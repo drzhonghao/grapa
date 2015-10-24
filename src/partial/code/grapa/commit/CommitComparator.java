@@ -88,26 +88,7 @@ import com.ibm.wala.viz.NodeDecorator;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
-import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
-import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
-import ch.uzh.ifi.seal.changedistiller.ast.FileUtils;
-import ch.uzh.ifi.seal.changedistiller.ast.java.JavaCompilation;
-import ch.uzh.ifi.seal.changedistiller.ast.java.JavaSourceCodeChangeClassifier;
-import ch.uzh.ifi.seal.changedistiller.distilling.AstDistiller;
-import ch.uzh.ifi.seal.changedistiller.distilling.ClassDistiller;
-import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
-import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
-import ch.uzh.ifi.seal.changedistiller.model.entities.StructureEntityVersion;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureDifferencer;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.java.JavaStructureNode;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.java.JavaStructureTreeBuilder;
-import ch.uzh.ifi.seal.changedistiller.structuredifferencing.java.JavaStructureNode.Type;
+
 import ca.mcgill.cs.swevo.ppa.PPAOptions;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 

@@ -65,9 +65,10 @@ import org.eclipse.pde.internal.core.ClasspathUtilCore;
 import org.eclipse.pde.internal.core.PDECore;
 
 import partial.code.grapa.mapping.ClientMethod;
+import partial.code.grapa.tool.FileUtils;
 import partial.code.grapa.tool.visual.JGraphTViewer;
-import ch.uzh.ifi.seal.changedistiller.ast.FileUtils;
-import ch.uzh.ifi.seal.changedistiller.ast.java.JavaCompilation;
+
+
 
 import com.ibm.wala.cast.java.client.JDTJavaSourceAnalysisEngine;
 import com.ibm.wala.cast.java.client.JavaSourceAnalysisEngine;

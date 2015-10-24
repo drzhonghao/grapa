@@ -11,9 +11,9 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 
+import partial.code.grapa.tool.FileUtils;
 import ca.mcgill.cs.swevo.ppa.PPAOptions;
 import ca.mcgill.cs.swevo.ppa.ui.PPAUtil;
-import ch.uzh.ifi.seal.changedistiller.ast.FileUtils;
 
 public class VersionDetector {
 
