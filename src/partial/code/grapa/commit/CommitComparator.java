@@ -126,7 +126,7 @@ public class CommitComparator {
 				}
 				if(bVisited){
 					analyzeCommit(c);
-					break;
+//					break;
 				}
 			}
 		}

@@ -35,11 +35,11 @@ Bundle-ClassPath: .,
  lib/GMT.jar
 Export-Package: edu.uci.ics.jung.graph,
  partial.code.grapa,
+ partial.code.grapa.commit,
  partial.code.grapa.delta.graph,
  partial.code.grapa.delta.graph.data,
  partial.code.grapa.dependency.graph,
  partial.code.grapa.mapping,
- partial.code.grapa.popup.actions,
  partial.code.grapa.tool,
  partial.code.grapa.tool.visual,
  partial.code.grapa.version.detect
