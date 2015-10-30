@@ -33,14 +33,14 @@ public class CommtComparAction implements IObjectActionDelegate {
 	public void run(IAction action) {
 		CommitComparator comparator = new CommitComparator();
 		comparator.setDotExe("E:/Program Files (x86)/Graphviz2.38/bin/dot.exe");
-		comparator.setProject("derby");
+		comparator.setProject("cassandra");
 		comparator.setElementListDir("D:/project/empirical/bugfix_largecommit/data/elementlist/");
 		comparator.setCommitDir("D:/project/empirical/bugfix_icse2015/data/repository/");
 		comparator.setLibDir("D:/project/empirical/bugfix_largecommit/data/lib/");
 		comparator.setJ2seDir("C:/Program Files/Java/jre1.8.0_60/lib/");
 		comparator.setOtherLibDir("D:/project/empirical/bugfix_largecommit/data/otherlib/");
-		comparator.setResultDir("D:/project/empirical/bugfix_largecommit/data/result/grapa/");
-		comparator.setExclusionFile("D:/project/empirical/bugfix_largecommit/tool/grapa/Java60RegressionExclusions.txt");
+		comparator.setResultDir("D:/project/empirical/bugfix_largecommit/data/graphs/");
+		comparator.setExclusionFile("D:/project/empirical/bugfix_largecommit/tool/Java60RegressionExclusions.txt");
 		comparator.run();
 	}
 
