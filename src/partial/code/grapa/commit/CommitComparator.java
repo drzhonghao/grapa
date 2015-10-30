@@ -121,13 +121,13 @@ public class CommitComparator {
 			if(c.isDirectory()){
 				bugName = c.getName();
 				System.out.println(bugName);
-//				if(bugName.compareTo("997667_internal")==0){
-//					bVisited = true;
-//				}
-//				if(bVisited){
+				if(bugName.compareTo("00ecb0f_CASSANDRA-2044")==0){
+					bVisited = true;
+				}
+				if(bVisited){
 					analyzeCommit(c);
-//					break;
-//				}
+					break;
+				}
 			}
 		}
 		System.out.println("Done!");
