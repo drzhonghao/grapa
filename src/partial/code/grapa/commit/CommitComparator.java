@@ -121,12 +121,12 @@ public class CommitComparator {
 			if(c.isDirectory()){
 				bugName = c.getName();
 				System.out.println(bugName);
-				if(bugName.compareTo("00ecb0f_CASSANDRA-2044")==0){
-					bVisited = true;
-				}
 				if(bVisited){
 					analyzeCommit(c);
 //					break;
+				}
+				if(bugName.compareTo("2f5f0c2_CASSANDRA-1804")==0){
+					bVisited = true;
 				}
 			}
 		}
@@ -231,7 +231,8 @@ public class CommitComparator {
 		
 		boolean bRightSuccess = false;
 		System.out.print("->");
-		 ArrayList<ASTNode> rightTrees = null;
+		
+		ArrayList<ASTNode> rightTrees = null;
 		for(String newVersion:pair.right.versions){
 			System.out.print(newVersion+",");
 			try{
@@ -252,7 +253,13 @@ public class CommitComparator {
 		if(!bRightSuccess){
 			System.out.println("Fail to parse the right side project");
 		}
-		System.out.println();
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if(bLeftSuccess&&bRightSuccess){
 			File file = new File(resultDir+this.bugName+"/");
 			if(!file.exists()){
