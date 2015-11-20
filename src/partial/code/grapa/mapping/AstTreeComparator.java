@@ -46,12 +46,12 @@ public class AstTreeComparator {
 			ClientMethod m2 = mms.get(m1);
 			m1.resolveSig();
 			m2.resolveSig();
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(200);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		return mms;
 	}

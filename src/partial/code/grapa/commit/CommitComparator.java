@@ -121,13 +121,13 @@ public class CommitComparator {
 			if(c.isDirectory()){
 				bugName = c.getName();
 				System.out.println(bugName);
-				if(bVisited){
+//				if(bVisited){
 					analyzeCommit(c);
 //					break;
-				}
-				if(bugName.compareTo("2f5f0c2_CASSANDRA-1804")==0){
-					bVisited = true;
-				}
+//				}
+//				if(bugName.compareTo("963509_DERBY-3844")==0){
+//					bVisited = true;
+//				}				
 			}
 		}
 		System.out.println("Done!");
@@ -253,12 +253,12 @@ public class CommitComparator {
 		if(!bRightSuccess){
 			System.out.println("Fail to parse the right side project");
 		}
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(200);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		if(bLeftSuccess&&bRightSuccess){
 			File file = new File(resultDir+this.bugName+"/");
@@ -311,7 +311,7 @@ public class CommitComparator {
 			String filename) {
 		// TODO Auto-generated method stub
 		GraphUtil.writeGraphXMLFile(graph, ir, filename);
-		GraphUtil.writePdfSDGraph(graph, ir, filename);
+//		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
 	private void  writeDependencyGraph(
