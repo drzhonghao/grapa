@@ -106,10 +106,7 @@ public class Connector extends AbstractNode{
 			}
 		}
 		
-		if(shortLabel.indexOf("main")>=0){
-			System.out.println();
-			System.out.println();
-		}
+		
 		return shortLabel;
 	}
 }
