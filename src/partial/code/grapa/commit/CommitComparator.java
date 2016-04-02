@@ -308,7 +308,7 @@ public class CommitComparator {
 			String filename) {
 		// TODO Auto-generated method stub
 		GraphUtil.writeGraphXMLFile(graph, ir, filename);
-//		GraphUtil.writePdfSDGraph(graph, ir, filename);
+		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
 	private void  writeDependencyGraph(

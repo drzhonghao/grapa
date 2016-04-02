@@ -31,6 +31,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
+import com.ibm.wala.ssa.SSASwitchInstruction;
 import com.ibm.wala.ssa.SSAUnaryOpInstruction;
 import com.ibm.wala.types.TypeReference;
 
@@ -81,8 +82,6 @@ public class GraphComparator {
 		calculateCostMatrix();
 		HungarianAlgorithm ha = new HungarianAlgorithm();
         int[][] matching = ha.hgAlgorithm(costMatrix);
-//		VolgenantJonker vj = new VolgenantJonker();
-//      int[][] matching = vj.run(costMatrix);
         
         //mapped nodes
         Hashtable<StatementNode, StatementNode> vm = new Hashtable<StatementNode, StatementNode>();
@@ -104,31 +103,17 @@ public class GraphComparator {
 		double inNodeCost;
 		double outNodeCost;
 		double nodeCost;
-//		System.out.print("\t");
-//		for (int j = 0; j < rightGraph.getVertexCount(); j++) {
-//			StatementNode rightNode = (StatementNode)rightGraph.getVertices().toArray()[j];
-//			System.out.print(this.getString(((NormalStatement)rightNode.statement).getInstruction())+"\t");
-//		}
-//		System.out.println();
+
 		for (int i = 0; i < internalLeftGraph.getVertexCount(); i++) {
 			StatementNode leftNode = (StatementNode)internalLeftGraph.getVertices().toArray()[i];
-//			System.out.print(this.getString(((NormalStatement)leftNode.statement).getInstruction())+"\t");
-//			if(leftNode.statement.toString().indexOf("maxDoc()I")>0){
-//        		System.out.print("");
-//        	}
+
             for (int j = 0; j < internalRightGraph.getVertexCount(); j++) {
             	StatementNode rightNode = (StatementNode)internalRightGraph.getVertices().toArray()[j];
             	inNodeCost = calculateIndegreeSimilarity(leftNode, rightNode);
             	outNodeCost = calculateOutDegreeSimilarity(leftNode, rightNode);
                 nodeCost = calculateNodeCost(leftNode, rightNode);
                 costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
-//                if(Double.isFinite(nodeCost)){
-//                	System.out.print(inNodeCost+outNodeCost+nodeCost+"\t");
-//                }else{
-//                	System.out.print("na\t");
-//                }
             }
-//            System.out.println();
         }
 	}
 
@@ -172,8 +157,9 @@ public class GraphComparator {
 		rightLine = getComparedLabel(internalRightIr, rightNode.statement);
 	
 		double distance = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
-		int length = leftLine.length()>rightLine.length()?leftLine.length():rightLine.length();
-		return distance/length;
+//		int length = leftLine.length()>rightLine.length()?leftLine.length():rightLine.length();
+//		return distance/length;
+		return distance;
 	}
 	
 	
@@ -231,6 +217,7 @@ public class GraphComparator {
 	        default:
 	          line =  s.toString();
 	     }
+      
 		 return line;
 	}
 	
@@ -254,24 +241,15 @@ public class GraphComparator {
 			  } else {
 			      line =  "putfield " + pis.getDeclaredField();
 			  }
-//			  String value = ins.getValueString(ir.getSymbolTable(), pis.getVal());
-//			  if(value.indexOf("#")>0){
-//				  line = line + "= "+value; 
-//			  }
 		  }else if(ins instanceof SSAGetInstruction){
 			  SSAGetInstruction gis = (SSAGetInstruction)ins;
 			  if (gis.isStatic()) {
 			      line = "getstatic " + gis.getDeclaredField();
 			  } else {
 			      line =  "getfield " + gis.getDeclaredField();
-			  }
-//			  String value = ins.getValueString(ir.getSymbolTable(), gis.getRef());
-//			  if(value.indexOf("#")>0){
-//				  line = line + "= "+value; 
-//			  }
+			  }			 
 		  }else if(ins instanceof SSABinaryOpInstruction){
 			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
-//			  line = ois.toString(ir.getSymbolTable());
 			  line = "binaryop(" + ois.getOperator() + ") ";
 		  }else if(ins instanceof SSAArrayStoreInstruction){
 			  line = "arraystore";
@@ -296,9 +274,10 @@ public class GraphComparator {
 		      }
 		  }else if(ins instanceof SSAAbstractThrowInstruction){
 			  line = "throw";
+		  }else if(ins instanceof SSASwitchInstruction){
+			  line = "switch";
 		  }else{
 			  line = ins.toString(ir.getSymbolTable());
-//			  System.err.println(line);
 		  }
 		  return line;
 	}
@@ -413,3 +392,4 @@ public class GraphComparator {
 		return line;
 	}
 }
+
