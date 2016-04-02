@@ -35,7 +35,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		// TODO Auto-generated constructor stub
 	}
 
-	public ArrayList<DirectedSparseGraph<StatementNode, StatementEdge>> extractChangeGraph() {
+	public DirectedSparseGraph<StatementNode, StatementEdge> extractChangeGraph() {
 		// TODO Auto-generated method stub
 		Hashtable<StatementNode, StatementNode> vm = this.extractNodeMappings();
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = new DirectedSparseGraph<StatementNode, StatementEdge>();
@@ -96,9 +96,9 @@ public class ChangeGraphBuilder extends GraphComparator{
 			}
 		}
 		
-		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
+//		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
 		
-		return ccs;
+		return graph;
 	}
 
 	private ArrayList<DirectedSparseGraph<StatementNode, StatementEdge>> generateClusters(

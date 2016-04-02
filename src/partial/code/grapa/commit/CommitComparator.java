@@ -297,11 +297,8 @@ public class CommitComparator {
 			writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
 			
 			if(leftGraph!=null&&rightGraph!=null){
-				ArrayList<DirectedSparseGraph<StatementNode, StatementEdge>> graphs = compareGraphs(leftGraph, lir, rightGraph, rir);
-				for(int i=0; i<graphs.size(); i++){
-					DirectedSparseGraph<StatementNode, StatementEdge> graph = graphs.get(i);
-					writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/" + i+"_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);	
-				}		
+				DirectedSparseGraph<StatementNode, StatementEdge> graph = compareGraphs(leftGraph, lir, rightGraph, rir);
+				writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/" + "_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
 			}
 		}
 	}
@@ -322,7 +319,7 @@ public class CommitComparator {
 		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
 	}
 
-	private ArrayList<DirectedSparseGraph<StatementNode, StatementEdge>> compareGraphs(
+	private DirectedSparseGraph<StatementNode, StatementEdge> compareGraphs(
 			DirectedSparseGraph<StatementNode, StatementEdge> leftGraph,
 			IR lir, DirectedSparseGraph<StatementNode, StatementEdge> rightGraph, IR rir) {
 		// TODO Auto-generated method stub
@@ -336,8 +333,8 @@ public class CommitComparator {
 		System.out.println("---------------------------------------------");
 		
 		ChangeGraphBuilder builder = new ChangeGraphBuilder(leftGraph, lir, rightGraph, rir);
-		ArrayList<DirectedSparseGraph<StatementNode, StatementEdge>> graphs = builder.extractChangeGraph();
-		return graphs;
+		DirectedSparseGraph<StatementNode, StatementEdge> graph = builder.extractChangeGraph();
+		return graph;
 	}
 
 
