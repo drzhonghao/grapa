@@ -118,34 +118,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return result;
 	}
 
-	private boolean isInteresting(
-			DirectedSparseGraph<StatementNode, StatementEdge> g) {
-		// TODO Auto-generated method stub
-		boolean bHasBasicIns = false;
-		boolean bHasPhi = false;
-		for(StatementNode s:g.getVertices()){
-			String label;
-			if(s.side == StatementNode.LEFT){
-				label = GraphComparator.getComparedLabel(this.leftIr, s.statement);
-			}else{
-				label = GraphComparator.getComparedLabel(this.rightIr, s.statement);
-			}
-			if(label.startsWith("invoke")){
-				bHasBasicIns = true;
-				break;
-			}else if(label.startsWith("put")){
-				bHasBasicIns = true;
-				break;
-			}else if(label.startsWith("set")){
-				bHasBasicIns = true;
-				break;
-			}else if(label.indexOf(" phi ")>0){
-				bHasPhi = true;
-				break;
-			}
-		}
-		return bHasBasicIns||bHasPhi;
-	}
+	
 
 }
  
