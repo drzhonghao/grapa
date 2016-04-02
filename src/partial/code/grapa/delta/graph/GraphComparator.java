@@ -33,6 +33,8 @@ import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.ssa.SSASwitchInstruction;
 import com.ibm.wala.ssa.SSAUnaryOpInstruction;
+import com.ibm.wala.ssa.SymbolTable;
+import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.TypeReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -43,13 +45,16 @@ public class GraphComparator {
 	private DirectedSparseGraph<StatementNode, StatementEdge> internalRightGraph;
 	private IR internalLeftIr;
 	private IR internalRightIr;
-	private boolean mode;//true: does not swap left and right. false: does.
+	protected boolean mode;//true: does not swap left and right. false: does.
 	
 	protected DirectedSparseGraph<StatementNode, StatementEdge> leftGraph;
 	protected DirectedSparseGraph<StatementNode, StatementEdge> rightGraph;
 	protected IR leftIr;
 	protected IR rightIr;
 	protected Levenshtein stringComparator;
+	
+	protected Hashtable<Integer, String> leftValueTable;
+	protected Hashtable<Integer, String> rightValueTable;
 	
 	
 	public GraphComparator(
@@ -75,8 +80,50 @@ public class GraphComparator {
 		this.rightGraph = newGraph;
 		this.rightIr = newIr;
 		stringComparator = new Levenshtein();
+		
+		leftValueTable = extractValues(internalLeftGraph, leftIr);
+		rightValueTable = extractValues(internalRightGraph, rightIr);
 	}
 	
+	private Hashtable<Integer, String> extractValues(
+			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR ir) {
+		// TODO Auto-generated method stub
+		Hashtable<Integer, String> valueTable = new Hashtable<Integer, String>();
+		
+		SymbolTable table = ir.getSymbolTable();
+		for(int i=0; i<table.getMaxValueNumber(); i++){
+			String line = table.getValueString(i);
+			int mark = line.indexOf(":");
+			if(mark>0){
+				line = line.substring(mark+1);
+				valueTable.put(i, line);
+			}
+		}
+		
+		for(StatementNode node:graph.getVertices()){
+			if(node.statement instanceof NormalStatement){
+				NormalStatement ns = (NormalStatement)node.statement;
+				SSAInstruction ins = ns.getInstruction();
+				if(ins instanceof SSAGetInstruction){
+					SSAGetInstruction gis = (SSAGetInstruction)ins;
+					FieldReference field = gis.getDeclaredField();
+					String sig = field.getSignature();
+					valueTable.put(gis.getDef(), sig);
+				}else if(ins instanceof AstJavaInvokeInstruction){
+					AstJavaInvokeInstruction inv = (AstJavaInvokeInstruction)ins;
+					if(inv.hasDef()){
+						CallSiteReference site = inv.getCallSite();
+						String  line = "invoke "+site.getInvocationString() + " ";
+						line = line + site.getDeclaredTarget().toString();
+						valueTable.put(inv.getDef(), line);
+					}
+				}
+			}
+		}
+		
+		return valueTable;
+	}
+
 	public Hashtable<StatementNode, StatementNode> extractNodeMappings() {
 		// TODO Auto-generated method stub
 		calculateCostMatrix();
@@ -153,8 +200,8 @@ public class GraphComparator {
 		String leftLine;
 		String rightLine;
 		
-		leftLine = getComparedLabel(internalLeftIr, leftNode.statement);
-		rightLine = getComparedLabel(internalRightIr, rightNode.statement);
+		leftLine = getComparedLabel(this.leftValueTable, internalLeftIr, leftNode.statement);
+		rightLine = getComparedLabel(this.rightValueTable, internalRightIr, rightNode.statement);
 	
 		double distance = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
 //		int length = leftLine.length()>rightLine.length()?leftLine.length():rightLine.length();
@@ -176,7 +223,7 @@ public class GraphComparator {
 	
 
 	
-	public static String getComparedLabel(IR ir, Statement s) {
+	public  String getComparedLabel(Hashtable<Integer, String> valueTable, IR ir, Statement s) {
 		// TODO Auto-generated method stub
 		
 		String line = "";
@@ -191,7 +238,7 @@ public class GraphComparator {
 	        case NORMAL:
 	          NormalStatement n = (NormalStatement) s;
 	          SSAInstruction ins = n.getInstruction();
-	          line = getComparedInstructionString(ir, ins);
+	          line = getComparedInstructionString(valueTable, ir, ins);
 	          break;
 	        case PARAM_CALLEE:
 	          ParamCallee paramCallee = (ParamCallee) s;
@@ -210,7 +257,7 @@ public class GraphComparator {
 	        	break;	
 	        case NORMAL_RET_CALLER:
 	        	NormalReturnCaller caller = (NormalReturnCaller)s;
-	        	line = "NORMAL_RET_CALLER:" + getComparedInstructionString(ir, caller.getInstruction());
+	        	line = "NORMAL_RET_CALLER:" + getComparedInstructionString(valueTable, ir, caller.getInstruction());
 	        	break;	
 	        case EXC_RET_CALLEE:
 	        case NORMAL_RET_CALLEE:
@@ -223,7 +270,7 @@ public class GraphComparator {
 	
 
 	
-	public static String getComparedInstructionString(IR ir, SSAInstruction ins) {
+	public  String getComparedInstructionString(Hashtable<Integer, String> valueTable, IR ir, SSAInstruction ins) {
 		String line;
 		if(ins instanceof AstJavaInvokeInstruction){
 			  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
@@ -246,11 +293,12 @@ public class GraphComparator {
 			  if (gis.isStatic()) {
 			      line = "getstatic " + gis.getDeclaredField();
 			  } else {
-			      line =  "getfield " + gis.getDeclaredField();
+			      line = "getfield " + gis.getDeclaredField();
 			  }			 
 		  }else if(ins instanceof SSABinaryOpInstruction){
 			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
-			  line = "binaryop(" + ois.getOperator() + ") ";
+			  line = valueTable.get(ois.getDef())+"=binaryop(" + ois.getOperator() + ") "+valueTable.get(ois.getVal1())+","+valueTable.get(ois.getVal2());
+//			  System.out.println(line+": "+"v"+ois.getDef()+" = binaryop(" + ois.getOperator() + ") v"+ois.getVal1()+", v"+ois.getVal2());
 		  }else if(ins instanceof SSAArrayStoreInstruction){
 			  line = "arraystore";
 		  }else if(ins instanceof SSAUnaryOpInstruction){
@@ -326,69 +374,45 @@ public class GraphComparator {
 	}
 
 	public static String getInstructionVisualString(IR ir, SSAInstruction ins) {
-		String line;
-		if(ins instanceof AstJavaInvokeInstruction){
-			  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
-			  CallSiteReference site = aji.getCallSite();
-			  line = "invoke "+site.getInvocationString() + " ";
-			  line += site.getDeclaredTarget().toString();
-			  line += " @" + site.getProgramCounter();
-		  }else if (ins instanceof SSANewInstruction){
-			  SSANewInstruction nis = (SSANewInstruction)ins;
-			  NewSiteReference site = nis.getNewSite();
-			  line = "new " + site.getDeclaredType();
-			  line += " @" + site.getProgramCounter();
-		  }else if(ins instanceof SSAPutInstruction){
-//			  SSAPutInstruction pis = (SSAPutInstruction)ins;
-//			  if (pis.isStatic()) {
-//			      line = "putstatic " + pis.getDeclaredField() + " = " + pis.getValueString(null, pis.getVal());
-//			  } else {
-//			      line =  "putfield " + pis.getDeclaredField();
-//			  }
-//			  String value = ins.getValueString(ir.getSymbolTable(), pis.getVal());
-//			  if(value.indexOf("#")>0){
-//				  line = line + "= "+value; 
-//			  }
-			  line = ins.toString(ir.getSymbolTable());
-			  
-		  }else if(ins instanceof SSAGetInstruction){
-//			  SSAGetInstruction gis = (SSAGetInstruction)ins;
-//			  if (gis.isStatic()) {
-//			      line = "getstatic " + gis.getDeclaredField();
-//			  } else {
-//			      line =  "getfield " + gis.getDeclaredField();
-//			  }
-//			  String value = ins.getValueString(ir.getSymbolTable(), gis.getRef());
-//			  if(value.indexOf("#")>0){
-//				  line = line + "= "+value; 
-//			  }
-			  line = ins.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSABinaryOpInstruction){
-			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
-			  line = ois.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSAArrayStoreInstruction){
-			  line = ins.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSAUnaryOpInstruction){
-			  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
-			  line = uoi.getOpcode().toString();
-		  }else if(ins instanceof SSAGotoInstruction){
-			  SSAGotoInstruction goi = (SSAGotoInstruction)ins;
-			  line = goi.toString(ir.getSymbolTable());
-		  }else if(ins instanceof AstAssertInstruction){
-			  line = ins.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSAConditionalBranchInstruction){
-			  SSAConditionalBranchInstruction cbi = (SSAConditionalBranchInstruction)ins;
-			  line = cbi.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSAInstanceofInstruction){
-//			  SSAInstanceofInstruction iis = (SSAInstanceofInstruction)ins;
-			  line = ins.toString(ir.getSymbolTable());
-		  }else if(ins instanceof SSACheckCastInstruction){
-//			  SSACheckCastInstruction cci = (SSACheckCastInstruction)ins;
-			  line = ins.toString(ir.getSymbolTable());
-		  }else{
-			  line = ins.toString();
-//			  System.err.println(line);
-		  }
+		String line = ins.toString(ir.getSymbolTable());
+//		if(ins instanceof AstJavaInvokeInstruction){
+//			  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
+//			  CallSiteReference site = aji.getCallSite();
+//			  line = "invoke "+site.getInvocationString() + " ";
+//			  line += site.getDeclaredTarget().toString();
+//			  line += " @" + site.getProgramCounter();
+//		  }else if (ins instanceof SSANewInstruction){
+//			  SSANewInstruction nis = (SSANewInstruction)ins;
+//			  NewSiteReference site = nis.getNewSite();
+//			  line = "new " + site.getDeclaredType();
+//			  line += " @" + site.getProgramCounter();
+//		  }else if(ins instanceof SSAPutInstruction){
+//			  line = ins.toString(ir.getSymbolTable());			  
+//		  }else if(ins instanceof SSAGetInstruction){
+//			  line = ins.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSABinaryOpInstruction){
+//			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
+//			  line = ois.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSAArrayStoreInstruction){
+//			  line = ins.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSAUnaryOpInstruction){
+//			  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
+//			  line = uoi.getOpcode().toString();
+//		  }else if(ins instanceof SSAGotoInstruction){
+//			  SSAGotoInstruction goi = (SSAGotoInstruction)ins;
+//			  line = goi.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof AstAssertInstruction){
+//			  line = ins.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSAConditionalBranchInstruction){
+//			  SSAConditionalBranchInstruction cbi = (SSAConditionalBranchInstruction)ins;
+//			  line = cbi.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSAInstanceofInstruction){
+//			  line = ins.toString(ir.getSymbolTable());
+//		  }else if(ins instanceof SSACheckCastInstruction){
+//			  line = ins.toString(ir.getSymbolTable());
+//		  }else{
+//			  line = ins.toString();
+//		  }
 		return line;
 	}
 }

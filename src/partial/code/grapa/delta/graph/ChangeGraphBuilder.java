@@ -14,6 +14,7 @@ import java.util.Set;
 
 
 
+
 import partial.code.grapa.dependency.graph.StatementEdge;
 import partial.code.grapa.dependency.graph.StatementNode;
 
@@ -71,9 +72,19 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(StatementNode n1:graph.getVertices()){
 			if(n1.side == StatementNode.LEFT){
 				StatementNode n2 = vm.get(n1);
-				if(n2!=null&&calculateCost(n1,n2)==0){
-						toDeleteNodes.add(n1);
-						toDeleteNodes.add(n2);
+				if(n2!=null){					
+					if(mode){
+						if(calculateNodeCost(n1,n2)==0){
+							toDeleteNodes.add(n1);
+							toDeleteNodes.add(n2);
+						}
+					}else{
+				
+						if(calculateNodeCost(n2, n1)==0){
+							toDeleteNodes.add(n1);
+							toDeleteNodes.add(n2);
+						}
+					}
 				}
 			}
 		}		
@@ -86,11 +97,21 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(StatementNode n1:graph.getVertices()){
 			StatementNode n2 = vm.get(n1);
 			if(n2!=null){
-				if(calculateCost(n1,n2)!=0&&n1.isSameInterestingType(n2, this.leftIr)){
-					StatementEdge edge = graph.findEdge(n1, n2);
-					if(edge==null){
-						edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
-						graph.addEdge(edge, n1, n2);
+				if(mode){
+					if(calculateNodeCost(n1,n2)!=0){
+						StatementEdge edge = graph.findEdge(n1, n2);
+						if(edge==null){
+							edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
+							graph.addEdge(edge, n1, n2);
+						}
+					}
+				}else{
+					if(calculateNodeCost(n2, n1)!=0){
+						StatementEdge edge = graph.findEdge(n1, n2);
+						if(edge==null){
+							edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
+							graph.addEdge(edge, n1, n2);
+						}
 					}
 				}
 			}

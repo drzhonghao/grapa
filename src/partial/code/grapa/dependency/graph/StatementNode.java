@@ -39,25 +39,6 @@ public class StatementNode {
 		return t1.compareTo(t2)==0;
 	}
 
-	public boolean isSameInterestingType(StatementNode sn, IR ir) {
-		// TODO Auto-generated method stub
-		return isSameType(sn)&&isInterestingType(ir);
-	}
-
-	private boolean isInterestingType(IR ir) {
-		// TODO Auto-generated method stub
-		boolean bInte = false;
-		if(statement instanceof NormalStatement){
-			String type = GraphComparator.getComparedLabel(ir, statement);
-			if(type.startsWith("invoke")){
-				bInte = true;
-			}else if(type.startsWith("put")){
-				bInte = true;
-			}else if(type.startsWith("get")){
-				bInte = true;
-			}
-		}
-		return bInte;
-	}
+	
 
 }
