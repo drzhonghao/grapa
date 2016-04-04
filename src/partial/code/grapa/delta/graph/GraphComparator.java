@@ -8,6 +8,9 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import util.EditDistance;
 
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
+import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
+import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
+import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.classLoader.NewSiteReference;
@@ -29,6 +32,7 @@ import com.ibm.wala.ssa.SSAGotoInstruction;
 import com.ibm.wala.ssa.SSAInstanceofInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
+import com.ibm.wala.ssa.SSAPhiInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.ssa.SSASwitchInstruction;
@@ -253,7 +257,12 @@ public class GraphComparator {
 	        	break;
 	        case PHI:
 	        	PhiStatement phi = (PhiStatement)s;
-	        	line = phi.getPhi().toString();
+	        	SSAPhiInstruction pins = phi.getPhi();
+	        	line = valueTable.get(pins.getDef())+"=phi ";
+	        	for(int i=0;i<pins.getNumberOfUses(); i++){
+	        		line += valueTable.get(pins.getUse(i));
+	        	}
+
 	        	break;	
 	        case NORMAL_RET_CALLER:
 	        	NormalReturnCaller caller = (NormalReturnCaller)s;
@@ -298,7 +307,6 @@ public class GraphComparator {
 		  }else if(ins instanceof SSABinaryOpInstruction){
 			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
 			  line = valueTable.get(ois.getDef())+"=binaryop(" + ois.getOperator() + ") "+valueTable.get(ois.getVal1())+","+valueTable.get(ois.getVal2());
-//			  System.out.println(line+": "+"v"+ois.getDef()+" = binaryop(" + ois.getOperator() + ") v"+ois.getVal1()+", v"+ois.getVal2());
 		  }else if(ins instanceof SSAArrayStoreInstruction){
 			  line = "arraystore";
 		  }else if(ins instanceof SSAUnaryOpInstruction){
@@ -322,12 +330,43 @@ public class GraphComparator {
 		      }
 		  }else if(ins instanceof SSAAbstractThrowInstruction){
 			  line = "throw";
+		  }else if(ins instanceof SSAReturnInstruction){
+			  line = "return";
 		  }else if(ins instanceof SSASwitchInstruction){
 			  line = "switch";
+		  }else if(ins instanceof AstLexicalWrite){
+			  AstLexicalWrite ast = (AstLexicalWrite)ins;
+			  line = "";
+			  for (int i = 0; i < ast.getAccessCount(); i++) {
+			      Access A = ast.getAccess(i);
+			      if (i != 0)
+			        line += ", ";
+			      line += "lexical:";
+			      line += A.variableName;
+			      line += "@";
+			      line += A.variableDefiner;
+			      line += " = ";
+			      line += valueTable.get(A.valueNumber);
+			    }			 
+		  }else if(ins instanceof AstLexicalRead){
+			  AstLexicalRead ast = (AstLexicalRead)ins;
+			  line = "";
+			  for (int i = 0; i < ast.getAccessCount(); i++) {
+			      Access A = ast.getAccess(i);
+			      if (i != 0)
+			      line += ", ";
+			      line += valueTable.get(A.valueNumber);
+			      line += " = lexical:";
+			      line += "@";
+			      line += A.variableDefiner;
+			   }		 
 		  }else{
 			  line = ins.toString(ir.getSymbolTable());
 		  }
-		  return line;
+//		if(line.indexOf("return")>=0){
+//			System.out.println("here!");
+//		}
+		return line;
 	}
 	
 	public static String getVisualLabel(IR ir, Statement s) {

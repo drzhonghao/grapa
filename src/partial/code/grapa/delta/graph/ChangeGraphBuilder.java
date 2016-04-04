@@ -72,14 +72,14 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(StatementNode n1:graph.getVertices()){
 			if(n1.side == StatementNode.LEFT){
 				StatementNode n2 = vm.get(n1);
+			
 				if(n2!=null){					
 					if(mode){
 						if(calculateNodeCost(n1,n2)==0){
 							toDeleteNodes.add(n1);
 							toDeleteNodes.add(n2);
 						}
-					}else{
-				
+					}else{				
 						if(calculateNodeCost(n2, n1)==0){
 							toDeleteNodes.add(n1);
 							toDeleteNodes.add(n2);

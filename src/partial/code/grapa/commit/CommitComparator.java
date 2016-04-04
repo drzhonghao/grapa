@@ -298,7 +298,9 @@ public class CommitComparator {
 			
 			if(leftGraph!=null&&rightGraph!=null){
 				DirectedSparseGraph<StatementNode, StatementEdge> graph = compareGraphs(leftGraph, lir, rightGraph, rir);
-				writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/" + "_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
+				if(graph.getVertexCount()>0){
+					writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/" + "_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
+				}
 			}
 		}
 	}
