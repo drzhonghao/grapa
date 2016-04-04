@@ -88,191 +88,30 @@ public class GraphEditScript extends GraphComparator{
         Hashtable<StatementNode, StatementNode> vm = extractNodeMappings();
         for(StatementNode v1:vm.keySet()){
         	StatementNode v2 = vm.get(v1);
-        	if(v2!=null){
+    		if(calculateNodeCost(v1,v2)!=0){
+    			if(mode){
+	    			UpdateNode un = new UpdateNode(getComparedLabel(v1),
+	        					getComparedLabel(v2));
+	       			changes.add(un);
+    			}else{
+    				UpdateNode un = new UpdateNode(getComparedLabel(v2),
+    						getComparedLabel(v1));
+    				changes.add(un);
+    			}
+    		}
+        }
+        
+        for(StatementNode node:this.rightGraph.getVertices()){
+        	if(!vm.containsValue(node)){
         		if(mode){
-	        		if(calculateNodeCost(v1,v2)!=0){
-	        			UpdateNode un = new UpdateNode(getComparedLabel(this.leftValueTable, leftIr, v1.statement),
-		        					getComparedLabel(this.rightValueTable, rightIr, v2.statement));
-	           			changes.add(un);
-	        		}
-					ArrayList<AbstractEdit> ecs = extractEdgeChanges(v1, v2, vm);
-					addUniqueEdgeEdits(changes,ecs);
-
+        			InsertNode in = new InsertNode(getComparedLabel(node));
+        			changes.add(in);
         		}else{
-        			if(calculateNodeCost(v2,v1)!=0){
-	        			UpdateNode un = new UpdateNode(getComparedLabel(this.rightValueTable, rightIr, v1.statement),
-		        					getComparedLabel(this.leftValueTable, leftIr, v2.statement));
-	           			changes.add(un);
-	        		}
-					ArrayList<AbstractEdit> ecs = extractEdgeChanges(v1, v2, vm);
-					addUniqueEdgeEdits(changes,ecs);
+        			DeleteNode dn = new DeleteNode(getComparedLabel(node));
+        			changes.add(dn);
         		}
         	}
-        }
-        
-        //left side unmapped nodes
-        ArrayList<StatementNode> sns = new ArrayList<StatementNode>();
-        sns.addAll(leftGraph.getVertices());
-        sns.removeAll(vm.keySet());
-        for(StatementNode sn:sns){
-    		DeleteNode dn = new DeleteNode(getComparedLabel(this.leftValueTable, leftIr, sn.statement));
-    		changes.add(dn);
-    		Collection<StatementEdge> edges = leftGraph.getInEdges(sn);
-    		for(StatementEdge edge:edges){
-        		DeleteEdge de = new DeleteEdge(getComparedLabel(this.leftValueTable, leftIr, edge.from.statement),
-        				getComparedLabel(this.leftValueTable, leftIr, edge.to.statement),
-        				edge.type);
-        		addUniqueEdgeEdit(changes, de);
-    		}
-    		edges = leftGraph.getOutEdges(sn);
-    		for(StatementEdge edge:edges){
-        		DeleteEdge de = new DeleteEdge(getComparedLabel(this.leftValueTable, leftIr, edge.from.statement),
-        				getComparedLabel(this.leftValueTable, leftIr, edge.to.statement),
-        				edge.type);
-        		addUniqueEdgeEdit(changes, de);
-    		}
-        }
-        
-        //right side unmapped nodes
-        sns.clear();
-        sns.addAll(rightGraph.getVertices());
-        sns.removeAll(vm.values());
-        for(StatementNode sn:sns){
-    		InsertNode dn = new InsertNode(getComparedLabel(this.rightValueTable, rightIr, sn.statement));
-    		changes.add(dn);
-    		Collection<StatementEdge> edges = leftGraph.getInEdges(sn);
-    		if(edges!=null){
-        		for(StatementEdge edge:edges){
-        			InsertEdge de = new InsertEdge(getComparedLabel(this.rightValueTable, rightIr, edge.from.statement),
-        					getComparedLabel(this.rightValueTable, rightIr, edge.to.statement),
-        					edge.type);
-	        		addUniqueEdgeEdit(changes, de);
-        		}
-    		}
-    		edges = leftGraph.getOutEdges(sn);
-    		if(edges!=null){
-        		for(StatementEdge edge:edges){
-        			InsertEdge de = new InsertEdge(getComparedLabel(this.rightValueTable, rightIr, edge.from.statement),
-        					getComparedLabel(this.rightValueTable, rightIr, edge.to.statement),
-        					edge.type);
-	        		addUniqueEdgeEdit(changes, de);
-        		}
-    		}
-        }
+        }      
 		return changes;
 	}
-
-
-
-
-
-	private void addUniqueEdgeEdits(ArrayList<AbstractEdit> changes,
-			ArrayList<AbstractEdit> edges) {
-		// TODO Auto-generated method stub
-		for(AbstractEdit e1:edges){
-			addUniqueEdgeEdit(changes, e1);
-		}
-	}
-
-	private void addUniqueEdgeEdit(ArrayList<AbstractEdit> changes,
-			AbstractEdit e1) {
-		boolean bFound = false;
-		for(AbstractEdit e2:changes){
-			if(e1.getClass().getName().compareTo(e2.getClass().getName())==0){
-				if(e1 instanceof DeleteEdge){
-					DeleteEdge de1 = (DeleteEdge)e1;
-					DeleteEdge de2 = (DeleteEdge)e2;
-					if(de1.getFrom().compareTo(de2.getFrom())==0&&de1.getTo().compareTo(de2.getTo())==0){
-						bFound = true;
-						break;
-					}
-				}else{
-					InsertEdge de1 = (InsertEdge)e1;
-					InsertEdge de2 = (InsertEdge)e2;
-					if(de1.getFrom().compareTo(de2.getFrom())==0&&de1.getTo().compareTo(de2.getTo())==0){
-						bFound = true;
-						break;
-					}
-				}
-			}
-		}
-		if(!bFound){
-			changes.add(e1);
-		}
-	}
-	
-	private ArrayList<AbstractEdit> extractEdgeChanges(StatementNode v1, StatementNode v2, Hashtable<StatementNode, StatementNode> vm) {
-		// TODO Auto-generated method stub
-		ArrayList<AbstractEdit> changes = new ArrayList<AbstractEdit>();
-		ArrayList<StatementEdge> e1s = new ArrayList<StatementEdge>();
-		e1s.addAll(leftGraph.getInEdges(v1));
-		ArrayList<StatementEdge> e2s = new ArrayList<StatementEdge>();
-		e2s.addAll(rightGraph.getInEdges(v2));
-		for(int i=e1s.size()-1; i>=0; i--){
-			StatementEdge e1 = (StatementEdge)e1s.toArray()[i];
-			StatementNode v2from = vm.get(e1.from);
-			StatementEdge e2 = leftGraph.findEdge(v2from, v2);
-			if(e2!=null){
-				e1s.remove(e1);
-				e2s.remove(e2);
-			}
-		}
-		
-		for(StatementEdge e1:e1s){
-			DeleteEdge de = new DeleteEdge(getComparedLabel(this.leftValueTable, leftIr, e1.from.statement),
-					getComparedLabel(this.leftValueTable, leftIr, e1.to.statement),
-					e1.type);
-			changes.add(de);
-		}
-		for(StatementEdge e2:e2s){
-			InsertEdge de = new InsertEdge(getComparedLabel(this.rightValueTable, rightIr, e2.from.statement),
-					getComparedLabel(this.rightValueTable, rightIr, e2.to.statement),
-					e2.type);
-			changes.add(de);
-		}
-		
-		e1s.clear();
-		e1s.addAll(leftGraph.getOutEdges(v1));
-		e2s.clear();
-		e2s.addAll(rightGraph.getOutEdges(v2));
-		for(int i=e1s.size()-1; i>=0; i--){
-			StatementEdge e1 = (StatementEdge)e1s.toArray()[i];
-			StatementNode v2to = vm.get(e1.to);
-			StatementEdge e2 = leftGraph.findEdge(v2, v2to);
-			if(e2!=null){
-				e1s.remove(e1);
-				e2s.remove(e2);
-			}
-		}
-		
-		for(StatementEdge e1:e1s){
-			DeleteEdge de = new DeleteEdge(getComparedLabel(this.leftValueTable, leftIr, e1.from.statement),
-					getComparedLabel(this.leftValueTable, leftIr, e1.to.statement),
-					e1.type);
-			changes.add(de);
-		}
-		for(StatementEdge e2:e2s){
-			InsertEdge de = new InsertEdge(getComparedLabel(this.rightValueTable, rightIr, e2.from.statement),
-					getComparedLabel(this.rightValueTable, rightIr, e2.to.statement),
-					e2.type);
-			changes.add(de);
-		}
-		return changes;
-	}
-
-
-
-
-
-
-	
-
-
-
-	
-	
-	
-
-
-	
 }

@@ -15,6 +15,7 @@ import java.util.Set;
 
 
 
+
 import partial.code.grapa.dependency.graph.StatementEdge;
 import partial.code.grapa.dependency.graph.StatementNode;
 
@@ -40,82 +41,53 @@ public class ChangeGraphBuilder extends GraphComparator{
 		// TODO Auto-generated method stub
 		Hashtable<StatementNode, StatementNode> vm = this.extractNodeMappings();
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = new DirectedSparseGraph<StatementNode, StatementEdge>();
-		//add left nodes
-		for(StatementNode s:leftGraph.getVertices()){
-			s.side = StatementNode.LEFT;
-			graph.addVertex(s);
+		
+		for(StatementNode m:vm.keySet()){
+			StatementNode n = vm.get(m);
+//			if(n.toString().indexOf("binaryop(add)")>0){
+//				System.out.println("Here");
+//			}
+			if(calculateNodeCost(m,n)!=0){
+				graph.addVertex(m);
+				graph.addVertex(n);
+				if(mode){
+					m.side = StatementNode.LEFT;
+					n.side = StatementNode.RIGHT;
+					StatementEdge edge = new StatementEdge(m, n, StatementEdge.CHANGE);
+					graph.addEdge(edge, m, n);
+				}else{
+					m.side = StatementNode.RIGHT;
+					n.side = StatementNode.LEFT;
+					StatementEdge edge = new StatementEdge(n, m, StatementEdge.CHANGE);
+					graph.addEdge(edge, n, m);
+				}
+			}
 		}
 		
-		//add right nodes
-		for(StatementNode s:rightGraph.getVertices()){
-			s.side = StatementNode.RIGHT;
-			graph.addVertex(s);
-		}
+		 for(StatementNode node:this.rightGraph.getVertices()){
+        	if(!vm.containsValue(node)){
+        		if(mode){
+        			node.side = StatementNode.RIGHT;
+        			graph.addVertex(node);
+        		}else{
+        			node.side = StatementNode.LEFT;
+        			graph.addVertex(node);
+        		}
+        	}
+        }     
 		
 		for(StatementNode n1:graph.getVertices()){
 			for(StatementNode n2:graph.getVertices()){
-				if(!n1.equals(n2)&&n1.side==n2.side){
-					StatementEdge edge;
-					if(n1.side==StatementNode.LEFT){
-						edge = leftGraph.findEdge(n1, n2);
-					}else{
-						edge = rightGraph.findEdge(n1, n2);
-					}
-					if(edge != null){
-						graph.addEdge(edge, n1, n2);
-					}
+				StatementEdge edge = this.leftGraph.findEdge(n1, n2);
+				if(edge==null){
+					edge = this.rightGraph.findEdge(n1, n2);
+				}
+				if(edge != null){
+					graph.addEdge(edge, n1, n2);
 				}			
 			}
 		}
-		//remove internal nodes
-		ArrayList<StatementNode> toDeleteNodes = new ArrayList<StatementNode>();
-		for(StatementNode n1:graph.getVertices()){
-			if(n1.side == StatementNode.LEFT){
-				StatementNode n2 = vm.get(n1);
-			
-				if(n2!=null){					
-					if(mode){
-						if(calculateNodeCost(n1,n2)==0){
-							toDeleteNodes.add(n1);
-							toDeleteNodes.add(n2);
-						}
-					}else{				
-						if(calculateNodeCost(n2, n1)==0){
-							toDeleteNodes.add(n1);
-							toDeleteNodes.add(n2);
-						}
-					}
-				}
-			}
-		}		
 		
-		for(StatementNode node: toDeleteNodes){
-			graph.removeVertex(node);
-		}
-		
-		//	
-		for(StatementNode n1:graph.getVertices()){
-			StatementNode n2 = vm.get(n1);
-			if(n2!=null){
-				if(mode){
-					if(calculateNodeCost(n1,n2)!=0){
-						StatementEdge edge = graph.findEdge(n1, n2);
-						if(edge==null){
-							edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
-							graph.addEdge(edge, n1, n2);
-						}
-					}
-				}else{
-					if(calculateNodeCost(n2, n1)!=0){
-						StatementEdge edge = graph.findEdge(n1, n2);
-						if(edge==null){
-							edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
-							graph.addEdge(edge, n1, n2);
-						}
-					}
-				}
-			}
-		}
 		
 //		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
 		

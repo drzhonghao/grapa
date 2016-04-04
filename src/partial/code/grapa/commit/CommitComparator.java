@@ -299,7 +299,7 @@ public class CommitComparator {
 			if(leftGraph!=null&&rightGraph!=null){
 				DirectedSparseGraph<StatementNode, StatementEdge> graph = compareGraphs(leftGraph, lir, rightGraph, rir);
 				if(graph.getVertexCount()>0){
-					writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/" + "_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
+					writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
 				}
 			}
 		}
@@ -309,7 +309,7 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
 			String filename) {
 		// TODO Auto-generated method stub
-		GraphUtil.writeGraphXMLFile(graph, ir, filename);
+//		GraphUtil.writeGraphXMLFile(graph, ir, filename);
 		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
@@ -317,7 +317,7 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
 			IR rir, String filename) {
 		// TODO Auto-generated method stub
-		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
+//		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
 		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
 	}
 

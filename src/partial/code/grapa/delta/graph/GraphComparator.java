@@ -23,14 +23,18 @@ import com.ibm.wala.ipa.slicer.PhiStatement;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ssa.IR;
 import com.ibm.wala.ssa.SSAAbstractThrowInstruction;
+import com.ibm.wala.ssa.SSAArrayLengthInstruction;
+import com.ibm.wala.ssa.SSAArrayLoadInstruction;
 import com.ibm.wala.ssa.SSAArrayStoreInstruction;
 import com.ibm.wala.ssa.SSABinaryOpInstruction;
 import com.ibm.wala.ssa.SSACheckCastInstruction;
 import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
+import com.ibm.wala.ssa.SSAConversionInstruction;
 import com.ibm.wala.ssa.SSAGetInstruction;
 import com.ibm.wala.ssa.SSAGotoInstruction;
 import com.ibm.wala.ssa.SSAInstanceofInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.ssa.SSALoadMetadataInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.ssa.SSAPhiInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
@@ -45,16 +49,12 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class GraphComparator {
 	private double[][] costMatrix;
-	private DirectedSparseGraph<StatementNode, StatementEdge> internalLeftGraph;
-	private DirectedSparseGraph<StatementNode, StatementEdge> internalRightGraph;
-	private IR internalLeftIr;
-	private IR internalRightIr;
-	protected boolean mode;//true: does not swap left and right. false: does.
-	
 	protected DirectedSparseGraph<StatementNode, StatementEdge> leftGraph;
 	protected DirectedSparseGraph<StatementNode, StatementEdge> rightGraph;
-	protected IR leftIr;
-	protected IR rightIr;
+	private IR leftIr;
+	private IR rightIr;
+	protected boolean mode;//true: does not swap left and right. false: does.
+	
 	protected Levenshtein stringComparator;
 	
 	protected Hashtable<Integer, String> leftValueTable;
@@ -67,26 +67,22 @@ public class GraphComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> newGraph, IR newIr) {
 		// TODO Auto-generated constructor stub
 		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
-			internalLeftGraph = newGraph;
-			internalRightGraph = oldGraph;
-			internalLeftIr = newIr;
-			internalRightIr = oldIr;
+			leftGraph = newGraph;
+			rightGraph = oldGraph;
+			leftIr = newIr;
+			rightIr = oldIr;
 			mode = false;
 		}else{
-			internalLeftGraph = oldGraph;
-			internalRightGraph = newGraph;
-			internalLeftIr = oldIr;
-			internalRightIr = newIr;
+			leftGraph = oldGraph;
+			rightGraph = newGraph;
+			leftIr = oldIr;
+			rightIr = newIr;
 			mode = true;
 		}
-		this.leftGraph = oldGraph;
-		this.leftIr = oldIr;
-		this.rightGraph = newGraph;
-		this.rightIr = newIr;
-		stringComparator = new Levenshtein();
-		
-		leftValueTable = extractValues(internalLeftGraph, leftIr);
-		rightValueTable = extractValues(internalRightGraph, rightIr);
+
+		stringComparator = new Levenshtein();		
+		leftValueTable = extractValues(leftGraph, leftIr);
+		rightValueTable = extractValues(rightGraph, rightIr);
 	}
 	
 	private Hashtable<Integer, String> extractValues(
@@ -137,29 +133,25 @@ public class GraphComparator {
         //mapped nodes
         Hashtable<StatementNode, StatementNode> vm = new Hashtable<StatementNode, StatementNode>();
         for(int i=0; i<matching.length; i++){
-			StatementNode v1 = (StatementNode)internalLeftGraph.getVertices().toArray()[matching[i][0]];
-			StatementNode v2 = (StatementNode)internalRightGraph.getVertices().toArray()[matching[i][1]];
-			if(mode){
-				vm.put(v1, v2);
-			}else{
-				vm.put(v2, v1);
-			}
+			StatementNode v1 = (StatementNode)leftGraph.getVertices().toArray()[matching[i][0]];
+			StatementNode v2 = (StatementNode)rightGraph.getVertices().toArray()[matching[i][1]];
+			vm.put(v1, v2);
         }
         return vm;
 	}
 	
 	private void calculateCostMatrix() {
 		// TODO Auto-generated method stub
-		costMatrix =  new double[internalLeftGraph.getVertexCount()][internalRightGraph.getVertexCount()];
+		costMatrix =  new double[leftGraph.getVertexCount()][rightGraph.getVertexCount()];
 		double inNodeCost;
 		double outNodeCost;
 		double nodeCost;
 
-		for (int i = 0; i < internalLeftGraph.getVertexCount(); i++) {
-			StatementNode leftNode = (StatementNode)internalLeftGraph.getVertices().toArray()[i];
+		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
+			StatementNode leftNode = (StatementNode)leftGraph.getVertices().toArray()[i];
 
-            for (int j = 0; j < internalRightGraph.getVertexCount(); j++) {
-            	StatementNode rightNode = (StatementNode)internalRightGraph.getVertices().toArray()[j];
+            for (int j = 0; j < rightGraph.getVertexCount(); j++) {
+            	StatementNode rightNode = (StatementNode)rightGraph.getVertices().toArray()[j];
             	inNodeCost = calculateIndegreeSimilarity(leftNode, rightNode);
             	outNodeCost = calculateOutDegreeSimilarity(leftNode, rightNode);
                 nodeCost = calculateNodeCost(leftNode, rightNode);
@@ -172,8 +164,8 @@ public class GraphComparator {
 			StatementNode rightNode) {
 		double outNodeCost = 0;
 		try{
-			if((internalLeftGraph.outDegree(leftNode) + internalRightGraph.outDegree(rightNode))!=0){
-				outNodeCost = (double)Math.abs(internalLeftGraph.outDegree(leftNode) -  internalRightGraph.outDegree(rightNode))/(internalLeftGraph.outDegree(leftNode) + internalRightGraph.outDegree(rightNode));
+			if((leftGraph.outDegree(leftNode) + rightGraph.outDegree(rightNode))!=0){
+				outNodeCost = (double)Math.abs(leftGraph.outDegree(leftNode) -  rightGraph.outDegree(rightNode))/(leftGraph.outDegree(leftNode) + rightGraph.outDegree(rightNode));
 			}else{
 				outNodeCost = 0;
 			}
@@ -187,8 +179,8 @@ public class GraphComparator {
 			StatementNode rightNode) {
 		double inNodeCost = 0;
 		try{
-			if((internalLeftGraph.inDegree(leftNode) + internalRightGraph.inDegree(rightNode))!=0){
-				inNodeCost = (double)Math.abs(internalLeftGraph.inDegree(leftNode) - internalRightGraph.inDegree(rightNode))/(internalLeftGraph.inDegree(leftNode) + internalRightGraph.inDegree(rightNode));
+			if((leftGraph.inDegree(leftNode) + rightGraph.inDegree(rightNode))!=0){
+				inNodeCost = (double)Math.abs(leftGraph.inDegree(leftNode) - rightGraph.inDegree(rightNode))/(leftGraph.inDegree(leftNode) + rightGraph.inDegree(rightNode));
 			}else{
 				inNodeCost = 0;
 			}
@@ -204,8 +196,8 @@ public class GraphComparator {
 		String leftLine;
 		String rightLine;
 		
-		leftLine = getComparedLabel(this.leftValueTable, internalLeftIr, leftNode.statement);
-		rightLine = getComparedLabel(this.rightValueTable, internalRightIr, rightNode.statement);
+		leftLine = getComparedLabel(leftNode);
+		rightLine = getComparedLabel(rightNode);
 	
 		double distance = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
 //		int length = leftLine.length()>rightLine.length()?leftLine.length():rightLine.length();
@@ -227,9 +219,18 @@ public class GraphComparator {
 	
 
 	
-	public  String getComparedLabel(Hashtable<Integer, String> valueTable, IR ir, Statement s) {
+	public  String getComparedLabel(StatementNode node) {
 		// TODO Auto-generated method stub
-		
+		Hashtable<Integer, String> valueTable = null;
+		IR ir = null;
+		if(leftGraph.containsVertex(node)){
+			valueTable = this.leftValueTable;
+			ir = this.leftIr;
+		}else{
+			valueTable = this.rightValueTable;
+			ir = this.rightIr;
+		}
+		Statement s = node.statement;
 		String line = "";
 		switch (s.getKind()) {
 	        case HEAP_PARAM_CALLEE:
@@ -308,7 +309,16 @@ public class GraphComparator {
 			  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
 			  line = valueTable.get(ois.getDef())+"=binaryop(" + ois.getOperator() + ") "+valueTable.get(ois.getVal1())+","+valueTable.get(ois.getVal2());
 		  }else if(ins instanceof SSAArrayStoreInstruction){
-			  line = "arraystore";
+			  SSAArrayStoreInstruction sas = (SSAArrayStoreInstruction)ins;
+			  line = "arraystore " + valueTable.get(sas.getArrayRef()) + "[" + valueTable.get(sas.getIndex())
+		        + "] = " + valueTable.get(sas.getValue());
+		  }else if(ins instanceof SSAArrayLoadInstruction){
+			  SSAArrayLoadInstruction sas = (SSAArrayLoadInstruction)ins;
+			  line = valueTable.get(sas.getDef()) + " = arrayload " + valueTable.get(sas.getArrayRef()) + "["
+				        + valueTable.get(sas.getIndex()) + "]";
+		  }else if(ins instanceof SSAArrayLengthInstruction){
+			  SSAArrayLengthInstruction sas = (SSAArrayLengthInstruction)ins;
+			  line = valueTable.get(sas.getDef()) + " = arraylength " + valueTable.get(sas.getArrayRef());
 		  }else if(ins instanceof SSAUnaryOpInstruction){
 			  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
 			  line = uoi.getOpcode().toString();
@@ -318,7 +328,7 @@ public class GraphComparator {
 			  line = "assert"; 
 		  }else if(ins instanceof SSAConditionalBranchInstruction){
 			  SSAConditionalBranchInstruction cbi = (SSAConditionalBranchInstruction)ins;
-			  line = "conditional branch(" + cbi.getOperator() + ") ";
+			  line = "conditional branch(" + cbi.getOperator() + ") "+valueTable.get(cbi.getUse(0)) + "," + valueTable.get(cbi.getUse(1));
 		  }else if(ins instanceof SSAInstanceofInstruction){
 			  SSAInstanceofInstruction iis = (SSAInstanceofInstruction)ins;
 			  line = "instanceof " + iis.getCheckedType();
@@ -332,8 +342,13 @@ public class GraphComparator {
 			  line = "throw";
 		  }else if(ins instanceof SSAReturnInstruction){
 			  line = "return";
+		  }else if(ins instanceof SSALoadMetadataInstruction){
+			  line = "load_metadata";
 		  }else if(ins instanceof SSASwitchInstruction){
 			  line = "switch";
+		  }else if(ins instanceof SSAConversionInstruction){
+			  SSAConversionInstruction ci = (SSAConversionInstruction)ins;
+			  line = valueTable.get(ci.getDef())+" = conversion(" + ci.getToType().getName() + ") " + valueTable.get(ci.getUse(0));
 		  }else if(ins instanceof AstLexicalWrite){
 			  AstLexicalWrite ast = (AstLexicalWrite)ins;
 			  line = "";
@@ -363,7 +378,8 @@ public class GraphComparator {
 		  }else{
 			  line = ins.toString(ir.getSymbolTable());
 		  }
-//		if(line.indexOf("return")>=0){
+//		if(line.indexOf("load_metadata")>=0){
+//			ins.toString(ir.getSymbolTable());
 //			System.out.println("here!");
 //		}
 		return line;
