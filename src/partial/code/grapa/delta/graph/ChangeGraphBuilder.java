@@ -43,11 +43,11 @@ public class ChangeGraphBuilder extends GraphComparator{
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = new DirectedSparseGraph<StatementNode, StatementEdge>();
 		
 		for(StatementNode m:vm.keySet()){
-			StatementNode n = vm.get(m);
-//			if(n.toString().indexOf("binaryop(add)")>0){
-//				System.out.println("Here");
-//			}
+			StatementNode n = vm.get(m);		
 			if(calculateNodeCost(m,n)!=0){
+//				if(n.toString().indexOf("conditional branch(eq)")>=0){
+//					System.out.println("Here");
+//				}
 				graph.addVertex(m);
 				graph.addVertex(n);
 				if(mode){
@@ -87,10 +87,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 				}			
 			}
 		}
-		
-		
 //		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
-		
 		return graph;
 	}
 

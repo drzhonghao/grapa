@@ -60,6 +60,9 @@ public class GraphComparator {
 	protected Hashtable<Integer, String> leftValueTable;
 	protected Hashtable<Integer, String> rightValueTable;
 	
+	protected Hashtable<Integer, String> leftIndexTable;
+	protected Hashtable<Integer, String> rightIndexTable;
+	
 	
 	public GraphComparator(
 			DirectedSparseGraph<StatementNode, StatementEdge> oldGraph,
@@ -83,8 +86,26 @@ public class GraphComparator {
 		stringComparator = new Levenshtein();		
 		leftValueTable = extractValues(leftGraph, leftIr);
 		rightValueTable = extractValues(rightGraph, rightIr);
+		leftIndexTable = extractIndexTable(leftGraph);
+		rightIndexTable = extractIndexTable(rightGraph);
 	}
 	
+	private Hashtable<Integer, String> extractIndexTable(
+			DirectedSparseGraph<StatementNode, StatementEdge> graph) {
+		// TODO Auto-generated method stub
+		Hashtable<Integer, String> table = new Hashtable<Integer, String>();
+		for(StatementNode node:graph.getVertices()){			
+			if(node.statement instanceof NormalStatement){
+				NormalStatement ns = (NormalStatement)node.statement;
+				SSAInstruction ins = ns.getInstruction();
+				String label = getComparedLabel(node);
+				int index = ins.iindex;
+				table.put(index, label);
+			}
+		}
+		return table;
+	}
+
 	private Hashtable<Integer, String> extractValues(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR ir) {
 		// TODO Auto-generated method stub
@@ -117,6 +138,11 @@ public class GraphComparator {
 						line = line + site.getDeclaredTarget().toString();
 						valueTable.put(inv.getDef(), line);
 					}
+				}else if (ins instanceof SSANewInstruction){
+					  SSANewInstruction nis = (SSANewInstruction)ins;
+					  NewSiteReference site = nis.getNewSite();
+					  String line = "new " + site.getDeclaredType();
+					  valueTable.put(nis.getDef(), line);
 				}
 			}
 		}
@@ -146,6 +172,7 @@ public class GraphComparator {
 		double inNodeCost;
 		double outNodeCost;
 		double nodeCost;
+		double lineCost;
 
 		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
 			StatementNode leftNode = (StatementNode)leftGraph.getVertices().toArray()[i];
@@ -155,9 +182,26 @@ public class GraphComparator {
             	inNodeCost = calculateIndegreeSimilarity(leftNode, rightNode);
             	outNodeCost = calculateOutDegreeSimilarity(leftNode, rightNode);
                 nodeCost = calculateNodeCost(leftNode, rightNode);
+                lineCost = calculateLineCost(leftGraph.getVertexCount(), leftNode, rightGraph.getVertexCount(), rightNode);
                 costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
             }
         }
+	}
+
+	private double calculateLineCost(int leftSize, StatementNode leftNode,
+			int rightSize, StatementNode rightNode) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		if(leftNode.statement instanceof NormalStatement && rightNode.statement instanceof NormalStatement){
+			NormalStatement leftstatement = (NormalStatement)leftNode.statement;
+			NormalStatement rightstatement = (NormalStatement)rightNode.statement;
+			SSAInstruction leftins = leftstatement.getInstruction();
+			SSAInstruction rightins = rightstatement.getInstruction();
+			cost = Math.abs(leftins.iindex-rightins.iindex);
+			int size = leftSize>rightSize?leftSize:rightSize;
+			cost = cost/size;
+		}
+		return cost;
 	}
 
 	private double calculateOutDegreeSimilarity(StatementNode leftNode,
@@ -223,12 +267,16 @@ public class GraphComparator {
 		// TODO Auto-generated method stub
 		Hashtable<Integer, String> valueTable = null;
 		IR ir = null;
+		Hashtable<Integer, String> indexTable = null;
+		
 		if(leftGraph.containsVertex(node)){
 			valueTable = this.leftValueTable;
 			ir = this.leftIr;
+			indexTable = this.leftIndexTable;
 		}else{
 			valueTable = this.rightValueTable;
 			ir = this.rightIr;
+			indexTable = this.rightIndexTable;
 		}
 		Statement s = node.statement;
 		String line = "";
@@ -237,13 +285,13 @@ public class GraphComparator {
 	        case HEAP_PARAM_CALLER:
 	        case HEAP_RET_CALLEE:
 	        case HEAP_RET_CALLER:
-	          HeapStatement h = (HeapStatement) s;
+	          HeapStatement h = (HeapStatement) s;	          
 	          line = s.getKind() + "\\n" + h.getNode();
 	          break;
 	        case NORMAL:
 	          NormalStatement n = (NormalStatement) s;
 	          SSAInstruction ins = n.getInstruction();
-	          line = getComparedInstructionString(valueTable, ir, ins);
+	          line = getComparedInstructionString(valueTable, indexTable, ir, ins);
 	          break;
 	        case PARAM_CALLEE:
 	          ParamCallee paramCallee = (ParamCallee) s;
@@ -263,11 +311,10 @@ public class GraphComparator {
 	        	for(int i=0;i<pins.getNumberOfUses(); i++){
 	        		line += valueTable.get(pins.getUse(i));
 	        	}
-
 	        	break;	
 	        case NORMAL_RET_CALLER:
 	        	NormalReturnCaller caller = (NormalReturnCaller)s;
-	        	line = "NORMAL_RET_CALLER:" + getComparedInstructionString(valueTable, ir, caller.getInstruction());
+	        	line = "NORMAL_RET_CALLER:" + getComparedInstructionString(valueTable, indexTable, ir, caller.getInstruction());
 	        	break;	
 	        case EXC_RET_CALLEE:
 	        case NORMAL_RET_CALLEE:
@@ -280,7 +327,7 @@ public class GraphComparator {
 	
 
 	
-	public  String getComparedInstructionString(Hashtable<Integer, String> valueTable, IR ir, SSAInstruction ins) {
+	public  String getComparedInstructionString(Hashtable<Integer, String> valueTable, Hashtable<Integer, String> indexTable, IR ir, SSAInstruction ins) {
 		String line;
 		if(ins instanceof AstJavaInvokeInstruction){
 			  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
@@ -323,7 +370,12 @@ public class GraphComparator {
 			  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
 			  line = uoi.getOpcode().toString();
 		  }else if(ins instanceof SSAGotoInstruction){
-			  line = "goto";
+			  SSAGotoInstruction gti = (SSAGotoInstruction)ins;		
+			  if(indexTable!=null){
+				  line = "goto " + indexTable.get(gti.getTarget());
+			  }else{
+				  line = "goto";
+			  }
 		  }else if(ins instanceof AstAssertInstruction){
 			  line = "assert"; 
 		  }else if(ins instanceof SSAConditionalBranchInstruction){
