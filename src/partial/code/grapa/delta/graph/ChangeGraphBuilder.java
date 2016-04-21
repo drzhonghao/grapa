@@ -16,11 +16,15 @@ import java.util.Set;
 
 
 
+
+
 import partial.code.grapa.dependency.graph.StatementEdge;
 import partial.code.grapa.dependency.graph.StatementNode;
 
 import com.ibm.wala.ipa.slicer.NormalStatement;
 import com.ibm.wala.ssa.IR;
+import com.ibm.wala.ssa.SSAGotoInstruction;
+import com.ibm.wala.ssa.SSAInstruction;
 
 import edu.uci.ics.jung.algorithms.cluster.WeakComponentClusterer;
 import edu.uci.ics.jung.algorithms.filters.FilterUtils;
@@ -87,6 +91,30 @@ public class ChangeGraphBuilder extends GraphComparator{
 				}			
 			}
 		}
+		//removing isolated goto
+		for(int i=graph.getVertexCount()-1;i>=0; i--){
+			StatementNode n = (StatementNode) graph.getVertices().toArray()[i];
+			if(n.statement instanceof NormalStatement){
+				NormalStatement ns = (NormalStatement)n.statement;
+				SSAInstruction ins = ns.getInstruction();
+				if(ins instanceof SSAGotoInstruction){
+					ArrayList<StatementEdge> edges = new ArrayList<StatementEdge>();
+					edges.addAll(graph.getInEdges(n));
+					edges.addAll(graph.getOutEdges(n));
+					boolean bIsolated = true;
+					for(StatementEdge edge:edges){
+						if(edge.type!=StatementEdge.CHANGE){
+							bIsolated = false;
+							break;
+						}
+					}
+					if(bIsolated){
+						graph.removeVertex(n);
+					}
+				}
+			}
+		}
+		
 //		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
 		return graph;
 	}

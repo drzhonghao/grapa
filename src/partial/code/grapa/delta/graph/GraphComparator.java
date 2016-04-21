@@ -35,6 +35,7 @@ import com.ibm.wala.ssa.SSAGotoInstruction;
 import com.ibm.wala.ssa.SSAInstanceofInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSALoadMetadataInstruction;
+import com.ibm.wala.ssa.SSAMonitorInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.ssa.SSAPhiInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
@@ -179,11 +180,11 @@ public class GraphComparator {
 
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	StatementNode rightNode = (StatementNode)rightGraph.getVertices().toArray()[j];
-            	inNodeCost = calculateIndegreeSimilarity(leftNode, rightNode);
-            	outNodeCost = calculateOutDegreeSimilarity(leftNode, rightNode);
+            	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
+            	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
                 nodeCost = calculateNodeCost(leftNode, rightNode);
                 lineCost = calculateLineCost(leftGraph.getVertexCount(), leftNode, rightGraph.getVertexCount(), rightNode);
-                costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
+                costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost+lineCost;
             }
         }
 	}
@@ -204,7 +205,7 @@ public class GraphComparator {
 		return cost;
 	}
 
-	private double calculateOutDegreeSimilarity(StatementNode leftNode,
+	private double calculateOutDegreeCost(StatementNode leftNode,
 			StatementNode rightNode) {
 		double outNodeCost = 0;
 		try{
@@ -219,7 +220,7 @@ public class GraphComparator {
 		return outNodeCost;
 	}
 
-	private double calculateIndegreeSimilarity(StatementNode leftNode,
+	private double calculateIndegreeCost(StatementNode leftNode,
 			StatementNode rightNode) {
 		double inNodeCost = 0;
 		try{
@@ -254,8 +255,8 @@ public class GraphComparator {
 
 	protected double calculateCost(StatementNode v1, StatementNode v2) {
 		// TODO Auto-generated method stub
-		double inNodeCost = calculateIndegreeSimilarity(v1, v2);
-    	double outNodeCost = calculateOutDegreeSimilarity(v1, v2);
+		double inNodeCost = calculateIndegreeCost(v1, v2);
+    	double outNodeCost = calculateOutDegreeCost(v1, v2);
         double nodeCost = calculateNodeCost(v1, v2);
         return inNodeCost+outNodeCost+nodeCost;
 	}
@@ -401,6 +402,9 @@ public class GraphComparator {
 		  }else if(ins instanceof SSAConversionInstruction){
 			  SSAConversionInstruction ci = (SSAConversionInstruction)ins;
 			  line = valueTable.get(ci.getDef())+" = conversion(" + ci.getToType().getName() + ") " + valueTable.get(ci.getUse(0));
+		  }else if(ins instanceof SSAMonitorInstruction){
+			  SSAMonitorInstruction mi = (SSAMonitorInstruction)ins;
+			  line = "monitor" + (mi.isMonitorEnter() ? "enter " : "exit ") + valueTable.get(mi.getRef());
 		  }else if(ins instanceof AstLexicalWrite){
 			  AstLexicalWrite ast = (AstLexicalWrite)ins;
 			  line = "";
@@ -430,7 +434,7 @@ public class GraphComparator {
 		  }else{
 			  line = ins.toString(ir.getSymbolTable());
 		  }
-//		if(line.indexOf("load_metadata")>=0){
+//		if(line.indexOf("monitorexit")>=0){
 //			ins.toString(ir.getSymbolTable());
 //			System.out.println("here!");
 //		}
