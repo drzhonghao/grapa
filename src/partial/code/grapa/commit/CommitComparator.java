@@ -108,26 +108,29 @@ public class CommitComparator {
 	private String exclusionsFile;
 	private String bugName;
 
-	private boolean bVisited = false;	
+		
 
 	
 	public void run() {
+		
 		// TODO Auto-generated method stub
 		detector = new VersionDetector();
 		detector.setProject(pName);
 		detector.readElementList(elementListDir);
-		File d = new File(commitDir); 
+		File d = new File(commitDir);
+		
+		boolean bVisited = false;
 		for(File c:d.listFiles()){
 			if(c.isDirectory()){
 				bugName = c.getName();
 				System.out.println(bugName);
-//				if(bVisited){
+				if(bVisited){
 					analyzeCommit(c);
 //					break;
-//				}
-//				if(bugName.compareTo("963509_DERBY-3844")==0){
-//					bVisited = true;
-//				}				
+				}
+				if(bugName.compareTo("1455683_MAHOUT-1141")==0){
+					bVisited = true;
+				}				
 			}
 		}
 		System.out.println("Done!");
@@ -309,7 +312,7 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
 			String filename) {
 		// TODO Auto-generated method stub
-//		GraphUtil.writeGraphXMLFile(graph, ir, filename);
+		GraphUtil.writeGraphXMLFile(graph, ir, filename);
 		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
@@ -317,7 +320,7 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
 			IR rir, String filename) {
 		// TODO Auto-generated method stub
-//		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
+		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
 		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
 	}
 
