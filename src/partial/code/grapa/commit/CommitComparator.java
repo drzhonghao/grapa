@@ -128,7 +128,7 @@ public class CommitComparator {
 					analyzeCommit(c);
 //					break;
 				}
-				if(bugName.compareTo("1455683_MAHOUT-1141")==0){
+				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
 					bVisited = true;
 				}				
 			}
