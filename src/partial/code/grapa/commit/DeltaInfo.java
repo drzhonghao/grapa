@@ -6,4 +6,10 @@ public class DeltaInfo {
 	public int deltaMethod = 0;
 	public int modifiedMethod = 0;
 	public int deltaNode = 0;
+	
+	public void println() {
+		// TODO Auto-generated method stub
+		System.out.println("deltaFile:"+deltaFile+" modifiedFile:"+modifiedFile+" deltaMethod:"+deltaMethod
+				+" modifiedMethod:"+modifiedMethod+" deltaNode:"+deltaNode);
+	}
 }
