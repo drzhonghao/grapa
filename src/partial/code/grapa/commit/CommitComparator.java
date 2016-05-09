@@ -106,8 +106,7 @@ public class CommitComparator {
 	private String otherLibDir;
 	private String exclusionsFile;
 	private String bugName;
-	private SDGwithPredicate lfg;
-	private SDGwithPredicate rfg;
+
 
 		
 
@@ -283,8 +282,7 @@ public class CommitComparator {
 				info.modifiedFile++;
 			}
 			try {
-				compareMethods(mps);
-				info.deltaNode = Math.abs(this.lfg.getNumberOfNodes()-this.rfg.getNumberOfNodes());
+				info.deltaGraphNode = compareMethods(mps);				 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -297,28 +295,31 @@ public class CommitComparator {
 
 
 	
-	private void compareMethods(Hashtable<ClientMethod, ClientMethod> mps) throws InterruptedException {
+	private int compareMethods(Hashtable<ClientMethod, ClientMethod> mps) throws InterruptedException {
 		// TODO Auto-generated method stub
+	    int deltaGraphSize = 0;
 		for(ClientMethod oldMethod:mps.keySet()){
 			ClientMethod newMethod = mps.get(oldMethod);
 			System.out.println(oldMethod.methodName);
-			lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
+			SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 			IR lir = leftEngine.getCurrentIR();
 			DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
 			writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
 			
-			rfg = rightEngine.buildSystemDependencyGraph(newMethod);
+			SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
 			IR rir = rightEngine.getCurrentIR();
 			DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
 			writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
 			
 			if(leftGraph!=null&&rightGraph!=null){
-				DirectedSparseGraph<StatementNode, StatementEdge> graph = compareGraphs(leftGraph, lir, rightGraph, rir);
-				if(graph.getVertexCount()>0){
-					writeDependencyGraph(graph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
+				DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = compareGraphs(leftGraph, lir, rightGraph, rir);
+				deltaGraphSize += deltaGraph.getVertexCount();
+				if(deltaGraph.getVertexCount()>0){
+					writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
 				}
-			}
+			}			
 		}
+		return deltaGraphSize;
 	}
 
 	private void writeSDGraph(
