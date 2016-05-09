@@ -112,10 +112,9 @@ public class CommitComparator {
 		
 
 	
-	public DeltaInfo run() {
+	public void run() {
 		
 		// TODO Auto-generated method stub
-		DeltaInfo info = null;
 		detector = new VersionDetector();
 		detector.setProject(pName);
 		detector.readElementList(elementListDir);
@@ -126,17 +125,17 @@ public class CommitComparator {
 			if(c.isDirectory()){
 				bugName = c.getName();
 				System.out.println(bugName);
-				if(bVisited){
-					info = analyzeCommit(c);
+//				if(bVisited){
+					DeltaInfo info = analyzeCommit(c);
+					info.println();
 //					break;
-				}
-				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
-					bVisited = true;
-				}				
+//				}
+//				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
+//					bVisited = true;
+//				}				
 			}
 		}
 		System.out.println("Done!");
-		return info;
 	}
 
 	
