@@ -16,6 +16,8 @@ public class AstTreeComparator {
 	private ArrayList<ASTNode> leftTrees;
 	private ArrayList<ASTNode> rightTrees;
 	protected Levenshtein stringComparator = new Levenshtein();
+	private ArrayList<ClientMethod> leftMethods;
+	private ArrayList<ClientMethod> rightMethods;
 	
 	public AstTreeComparator(ArrayList<ASTNode> leftTrees,
 			ArrayList<ASTNode> rightTrees) {
@@ -61,12 +63,12 @@ public class AstTreeComparator {
 		// TODO Auto-generated method stub
 		ClientMethodVisitor visitor = new ClientMethodVisitor();
 		leftTree.accept(visitor);
-		ArrayList<ClientMethod> leftMethods = new ArrayList<ClientMethod>();
+		leftMethods = new ArrayList<ClientMethod>();
 		leftMethods.addAll(visitor.methods);
 		
 		visitor.clear();
 		rightTree.accept(visitor);
-		ArrayList<ClientMethod> rightMethods = new ArrayList<ClientMethod>();
+		rightMethods = new ArrayList<ClientMethod>();
 		rightMethods.addAll(visitor.methods);
 		
 		if(leftMethods.size()==0||rightMethods.size()==0){
@@ -165,6 +167,11 @@ public class AstTreeComparator {
             }
         }
 		return costMatrix;
+	}
+
+	public int getDeltaMethod() {
+		// TODO Auto-generated method stub
+		return Math.abs(this.leftMethods.size()-this.rightMethods.size());
 	}
 
 }

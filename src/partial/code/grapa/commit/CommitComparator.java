@@ -32,7 +32,6 @@ import partial.code.grapa.delta.graph.InsertNode;
 import partial.code.grapa.delta.graph.UpdateNode;
 import partial.code.grapa.delta.graph.data.AbstractNode;
 import partial.code.grapa.delta.graph.data.Connector;
-import partial.code.grapa.delta.graph.data.Edge;
 import partial.code.grapa.delta.graph.data.GetInst;
 import partial.code.grapa.delta.graph.data.MethodInvoc;
 import partial.code.grapa.delta.graph.data.NewInst;
@@ -107,13 +106,16 @@ public class CommitComparator {
 	private String otherLibDir;
 	private String exclusionsFile;
 	private String bugName;
+	private SDGwithPredicate lfg;
+	private SDGwithPredicate rfg;
 
 		
 
 	
-	public void run() {
+	public DeltaInfo run() {
 		
 		// TODO Auto-generated method stub
+		DeltaInfo info = null;
 		detector = new VersionDetector();
 		detector.setProject(pName);
 		detector.readElementList(elementListDir);
@@ -125,7 +127,7 @@ public class CommitComparator {
 				bugName = c.getName();
 				System.out.println(bugName);
 				if(bVisited){
-					analyzeCommit(c);
+					info = analyzeCommit(c);
 //					break;
 				}
 				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
@@ -134,11 +136,13 @@ public class CommitComparator {
 			}
 		}
 		System.out.println("Done!");
+		return info;
 	}
 
 	
-	private void analyzeCommit(File d) {
+	private DeltaInfo analyzeCommit(File d) {
 		// TODO Auto-generated method stub
+		DeltaInfo info = null;
 		File fd = new File(d.getAbsolutePath()+"/from");
 		ArrayList<File> oldfiles = new ArrayList<File>();
 		for(File f:fd.listFiles()){
@@ -171,8 +175,11 @@ public class CommitComparator {
 		
 		
 		if(pair.left.versions.size()!=0&&pair.right.versions.size()!=0){
-			compareVersions(pair, oldfiles, newfiles);
+			info = compareVersions(pair, oldfiles, newfiles);
+		}else{
+			info = new DeltaInfo();
 		}
+		return info;
 	}
 
 	private void writeToLog(String version, String name) {
@@ -205,10 +212,11 @@ public class CommitComparator {
 		GraphUtil.dotExe = dotExe;
 	}
 
-	private void compareVersions(VersionPair pair, ArrayList<File> oldfiles,
+	private DeltaInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles) {
 		// TODO Auto-generated method stub\
-		
+		DeltaInfo info = new DeltaInfo();
+		info.deltaFile = Math.abs(oldfiles.size()-newfiles.size());
 		boolean bLeftSuccess = false;
 		ArrayList<ASTNode> leftTrees = null; 
 		for(String oldVersion:pair.left.versions){
@@ -270,8 +278,14 @@ public class CommitComparator {
 			}
 			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
 			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
+			info.modifiedMethod += mps.size();
+			info.deltaMethod = comparator.getDeltaMethod();
+			if(info.modifiedMethod>0||info.deltaMethod>0){
+				info.modifiedFile++;
+			}
 			try {
-				compareMethods(mps);			
+				compareMethods(mps);
+				info.deltaNode = Math.abs(this.lfg.getNumberOfNodes()-this.rfg.getNumberOfNodes());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -279,7 +293,7 @@ public class CommitComparator {
 		}else{
 			System.out.println("Error:"+bugName);
 		}
-		
+		return info;
 	}
 
 
@@ -289,12 +303,12 @@ public class CommitComparator {
 		for(ClientMethod oldMethod:mps.keySet()){
 			ClientMethod newMethod = mps.get(oldMethod);
 			System.out.println(oldMethod.methodName);
-			SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
+			lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 			IR lir = leftEngine.getCurrentIR();
 			DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
 			writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
 			
-			SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
+			rfg = rightEngine.buildSystemDependencyGraph(newMethod);
 			IR rir = rightEngine.getCurrentIR();
 			DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
 			writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
