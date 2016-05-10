@@ -106,10 +106,6 @@ public class CommitComparator {
 	private String otherLibDir;
 	private String exclusionsFile;
 	private String bugName;
-
-
-		
-
 	
 	public void run() {
 		
