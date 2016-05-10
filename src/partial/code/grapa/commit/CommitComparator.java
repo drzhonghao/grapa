@@ -98,7 +98,7 @@ public class CommitComparator {
 	private String commitDir;
 	private String libDir;
 	private String j2seDir;
-	private VersionDetector detector;
+
 	private String resultDir;
 	
 	private DataFlowAnalysisEngine leftEngine;
@@ -107,14 +107,9 @@ public class CommitComparator {
 	private String exclusionsFile;
 	private String bugName;
 	
-	public void run() {
-		
-		// TODO Auto-generated method stub
-		detector = new VersionDetector();
-		detector.setProject(pName);
-		detector.readElementList(elementListDir);
-		File d = new File(commitDir);
-		
+	public void run() {		
+		// TODO Auto-generated method stub		
+		File d = new File(commitDir);		
 		boolean bVisited = false;
 		for(File c:d.listFiles()){
 			if(c.isDirectory()){
@@ -134,9 +129,12 @@ public class CommitComparator {
 	}
 
 	
-	private DeltaInfo analyzeCommit(File d) {
+	public DeltaInfo analyzeCommit(File d) {
 		// TODO Auto-generated method stub
 		DeltaInfo info = null;
+		VersionDetector detector = new VersionDetector();
+		detector.setProject(pName);
+		detector.readElementList(elementListDir);
 		File fd = new File(d.getAbsolutePath()+"/from");
 		ArrayList<File> oldfiles = new ArrayList<File>();
 		for(File f:fd.listFiles()){
