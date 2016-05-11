@@ -163,8 +163,7 @@ public class CommitComparator {
 			if(pair.right.testFiles.contains(file)){
 				newfiles.remove(i);
 			}
-		}
-		
+		}		
 		
 		if(pair.left.versions.size()!=0&&pair.right.versions.size()!=0){
 			info = compareVersions(pair, oldfiles, newfiles);
@@ -204,7 +203,7 @@ public class CommitComparator {
 		GraphUtil.dotExe = dotExe;
 	}
 
-	private DeltaInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
+	public DeltaInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles) {
 		// TODO Auto-generated method stub\
 		DeltaInfo info = new DeltaInfo();
