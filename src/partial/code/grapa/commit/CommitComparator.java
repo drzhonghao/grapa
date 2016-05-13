@@ -116,8 +116,8 @@ public class CommitComparator {
 				bugName = c.getName();
 				System.out.println(bugName);
 //				if(bVisited){
-					DeltaInfo info = analyzeCommit(c);
-					info.println();
+					ResultInfo info = analyzeCommit(c);
+					info.info.println();
 //					break;
 //				}
 //				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
@@ -129,9 +129,9 @@ public class CommitComparator {
 	}
 
 	
-	public DeltaInfo analyzeCommit(File d) {
+	public ResultInfo analyzeCommit(File d) {
 		// TODO Auto-generated method stub
-		DeltaInfo info = null;
+		ResultInfo info = null;
 		VersionDetector detector = new VersionDetector();
 		detector.setProject(pName);
 		detector.readElementList(elementListDir);
@@ -168,7 +168,7 @@ public class CommitComparator {
 		if(pair.left.versions.size()!=0&&pair.right.versions.size()!=0){
 			info = compareVersions(pair, oldfiles, newfiles);
 		}else{
-			info = new DeltaInfo();
+			info = new ResultInfo();
 		}
 		return info;
 	}
@@ -203,11 +203,11 @@ public class CommitComparator {
 		GraphUtil.dotExe = dotExe;
 	}
 
-	public DeltaInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
+	public ResultInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles) {
 		// TODO Auto-generated method stub\
-		DeltaInfo info = new DeltaInfo();
-		info.deltaFile = Math.abs(oldfiles.size()-newfiles.size());
+		ResultInfo ri = new ResultInfo();
+		ri.info.deltaFile = Math.abs(oldfiles.size()-newfiles.size());
 		boolean bLeftSuccess = false;
 		ArrayList<ASTNode> leftTrees = null; 
 		for(String oldVersion:pair.left.versions){
@@ -269,51 +269,52 @@ public class CommitComparator {
 			}
 			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
 			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
-			info.modifiedMethod += mps.size();
-			info.deltaMethod = comparator.getDeltaMethod();
-			if(info.modifiedMethod>0||info.deltaMethod>0){
-				info.modifiedFile++;
+			ri.info.modifiedMethod += mps.size();
+			ri.info.deltaMethod = comparator.getDeltaMethod();
+			if(ri.info.modifiedMethod>0||ri.info.deltaMethod>0){
+				ri.info.modifiedFile++;
 			}
-			try {
-				info.deltaGraphNode = compareMethods(mps);				 
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for(ClientMethod oldMethod:mps.keySet()){
+				ClientMethod newMethod = mps.get(oldMethod);					
+				DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = compareMethodPair(oldMethod, newMethod);
+				MethodDelta md = new MethodDelta(oldMethod, newMethod, deltaGraph);
+				ri.methods.add(md);
+				ri.info.deltaGraphNode = deltaGraph.getVertexCount();
 			}
 		}else{
 			System.out.println("Error:"+bugName);
 		}
-		return info;
+		return ri;
 	}
 
 
 	
-	private int compareMethods(Hashtable<ClientMethod, ClientMethod> mps) throws InterruptedException {
+	private DirectedSparseGraph<StatementNode, StatementEdge> compareMethodPair(ClientMethod oldMethod,
+			ClientMethod newMethod) {
 		// TODO Auto-generated method stub
-	    int deltaGraphSize = 0;
-		for(ClientMethod oldMethod:mps.keySet()){
-			ClientMethod newMethod = mps.get(oldMethod);
-			System.out.println(oldMethod.methodName);
-			SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
-			IR lir = leftEngine.getCurrentIR();
-			DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
-			writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
-			
-			SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
-			IR rir = rightEngine.getCurrentIR();
-			DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
-			writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
-			
-			if(leftGraph!=null&&rightGraph!=null){
-				DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = compareGraphs(leftGraph, lir, rightGraph, rir);
-				deltaGraphSize += deltaGraph.getVertexCount();
-				if(deltaGraph.getVertexCount()>0){
-					writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
-				}
-			}			
+		System.out.println(oldMethod.methodName);
+		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
+		IR lir = leftEngine.getCurrentIR();
+		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
+		writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
+		
+		SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
+		IR rir = rightEngine.getCurrentIR();
+		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
+		writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
+		
+		DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = null;
+		if(leftGraph!=null&&rightGraph!=null){
+			deltaGraph = compareGraphs(leftGraph, lir, rightGraph, rir);
+			if(deltaGraph.getVertexCount()>0){
+				writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
+			}
 		}
-		return deltaGraphSize;
+		return deltaGraph;
 	}
+
+
+
 
 	private void writeSDGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
