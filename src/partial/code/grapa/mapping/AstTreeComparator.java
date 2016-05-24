@@ -38,6 +38,8 @@ public class AstTreeComparator {
 					for(ClientMethod m1:mm.keySet()){
 						ClientMethod m2 = mm.get(m1);
 						if(m1.methodbody.toString().compareTo(m2.methodbody.toString())!=0){
+							m1.ast = leftTree;
+							m2.ast = rightTree;
 							mms.put(m1, m2);
 						}
 					}

@@ -54,6 +54,7 @@ import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.classLoader.NewSiteReference;
+import com.ibm.wala.classLoader.ShrikeBTMethod;
 import com.ibm.wala.examples.drivers.PDFTypeHierarchy;
 import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.impl.ExplicitCallGraph;
@@ -307,13 +308,38 @@ public class CommitComparator {
 		if(leftGraph!=null&&rightGraph!=null){
 			deltaGraph = compareGraphs(leftGraph, lir, rightGraph, rir);
 			if(deltaGraph.getVertexCount()>0){
+				resolveAst(oldMethod.ast, newMethod.ast, deltaGraph);
 				writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
 			}
 		}
 		return deltaGraph;
 	}
 
+	private void resolveAst(ASTNode oldAst, ASTNode newAst, DirectedSparseGraph<StatementNode, StatementEdge> graph) {
+		// TODO Auto-generated method stub
+		for(StatementNode node:graph.getVertices()){
+			if(node.side == StatementNode.LEFT){
+				resolveAst(oldAst, node);
+			}else{
+				resolveAst(newAst, node);
+			}
+		}
+	}
 
+	private void resolveAst(ASTNode ast, StatementNode node) {
+		// TODO Auto-generated method stub
+		if(node.statement.getKind() == Statement.Kind.NORMAL){
+			int bcIndex, instructionIndex = ((NormalStatement)node.statement).getInstructionIndex();
+			try {
+			    bcIndex = ((ShrikeBTMethod)node.statement.getNode().getMethod()).getBytecodeIndex(instructionIndex);
+			    int src_line_number = node.statement.getNode().getMethod().getLineNumber(bcIndex);
+			    
+			} catch (Exception e ) {
+			    System.err.println("it's probably not a BT method (e.g. it's a fakeroot method)");
+			    System.err.println(e.getMessage());
+			}
+		}
+	}
 
 
 	private void writeSDGraph(

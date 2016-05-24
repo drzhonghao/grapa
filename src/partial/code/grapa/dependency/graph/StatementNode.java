@@ -2,6 +2,8 @@ package partial.code.grapa.dependency.graph;
 
 import partial.code.grapa.delta.graph.GraphComparator;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import com.ibm.wala.ipa.slicer.NormalStatement;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ssa.IR;
@@ -9,6 +11,7 @@ import com.ibm.wala.ssa.IR;
 public class StatementNode {
 	public int side = 0;
 	public Statement statement;
+	public ASTNode node;
 	public static final int LEFT  = 1;
 	public static final int RIGHT = 2;
 	

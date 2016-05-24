@@ -3,6 +3,7 @@ package partial.code.grapa.mapping;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
@@ -14,6 +15,7 @@ public class ClientMethod {
 	public String key;
 	public String methodName;
 	public String sig;
+	public ASTNode ast;
 	
 	public MethodDeclaration methodbody;
 	
