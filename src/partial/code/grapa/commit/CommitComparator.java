@@ -289,8 +289,6 @@ public class CommitComparator {
 		}
 		return ri;
 	}
-
-
 	
 	private DirectedSparseGraph<StatementNode, StatementEdge> compareMethodPair(ClientMethod oldMethod,
 			ClientMethod newMethod) {
