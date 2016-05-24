@@ -51,8 +51,10 @@ import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
 
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.ConcreteJavaMethod;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.classLoader.CallSiteReference;
+import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.NewSiteReference;
 import com.ibm.wala.classLoader.ShrikeBTMethod;
 import com.ibm.wala.examples.drivers.PDFTypeHierarchy;
@@ -329,13 +331,17 @@ public class CommitComparator {
 	private void resolveAst(ASTNode ast, StatementNode node) {
 		// TODO Auto-generated method stub
 		if(node.statement.getKind() == Statement.Kind.NORMAL){
-			int bcIndex, instructionIndex = ((NormalStatement)node.statement).getInstructionIndex();
+			int index = ((NormalStatement)node.statement).getInstructionIndex();
 			try {
-			    bcIndex = ((ShrikeBTMethod)node.statement.getNode().getMethod()).getBytecodeIndex(instructionIndex);
-			    int src_line_number = node.statement.getNode().getMethod().getLineNumber(bcIndex);
-			    
+				ConcreteJavaMethod method = (ConcreteJavaMethod)node.statement.getNode().getMethod();
+				int src_line_number = method.getLineNumber(index);
+			    CompilationUnit cu = (CompilationUnit)ast;
+			    int startPos = cu.getPosition(src_line_number, 0);
+			    int endPos = cu.getPosition(src_line_number+1, 0)-1;
+			    NodeFinder finder = new NodeFinder(ast, startPos, endPos);
+				node.node = finder.getCoveredNode();
 			} catch (Exception e ) {
-			    System.err.println("it's probably not a BT method (e.g. it's a fakeroot method)");
+			    System.err.println("it's probably not a source code method (e.g. it's a fakeroot method)");
 			    System.err.println(e.getMessage());
 			}
 		}
