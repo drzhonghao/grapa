@@ -282,7 +282,7 @@ public class CommitComparator {
 				DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = compareMethodPair(oldMethod, newMethod);
 				MethodDelta md = new MethodDelta(oldMethod, newMethod, deltaGraph);
 				ri.methods.add(md);
-				ri.info.deltaGraphNode = deltaGraph.getVertexCount();
+				ri.info.deltaGraphNode += deltaGraph.getVertexCount();
 			}
 		}else{
 			System.out.println("Error:"+bugName);
