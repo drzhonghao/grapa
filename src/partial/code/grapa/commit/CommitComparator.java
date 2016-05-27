@@ -110,6 +110,11 @@ public class CommitComparator {
 	private String exclusionsFile;
 	private String bugName;
 	
+	public void setBugName(String bugName) {
+		this.bugName = bugName;
+	}
+
+
 	public void run() {		
 		// TODO Auto-generated method stub		
 		File d = new File(commitDir);		
@@ -279,10 +284,10 @@ public class CommitComparator {
 			}
 			for(ClientMethod oldMethod:mps.keySet()){
 				ClientMethod newMethod = mps.get(oldMethod);					
-				DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = compareMethodPair(oldMethod, newMethod);
-				MethodDelta md = new MethodDelta(oldMethod, newMethod, deltaGraph);
+				MethodDelta md = compareMethodPair(oldMethod, newMethod);
+				
 				ri.methods.add(md);
-				ri.info.deltaGraphNode += deltaGraph.getVertexCount();
+				ri.info.deltaGraphNode += md.deltaGraph.getVertexCount();
 			}
 		}else{
 			System.out.println("Error:"+bugName);
@@ -290,29 +295,30 @@ public class CommitComparator {
 		return ri;
 	}
 	
-	private DirectedSparseGraph<StatementNode, StatementEdge> compareMethodPair(ClientMethod oldMethod,
+	private MethodDelta compareMethodPair(ClientMethod oldMethod,
 			ClientMethod newMethod) {
 		// TODO Auto-generated method stub
 		System.out.println(oldMethod.methodName);
 		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 		IR lir = leftEngine.getCurrentIR();
 		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
-		writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
+//		writeSDGraph(leftGraph, lir, resultDir + bugName+"/" + "left_"+oldMethod.getTypeName()+"_"+oldMethod.methodName);
 		
 		SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
 		IR rir = rightEngine.getCurrentIR();
 		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
-		writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
+//		writeSDGraph(rightGraph, rir, resultDir +  bugName+"/" + "right_"+newMethod.getTypeName()+"_"+oldMethod.methodName);
 		
 		DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = null;
 		if(leftGraph!=null&&rightGraph!=null){
 			deltaGraph = compareGraphs(leftGraph, lir, rightGraph, rir);
 			if(deltaGraph.getVertexCount()>0){
 				resolveAst(oldMethod.ast, newMethod.ast, deltaGraph);
-				writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
+//				writeDependencyGraph(deltaGraph, lir, rir,  resultDir +  bugName+"/_" + oldMethod.getTypeName()+"_"+oldMethod.methodName);
 			}
 		}
-		return deltaGraph;
+		MethodDelta md = new MethodDelta(oldMethod, newMethod, deltaGraph, this.leftEngine.getCurrentIR(), this.rightEngine.getCurrentIR(), leftGraph, rightGraph);
+		return md;
 	}
 
 	private void resolveAst(ASTNode oldAst, ASTNode newAst, DirectedSparseGraph<StatementNode, StatementEdge> graph) {
@@ -326,13 +332,24 @@ public class CommitComparator {
 		}
 	}
 
+	public String getResultDir() {
+		return resultDir;
+	}
+
+
+	public String getBugName() {
+		return bugName;
+	}
+
+
 	private void resolveAst(ASTNode ast, StatementNode node) {
 		// TODO Auto-generated method stub
 		if(node.statement.getKind() == Statement.Kind.NORMAL){
 			int index = ((NormalStatement)node.statement).getInstructionIndex();
 			try {
 				ConcreteJavaMethod method = (ConcreteJavaMethod)node.statement.getNode().getMethod();
-				int src_line_number = method.getLineNumber(index);
+				int src_line_number = method.getLineNumber(index);				
+				node.lineNumber = src_line_number;
 			    CompilationUnit cu = (CompilationUnit)ast;
 			    int startPos = cu.getPosition(src_line_number, 0);
 			    int endPos = cu.getPosition(src_line_number+1, 0)-1;
@@ -346,7 +363,7 @@ public class CommitComparator {
 	}
 
 
-	private void writeSDGraph(
+	public void writeSDGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
 			String filename) {
 		// TODO Auto-generated method stub
@@ -354,7 +371,7 @@ public class CommitComparator {
 		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
-	private void  writeDependencyGraph(
+	public void  writeDependencyGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
 			IR rir, String filename) {
 		// TODO Auto-generated method stub

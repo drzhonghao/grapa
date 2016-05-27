@@ -12,6 +12,7 @@ public class StatementNode {
 	public int side = 0;
 	public Statement statement;
 	public ASTNode node;
+	public int lineNumber = 0;
 	public static final int LEFT  = 1;
 	public static final int RIGHT = 2;
 	
