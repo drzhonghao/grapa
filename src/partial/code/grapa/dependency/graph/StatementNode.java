@@ -21,6 +21,15 @@ public class StatementNode {
 		this.statement = statement;
 	}
 
+	public String getSide(){
+		if(side == LEFT){
+			return "L";
+		}else if(side == RIGHT){
+			return "R";
+		}
+		return "E";
+	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

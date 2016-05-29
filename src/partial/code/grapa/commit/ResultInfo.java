@@ -17,16 +17,11 @@ public class ResultInfo {
 	}
 	public boolean isSimpleModification() {
 		// TODO Auto-generated method stub
-		if(info.deltaGraphNode<10){
-			return true;
-		}else{
-			ArrayList<Integer> lines = new ArrayList<Integer>();
-			for(MethodDelta method:methods){
-				for(StatementNode node:method.deltaGraph.getVertices()){
-					if(!lines.contains(node.lineNumber)){
-						lines.add(node.lineNumber);
-					}
-				}
+		if(info.deltaGraphNode>0){
+			if(info.deltaGraphNode<MAX_DELTA_NODE){
+				return true;
+			}else{
+				ArrayList<Integer> lines = getModifiedLines();
 				if(lines.size()<ResultInfo.MAX_DELTA_LINE){
 					return true;
 				}
@@ -34,6 +29,19 @@ public class ResultInfo {
 		}
 		return false;
 	}
+	
+	public ArrayList<Integer> getModifiedLines(){
+		ArrayList<Integer> lines = new ArrayList<Integer>();
+		for(MethodDelta method:methods){
+			for(StatementNode node:method.deltaGraph.getVertices()){
+				if(!lines.contains(node.lineNumber)&&node.lineNumber!=0){
+					lines.add(node.lineNumber);
+				}
+			}
+		}
+		return lines;
+	}
+	
 	public boolean isValid() {
 		// TODO Auto-generated method stub
 		if(this.isSingleModifiedMethod()){

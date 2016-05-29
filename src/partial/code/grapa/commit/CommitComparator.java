@@ -271,10 +271,10 @@ public class CommitComparator {
 //		}
 		
 		if(bLeftSuccess&&bRightSuccess){
-			File file = new File(resultDir+this.bugName+"/");
-			if(!file.exists()){
-				file.mkdir();
-			}
+//			File file = new File(resultDir+this.bugName+"/");
+//			if(!file.exists()){
+//				file.mkdir();
+//			}
 			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
 			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
 			ri.info.modifiedMethod += mps.size();
@@ -284,8 +284,7 @@ public class CommitComparator {
 			}
 			for(ClientMethod oldMethod:mps.keySet()){
 				ClientMethod newMethod = mps.get(oldMethod);					
-				MethodDelta md = compareMethodPair(oldMethod, newMethod);
-				
+				MethodDelta md = compareMethodPair(oldMethod, newMethod);				
 				ri.methods.add(md);
 				ri.info.deltaGraphNode += md.deltaGraph.getVertexCount();
 			}
