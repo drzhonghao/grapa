@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import partial.code.grapa.delta.graph.data.AbstractNode;
 import partial.code.grapa.delta.graph.data.Connector;
-import partial.code.grapa.delta.graph.data.Edge;
+import partial.code.grapa.delta.graph.data.InsEdge;
 import partial.code.grapa.delta.graph.data.GetInst;
 import partial.code.grapa.delta.graph.data.MethodInvoc;
 import partial.code.grapa.delta.graph.data.NewInst;
@@ -104,7 +104,7 @@ public class GraphUtil {
 		String xmlFile = filename + ".xml";
 		xmlFile = xmlFile.replaceAll("<", "");
 		xmlFile = xmlFile.replaceAll(">", "");
-		DirectedSparseGraph<AbstractNode, Edge> g = translateGraphToXMLGraph(graph, ir);
+		DirectedSparseGraph<AbstractNode, InsEdge> g = translateGraphToXMLGraph(graph, ir);
 		XStream xstream = new XStream(new StaxDriver());
 		 try{
 			 File file = new File(xmlFile);
@@ -117,10 +117,10 @@ public class GraphUtil {
 		 }
 	}
 	
-	public static DirectedSparseGraph<AbstractNode, Edge> translateGraphToXMLGraph(
+	public static DirectedSparseGraph<AbstractNode, InsEdge> translateGraphToXMLGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR ir) {
 		// TODO Auto-generated method stub
-		DirectedSparseGraph<AbstractNode, Edge> g = new DirectedSparseGraph<AbstractNode, Edge>(); 
+		DirectedSparseGraph<AbstractNode, InsEdge> g = new DirectedSparseGraph<AbstractNode, InsEdge>(); 
 		Hashtable<StatementNode, AbstractNode> table = new Hashtable<StatementNode, AbstractNode>();
 		for(StatementNode sn:graph.getVertices()){
 			if(sn.statement instanceof NormalStatement){
@@ -208,7 +208,7 @@ public class GraphUtil {
 		for(StatementEdge edge:graph.getEdges()){
 			AbstractNode from = table.get(edge.from);
 			AbstractNode to = table.get(edge.to);
-			Edge e = new Edge(from, to, edge.type);
+			InsEdge e = new InsEdge(from, to, edge.type);
 			g.addEdge(e, from, to);
 		}
 		return g;
@@ -255,7 +255,7 @@ public class GraphUtil {
 		String xmlFile = filename + ".xml";
 		xmlFile = xmlFile.replaceAll("<", "");
 		xmlFile = xmlFile.replaceAll(">", "");
-		DirectedSparseGraph<AbstractNode, Edge> g = translateDeltaGraphToXMLGraph(graph, lir, rir);
+		DirectedSparseGraph<AbstractNode, InsEdge> g = translateDeltaGraphToXMLGraph(graph, lir, rir);
 		XStream xstream = new XStream(new StaxDriver());
 		 try{
 			 File file = new File(xmlFile);
@@ -268,11 +268,11 @@ public class GraphUtil {
 		 }
 	}
 	
-	public static DirectedSparseGraph<AbstractNode, Edge> translateDeltaGraphToXMLGraph(
+	public static DirectedSparseGraph<AbstractNode, InsEdge> translateDeltaGraphToXMLGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir, IR rir) {
 		// TODO Auto-generated method stub
 		
-		DirectedSparseGraph<AbstractNode, Edge> g = new DirectedSparseGraph<AbstractNode, Edge>(); 
+		DirectedSparseGraph<AbstractNode, InsEdge> g = new DirectedSparseGraph<AbstractNode, InsEdge>(); 
 		Hashtable<StatementNode, AbstractNode> table = new Hashtable<StatementNode, AbstractNode>();
 		for(StatementNode sn:graph.getVertices()){
 			if(sn.statement instanceof NormalStatement){
@@ -379,7 +379,7 @@ public class GraphUtil {
 		for(StatementEdge edge:graph.getEdges()){
 			AbstractNode from = table.get(edge.from);
 			AbstractNode to = table.get(edge.to);
-			Edge e = new Edge(from, to, edge.type);
+			InsEdge e = new InsEdge(from, to, edge.type);
 			g.addEdge(e, from, to);
 		}
 		return g;

@@ -1,6 +1,6 @@
 package partial.code.grapa.delta.graph.data;
 
-public class Edge {
+public class InsEdge {
 	public int type;
 	public AbstractNode from;
 	public AbstractNode to;
@@ -8,7 +8,7 @@ public class Edge {
 	public static final int CONTROL_FLOW = 1;
 	public static final int CHANGE = 2;
 
-	public Edge(AbstractNode from, AbstractNode to, int m) {
+	public InsEdge(AbstractNode from, AbstractNode to, int m) {
 		// TODO Auto-generated constructor stub
 		this.from = from;
 		this.to = to;
