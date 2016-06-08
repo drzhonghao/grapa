@@ -91,7 +91,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 
-import ca.mcgill.cs.swevo.ppa.PPAOptions;
+
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class CommitComparator {

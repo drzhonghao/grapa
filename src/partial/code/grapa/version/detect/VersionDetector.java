@@ -78,8 +78,7 @@ public class VersionDetector {
                 mark = line.indexOf("\t");
                 String value = line.substring(0, mark);
                 line = line.substring(mark+1);
-                int v = Integer.parseInt(value);
-            	ArrayList<String> versions = new ArrayList<String>();
+                ArrayList<String> versions = new ArrayList<String>();
             	mark = line.indexOf("\t");
             	while(mark>0){
             		value = line.substring(0,mark);
