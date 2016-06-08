@@ -367,7 +367,7 @@ public class CommitComparator {
 			String filename) {
 		// TODO Auto-generated method stub
 		GraphUtil.writeGraphXMLFile(graph, ir, filename);
-		GraphUtil.writePdfSDGraph(graph, ir, filename);
+//		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
 	public void  writeDependencyGraph(
@@ -375,7 +375,7 @@ public class CommitComparator {
 			IR rir, String filename) {
 		// TODO Auto-generated method stub
 		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
-		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
+//		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
 	}
 
 	private DirectedSparseGraph<StatementNode, StatementEdge> compareGraphs(
