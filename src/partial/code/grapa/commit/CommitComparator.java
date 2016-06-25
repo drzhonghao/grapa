@@ -271,10 +271,6 @@ public class CommitComparator {
 //		}
 		
 		if(bLeftSuccess&&bRightSuccess){
-//			File file = new File(resultDir+this.bugName+"/");
-//			if(!file.exists()){
-//				file.mkdir();
-//			}
 			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
 			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
 			ri.info.modifiedMethod += mps.size();

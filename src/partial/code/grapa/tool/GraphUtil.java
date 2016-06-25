@@ -370,7 +370,7 @@ public class GraphUtil {
 					  g.addVertex(connector);
 				  }
 			}else{
-				Connector connector = new Connector(sn.statement.getClass().getName(), sn.statement.toString(), sn.side);
+				Connector connector = new Connector(sn.statement.getClass().getSimpleName(), sn.statement.toString(), sn.side);
 				table.put(sn, connector);
 				g.addVertex(connector);
 			}
