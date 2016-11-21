@@ -98,7 +98,7 @@ public class CommitComparator {
 
 	private String pName;
 	private String elementListDir;
-	private String commitDir;
+	
 	private String libDir;
 	private String j2seDir;
 
@@ -115,31 +115,10 @@ public class CommitComparator {
 	}
 
 
-	public void run() {		
-		// TODO Auto-generated method stub		
-		File d = new File(commitDir);		
-		boolean bVisited = false;
-		for(File c:d.listFiles()){
-			if(c.isDirectory()){
-				bugName = c.getName();
-				System.out.println(bugName);
-//				if(bVisited){
-					ResultInfo info = analyzeCommit(c, false);
-					info.info.println();
-//					break;
-//				}
-//				if(bugName.compareTo("36a9f9b_CASSANDRA-4163")==0){
-//					bVisited = true;
-//				}				
-			}
-		}
-		System.out.println("Done!");
-	}
-
 	
-	public ResultInfo analyzeCommit(File d, boolean bResolveAst) {
+	public ArrayList<MethodDelta> analyzeCommit(File d, boolean bResolveAst) {
 		// TODO Auto-generated method stub
-		ResultInfo info = null;
+		
 		VersionDetector detector = new VersionDetector();
 		detector.setProject(pName);
 		detector.readElementList(elementListDir);
@@ -173,10 +152,9 @@ public class CommitComparator {
 			}
 		}		
 		
+		ArrayList<MethodDelta> info = null;
 		if(pair.left.versions.size()!=0&&pair.right.versions.size()!=0){
 			info = compareVersions(pair, oldfiles, newfiles, bResolveAst);
-		}else{
-			info = new ResultInfo();
 		}
 		return info;
 	}
@@ -211,11 +189,10 @@ public class CommitComparator {
 		GraphUtil.dotExe = dotExe;
 	}
 
-	public ResultInfo compareVersions(VersionPair pair, ArrayList<File> oldfiles,
+	public ArrayList<MethodDelta> compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles, boolean bResolveAst) {
 		// TODO Auto-generated method stub\
-		ResultInfo ri = new ResultInfo();
-		ri.info.deltaFile = Math.abs(oldfiles.size()-newfiles.size());
+		ArrayList<MethodDelta> methods = new ArrayList<MethodDelta>();
 		boolean bLeftSuccess = false;
 		ArrayList<ASTNode> leftTrees = null; 
 		for(String oldVersion:pair.left.versions){
@@ -273,21 +250,16 @@ public class CommitComparator {
 		if(bLeftSuccess&&bRightSuccess){
 			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
 			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
-			ri.info.modifiedMethod += mps.size();
-			ri.info.deltaMethod = comparator.getDeltaMethod();
-			if(ri.info.modifiedMethod>0||ri.info.deltaMethod>0){
-				ri.info.modifiedFile++;
-			}
+			
 			for(ClientMethod oldMethod:mps.keySet()){
 				ClientMethod newMethod = mps.get(oldMethod);					
 				MethodDelta md = compareMethodPair(oldMethod, newMethod, bResolveAst);				
-				ri.methods.add(md);
-				ri.info.deltaGraphNode += md.deltaGraph.getVertexCount();
+				methods.add(md);
 			}
 		}else{
 			System.out.println("Error:"+bugName);
 		}
-		return ri;
+		return methods;
 	}
 	
 	private MethodDelta compareMethodPair(ClientMethod oldMethod,
@@ -430,10 +402,7 @@ public class CommitComparator {
 		elementListDir = eld+pName+"/";
 	}
 
-	public void setCommitDir(String cd) {
-		// TODO Auto-generated method stub
-		commitDir = cd+pName+"/";
-	}
+	
 
 	public void setLibDir(String dir) {
 		// TODO Auto-generated method stub
