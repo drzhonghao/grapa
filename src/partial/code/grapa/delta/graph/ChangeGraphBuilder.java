@@ -45,77 +45,49 @@ public class ChangeGraphBuilder extends GraphComparator{
 		// TODO Auto-generated method stub
 		Hashtable<StatementNode, StatementNode> vm = this.extractNodeMappings();
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = new DirectedSparseGraph<StatementNode, StatementEdge>();
-		
-		for(StatementNode m:vm.keySet()){
-			StatementNode n = vm.get(m);		
-			if(calculateNodeCost(m,n)!=0){
-//				if(n.toString().indexOf("conditional branch(eq)")>=0){
-//					System.out.println("Here");
-//				}
-				graph.addVertex(m);
-				graph.addVertex(n);
-				if(mode){
-					m.side = StatementNode.LEFT;
-					n.side = StatementNode.RIGHT;
-					StatementEdge edge = new StatementEdge(m, n, StatementEdge.CHANGE);
-					graph.addEdge(edge, m, n);
-				}else{
-					m.side = StatementNode.RIGHT;
-					n.side = StatementNode.LEFT;
-					StatementEdge edge = new StatementEdge(n, m, StatementEdge.CHANGE);
-					graph.addEdge(edge, n, m);
-				}
-			}
+		//add left nodes
+		for(StatementNode s:leftGraph.getVertices()){
+			s.side = StatementNode.LEFT;
+			graph.addVertex(s);
 		}
 		
-		 for(StatementNode node:this.rightGraph.getVertices()){
-        	if(!vm.containsValue(node)){
-        		if(mode){
-        			node.side = StatementNode.RIGHT;
-        			graph.addVertex(node);
-        		}else{
-        			node.side = StatementNode.LEFT;
-        			graph.addVertex(node);
-        		}
-        	}
-        }     
+		//add right nodes
+		for(StatementNode s:rightGraph.getVertices()){
+			s.side = StatementNode.RIGHT;
+			graph.addVertex(s);
+		}
 		
 		for(StatementNode n1:graph.getVertices()){
 			for(StatementNode n2:graph.getVertices()){
-				StatementEdge edge = this.leftGraph.findEdge(n1, n2);
-				if(edge==null){
-					edge = this.rightGraph.findEdge(n1, n2);
-				}
-				if(edge != null){
-					graph.addEdge(edge, n1, n2);
+				if(!n1.equals(n2)&&n1.side==n2.side){
+					StatementEdge edge;
+					if(n1.side==StatementNode.LEFT){
+						edge = leftGraph.findEdge(n1, n2);
+					}else{
+						edge = rightGraph.findEdge(n1, n2);
+					}
+					if(edge != null){
+						graph.addEdge(edge, n1, n2);
+					}
 				}			
 			}
 		}
-		//removing isolated goto
-		for(int i=graph.getVertexCount()-1;i>=0; i--){
-			StatementNode n = (StatementNode) graph.getVertices().toArray()[i];
-			if(n.statement instanceof NormalStatement){
-				NormalStatement ns = (NormalStatement)n.statement;
-				SSAInstruction ins = ns.getInstruction();
-				if(ins instanceof SSAGotoInstruction){
-					ArrayList<StatementEdge> edges = new ArrayList<StatementEdge>();
-					edges.addAll(graph.getInEdges(n));
-					edges.addAll(graph.getOutEdges(n));
-					boolean bIsolated = true;
-					for(StatementEdge edge:edges){
-						if(edge.type!=StatementEdge.CHANGE){
-							bIsolated = false;
-							break;
-						}
-					}
-					if(bIsolated){
-						graph.removeVertex(n);
+		
+		for(StatementNode n1:graph.getVertices()){
+			StatementNode n2 = vm.get(n1);
+			if(n2!=null){
+				if(calculateCost(n1,n2)==0){
+					n1.bChanged = false;
+					n2.bChanged = false;
+				}else{
+					StatementEdge edge = graph.findEdge(n1, n2);
+					if(edge==null){
+						edge = new StatementEdge(n1, n2, StatementEdge.CHANGE);
+						graph.addEdge(edge, n1, n2);
 					}
 				}
 			}
 		}
-		
-//		ArrayList<DirectedSparseGraph<StatementNode,StatementEdge>> ccs = generateClusters(graph);
 		return graph;
 	}
 
