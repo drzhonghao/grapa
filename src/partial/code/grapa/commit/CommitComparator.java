@@ -282,7 +282,7 @@ public class CommitComparator {
 			}
 		}
 		DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = extractDelta(graph); 
-		MethodDelta md = new MethodDelta(oldMethod, newMethod, graph, deltaGraph);
+		MethodDelta md = new MethodDelta(oldMethod, newMethod, graph, deltaGraph, lir, rir);
 		return md;
 	}
 	
@@ -363,7 +363,7 @@ public class CommitComparator {
 			IR rir, String filename) {
 		// TODO Auto-generated method stub
 		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
-//		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
+		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
 	}
 	
 	private GraphEditScript extractEditScript(

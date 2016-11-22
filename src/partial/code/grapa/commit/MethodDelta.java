@@ -12,13 +12,17 @@ public class MethodDelta {
 	public ClientMethod newMethod;
 	public DirectedSparseGraph<StatementNode, StatementEdge> graph;
 	public DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph;
+	public IR lir;
+	public IR rir;
 	
 	public MethodDelta(ClientMethod om, ClientMethod nm,
-			DirectedSparseGraph<StatementNode, StatementEdge> g, DirectedSparseGraph<StatementNode, StatementEdge> dg) {
+			DirectedSparseGraph<StatementNode, StatementEdge> g, DirectedSparseGraph<StatementNode, StatementEdge> dg, IR lir, IR rir) {
 		// TODO Auto-generated constructor stub
 		oldMethod = om;
 		newMethod = nm;
 		graph = g;
 		deltaGraph = dg;
+		this.lir = lir;
+		this.rir = rir;
 	}
 }
