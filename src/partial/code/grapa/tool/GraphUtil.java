@@ -200,8 +200,7 @@ public class GraphUtil {
 		
 		DirectedSparseGraph<XmlNode, XmlEdge> g = new DirectedSparseGraph<XmlNode, XmlEdge>(); 
 		Hashtable<StatementNode, XmlNode> table = new Hashtable<StatementNode, XmlNode>();
-		for(StatementNode sn:graph.getVertices()){
-			NormalStatement ns = (NormalStatement)sn.statement;
+		for(StatementNode sn:graph.getVertices()){		
 			String label = null;
 			if(sn.side == StatementNode.LEFT){
 				label = "l: "+GraphComparator.getVisualLabel(lir, sn.statement);
