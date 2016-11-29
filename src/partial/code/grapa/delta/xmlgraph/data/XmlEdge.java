@@ -1,14 +1,14 @@
-package partial.code.grapa.delta.graph.data;
+package partial.code.grapa.delta.xmlgraph.data;
 
-public class InsEdge {
+public class XmlEdge {
 	public int type;
-	public AbstractNode from;
-	public AbstractNode to;
+	public XmlNode from;
+	public XmlNode to;
 	public static final int DATA_FLOW = 0;
 	public static final int CONTROL_FLOW = 1;
 	public static final int CHANGE = 2;
 
-	public InsEdge(AbstractNode from, AbstractNode to, int m) {
+	public XmlEdge(XmlNode from, XmlNode to, int m) {
 		// TODO Auto-generated constructor stub
 		this.from = from;
 		this.to = to;

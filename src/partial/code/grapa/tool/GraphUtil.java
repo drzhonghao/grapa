@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import partial.code.grapa.delta.graph.data.AbstractNode;
-import partial.code.grapa.delta.graph.data.Connector;
-import partial.code.grapa.delta.graph.data.InsEdge;
-import partial.code.grapa.delta.graph.data.GetInst;
-import partial.code.grapa.delta.graph.data.MethodInvoc;
-import partial.code.grapa.delta.graph.data.NewInst;
-import partial.code.grapa.delta.graph.data.PutInst;
+import partial.code.grapa.delta.xmlgraph.data.XmlNode;
+import partial.code.grapa.delta.graph.GraphComparator;
+
+import partial.code.grapa.delta.xmlgraph.data.XmlEdge;
+
 import partial.code.grapa.dependency.graph.DeltaGraphDecorator;
 import partial.code.grapa.dependency.graph.DependencyGraphDotUtil;
 import partial.code.grapa.dependency.graph.DfgNodeDecorator;
@@ -23,7 +21,12 @@ import partial.code.grapa.dependency.graph.StatementNode;
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.examples.drivers.PDFTypeHierarchy;
+import com.ibm.wala.ipa.slicer.HeapStatement;
+import com.ibm.wala.ipa.slicer.NormalReturnCaller;
 import com.ibm.wala.ipa.slicer.NormalStatement;
+import com.ibm.wala.ipa.slicer.ParamCallee;
+import com.ibm.wala.ipa.slicer.ParamCaller;
+import com.ibm.wala.ipa.slicer.PhiStatement;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ipa.slicer.Slicer.ControlDependenceOptions;
 import com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions;
@@ -104,7 +107,7 @@ public class GraphUtil {
 		String xmlFile = filename + ".xml";
 		xmlFile = xmlFile.replaceAll("<", "");
 		xmlFile = xmlFile.replaceAll(">", "");
-		DirectedSparseGraph<AbstractNode, InsEdge> g = translateGraphToXMLGraph(graph, ir);
+		DirectedSparseGraph<XmlNode, XmlEdge> g = translateGraphToXMLGraph(graph, ir);
 		XStream xstream = new XStream(new StaxDriver());
 		 try{
 			 File file = new File(xmlFile);
@@ -117,98 +120,21 @@ public class GraphUtil {
 		 }
 	}
 	
-	public static DirectedSparseGraph<AbstractNode, InsEdge> translateGraphToXMLGraph(
+	public static DirectedSparseGraph<XmlNode, XmlEdge> translateGraphToXMLGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR ir) {
 		// TODO Auto-generated method stub
-		DirectedSparseGraph<AbstractNode, InsEdge> g = new DirectedSparseGraph<AbstractNode, InsEdge>(); 
-		Hashtable<StatementNode, AbstractNode> table = new Hashtable<StatementNode, AbstractNode>();
+		DirectedSparseGraph<XmlNode, XmlEdge> g = new DirectedSparseGraph<XmlNode, XmlEdge>(); 
+		Hashtable<StatementNode, XmlNode> table = new Hashtable<StatementNode, XmlNode>();
 		for(StatementNode sn:graph.getVertices()){
-			if(sn.statement instanceof NormalStatement){
-				NormalStatement ns = (NormalStatement)sn.statement;
-				SSAInstruction ins = ns.getInstruction();
-				if(ins instanceof AstJavaInvokeInstruction){
-					  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
-					  MethodInvoc method = new MethodInvoc(aji, sn.side);
-					  table.put(sn, method);
-					  g.addVertex(method);
-				  }else if (ins instanceof SSANewInstruction){
-					  SSANewInstruction nis = (SSANewInstruction)ins;
-					  NewInst method = new NewInst(nis, sn.side);
-					  table.put(sn, method);
-					  g.addVertex(method);
-				  }else if(ins instanceof SSAPutInstruction){
-					  SSAPutInstruction pis = (SSAPutInstruction)ins;
-					  PutInst put = new PutInst(pis, ir, sn.side);
-					  table.put(sn, put);
-					  g.addVertex(put);					
-				  }else if(ins instanceof SSAGetInstruction){
-					  SSAGetInstruction gis = (SSAGetInstruction)ins;
-					  GetInst put = new GetInst(gis, ir, sn.side);
-					  table.put(sn, put);
-					  g.addVertex(put);
-				  }else if(ins instanceof SSABinaryOpInstruction){
-					  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
-					  String line = "binaryop(" + ois.getOperator() + ") ";
-					  Connector connector = new Connector("SSABinaryOpInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAArrayStoreInstruction){
-					  Connector connector = new Connector("SSAArrayStoreInstruction", "arraystore", sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAUnaryOpInstruction){
-					  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
-					  String line = uoi.getOpcode().toString();
-					  Connector connector = new Connector("SSAUnaryOpInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAGotoInstruction){
-					  String line = ins.toString();
-					  Connector connector = new Connector("SSAGotoInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof AstAssertInstruction){
-					  String line = "assert"; 
-					  Connector connector = new Connector("AstAssertInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAConditionalBranchInstruction){
-					  SSAConditionalBranchInstruction cbi = (SSAConditionalBranchInstruction)ins;
-					  String line = cbi.toString(ir.getSymbolTable());
-					  Connector connector = new Connector("SSAConditionalBranchInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAInstanceofInstruction){
-					  SSAInstanceofInstruction iis = (SSAInstanceofInstruction)ins;
-					  String line = "instanceof " + iis.getCheckedType();
-					  Connector connector = new Connector("SSAInstanceofInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSACheckCastInstruction){
-					  SSACheckCastInstruction cci = (SSACheckCastInstruction)ins;
-					  String line = "checkcast";
-				      for (TypeReference t : cci.getDeclaredResultTypes()) {
-				          line = line + " " + t;
-				      }
-				      Connector connector = new Connector("SSACheckCastInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else{
-					  Connector connector = new Connector(sn.statement.getClass().getName(), sn.statement.toString(), sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }
-			}else{
-				Connector connector = new Connector(sn.statement.getClass().getName(), sn.statement.toString(), sn.side);
-				table.put(sn, connector);
-				g.addVertex(connector);
-			}
+			String label = GraphComparator.getVisualLabel(ir, sn.statement);
+			XmlNode node = new XmlNode(label);
+			g.addVertex(node);
 		}
 
 		for(StatementEdge edge:graph.getEdges()){
-			AbstractNode from = table.get(edge.from);
-			AbstractNode to = table.get(edge.to);
-			InsEdge e = new InsEdge(from, to, edge.type);
+			XmlNode from = table.get(edge.from);
+			XmlNode to = table.get(edge.to);
+			XmlEdge e = new XmlEdge(from, to, edge.type);
 			g.addEdge(e, from, to);
 		}
 		return g;
@@ -255,7 +181,7 @@ public class GraphUtil {
 		String xmlFile = filename + ".xml";
 		xmlFile = xmlFile.replaceAll("<", "");
 		xmlFile = xmlFile.replaceAll(">", "");
-		DirectedSparseGraph<AbstractNode, InsEdge> g = translateDeltaGraphToXMLGraph(graph, lir, rir);
+		DirectedSparseGraph<XmlNode, XmlEdge> g = translateDeltaGraphToXMLGraph(graph, lir, rir);
 		XStream xstream = new XStream(new StaxDriver());
 		 try{
 			 File file = new File(xmlFile);
@@ -268,118 +194,28 @@ public class GraphUtil {
 		 }
 	}
 	
-	public static DirectedSparseGraph<AbstractNode, InsEdge> translateDeltaGraphToXMLGraph(
+	public static DirectedSparseGraph<XmlNode, XmlEdge> translateDeltaGraphToXMLGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir, IR rir) {
 		// TODO Auto-generated method stub
 		
-		DirectedSparseGraph<AbstractNode, InsEdge> g = new DirectedSparseGraph<AbstractNode, InsEdge>(); 
-		Hashtable<StatementNode, AbstractNode> table = new Hashtable<StatementNode, AbstractNode>();
+		DirectedSparseGraph<XmlNode, XmlEdge> g = new DirectedSparseGraph<XmlNode, XmlEdge>(); 
+		Hashtable<StatementNode, XmlNode> table = new Hashtable<StatementNode, XmlNode>();
 		for(StatementNode sn:graph.getVertices()){
-			if(sn.statement instanceof NormalStatement){
-				NormalStatement ns = (NormalStatement)sn.statement;
-				SSAInstruction ins = ns.getInstruction();
-				if(ins instanceof AstJavaInvokeInstruction){
-					  AstJavaInvokeInstruction aji = (AstJavaInvokeInstruction)ins;
-					  MethodInvoc method = new MethodInvoc(aji, sn.side);
-					  table.put(sn, method);
-					  g.addVertex(method);
-				  }else if (ins instanceof SSANewInstruction){
-					  SSANewInstruction nis = (SSANewInstruction)ins;
-					  NewInst method = new NewInst(nis, sn.side);
-					  table.put(sn, method);
-					  g.addVertex(method);
-				  }else if(ins instanceof SSAPutInstruction){
-					  SSAPutInstruction pis = (SSAPutInstruction)ins;
-					  IR ir = null;
-					  if(sn.side == StatementNode.LEFT){
-					  	  ir = lir;
-					  }else{
-						  ir = rir;
-					  }
-					  PutInst put = new PutInst(pis, ir, sn.side);
-					  table.put(sn, put);
-					  g.addVertex(put);
-					
-				  }else if(ins instanceof SSAGetInstruction){
-					  SSAGetInstruction gis = (SSAGetInstruction)ins;
-					  IR ir = null;
-					  if(sn.side == StatementNode.LEFT){
-					  	  ir = lir;
-					  }else{
-						  ir = rir;
-					  }
-					  GetInst put = new GetInst(gis, ir, sn.side);
-					  table.put(sn, put);
-					  g.addVertex(put);
-				  }else if(ins instanceof SSABinaryOpInstruction){
-					  SSABinaryOpInstruction ois = (SSABinaryOpInstruction)ins;
-					  String line = "binaryop(" + ois.getOperator() + ") ";
-					  Connector connector = new Connector("SSABinaryOpInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAArrayStoreInstruction){
-					  Connector connector = new Connector("SSAArrayStoreInstruction", "arraystore", sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAUnaryOpInstruction){
-					  SSAUnaryOpInstruction uoi = (SSAUnaryOpInstruction)ins;
-					  String line = uoi.getOpcode().toString();
-					  Connector connector = new Connector("SSAUnaryOpInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAGotoInstruction){
-					  String line = ins.toString();
-					  Connector connector = new Connector("SSAGotoInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof AstAssertInstruction){
-					  String line = "assert"; 
-					  Connector connector = new Connector("AstAssertInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAConditionalBranchInstruction){
-					  SSAConditionalBranchInstruction cbi = (SSAConditionalBranchInstruction)ins;
-					  IR ir = null;
-					  if(sn.side == StatementNode.LEFT){
-					  	  ir = lir;
-					  }else{
-						  ir = rir;
-					  }
-					  String line = cbi.toString(ir.getSymbolTable());
-					  Connector connector = new Connector("SSAConditionalBranchInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSAInstanceofInstruction){
-					  SSAInstanceofInstruction iis = (SSAInstanceofInstruction)ins;
-					  String line = "instanceof " + iis.getCheckedType();
-					  Connector connector = new Connector("SSAInstanceofInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else if(ins instanceof SSACheckCastInstruction){
-					  SSACheckCastInstruction cci = (SSACheckCastInstruction)ins;
-					  String line = "checkcast";
-				      for (TypeReference t : cci.getDeclaredResultTypes()) {
-				          line = line + " " + t;
-				      }
-				      Connector connector = new Connector("SSACheckCastInstruction", line, sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }else{
-					  Connector connector = new Connector(sn.statement.getClass().getName(), sn.statement.toString(), sn.side);
-					  table.put(sn, connector);
-					  g.addVertex(connector);
-				  }
-			}else{
-				Connector connector = new Connector(sn.statement.getClass().getSimpleName(), sn.statement.toString(), sn.side);
-				table.put(sn, connector);
-				g.addVertex(connector);
+			NormalStatement ns = (NormalStatement)sn.statement;
+			String label = null;
+			if(sn.side == StatementNode.LEFT){
+				label = "l: "+GraphComparator.getVisualLabel(lir, sn.statement);
+			}else if(sn.side == StatementNode.RIGHT){
+				label = "r: "+GraphComparator.getVisualLabel(rir, sn.statement);
 			}
+			XmlNode node = new XmlNode(label, sn.side, sn.bModified);
+			g.addVertex(node);
 		}
 
 		for(StatementEdge edge:graph.getEdges()){
-			AbstractNode from = table.get(edge.from);
-			AbstractNode to = table.get(edge.to);
-			InsEdge e = new InsEdge(from, to, edge.type);
+			XmlNode from = table.get(edge.from);
+			XmlNode to = table.get(edge.to);
+			XmlEdge e = new XmlEdge(from, to, edge.type);
 			g.addEdge(e, from, to);
 		}
 		return g;

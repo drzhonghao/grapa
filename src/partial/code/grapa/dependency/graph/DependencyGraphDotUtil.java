@@ -219,7 +219,7 @@ public class DependencyGraphDotUtil extends DotUtil {
 			NodeDecorator<StatementNode> labels) {
 		// TODO Auto-generated method stub
 	  StringBuffer result = new StringBuffer();
-	  if(n.bChanged){
+	  if(n.bModified){
 		  result.append(" [color=red]\n");
 	  }else if(n.side == StatementNode.LEFT){
 		  result.append(" [color=limegreen]\n");

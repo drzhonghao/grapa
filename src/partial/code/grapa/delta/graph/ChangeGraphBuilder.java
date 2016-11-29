@@ -77,8 +77,8 @@ public class ChangeGraphBuilder extends GraphComparator{
 			StatementNode n2 = vm.get(n1);
 			if(n2!=null){
 				if(calculateCost(n1,n2)==0){
-					n1.bChanged = false;
-					n2.bChanged = false;
+					n1.bModified = false;
+					n2.bModified = false;
 				}else{
 					StatementEdge edge = graph.findEdge(n1, n2);
 					if(edge==null){

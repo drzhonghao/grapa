@@ -30,12 +30,8 @@ import partial.code.grapa.delta.graph.DeleteNode;
 import partial.code.grapa.delta.graph.GraphEditScript;
 import partial.code.grapa.delta.graph.InsertNode;
 import partial.code.grapa.delta.graph.UpdateNode;
-import partial.code.grapa.delta.graph.data.AbstractNode;
-import partial.code.grapa.delta.graph.data.Connector;
-import partial.code.grapa.delta.graph.data.GetInst;
-import partial.code.grapa.delta.graph.data.MethodInvoc;
-import partial.code.grapa.delta.graph.data.NewInst;
-import partial.code.grapa.delta.graph.data.PutInst;
+import partial.code.grapa.delta.xmlgraph.data.XmlNode;
+
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
 import partial.code.grapa.dependency.graph.DeltaGraphDecorator;
 import partial.code.grapa.dependency.graph.DependencyGraphDotUtil;
@@ -292,7 +288,7 @@ public class CommitComparator {
 		DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = new DirectedSparseGraph<StatementNode, StatementEdge>();
 		//add nodes
 		for(StatementNode node:graph.getVertices()){
-			if(node.bChanged){
+			if(node.bModified){
 				deltaGraph.addVertex(node);
 			}
 		}
