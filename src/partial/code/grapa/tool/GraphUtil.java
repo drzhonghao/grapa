@@ -129,6 +129,7 @@ public class GraphUtil {
 			String label = GraphComparator.getVisualLabel(ir, sn.statement);
 			XmlNode node = new XmlNode(label);
 			g.addVertex(node);
+			table.put(sn, node);
 		}
 
 		for(StatementEdge edge:graph.getEdges()){
@@ -209,6 +210,7 @@ public class GraphUtil {
 			}
 			XmlNode node = new XmlNode(label, sn.side, sn.bModified);
 			g.addVertex(node);
+			table.put(sn, node);
 		}
 
 		for(StatementEdge edge:graph.getEdges()){
