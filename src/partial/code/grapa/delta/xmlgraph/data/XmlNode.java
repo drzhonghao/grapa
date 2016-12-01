@@ -16,4 +16,9 @@ public class XmlNode {
 	public int side = -1;
 	public String label;	
 	public boolean bModified;
+	public String getKind() {
+		// TODO Auto-generated method stub
+		
+		return LabelParser.parse(label);
+	}
 }

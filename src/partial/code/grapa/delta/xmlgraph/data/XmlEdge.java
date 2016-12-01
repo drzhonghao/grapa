@@ -15,8 +15,8 @@ public class XmlEdge {
 		type = m;
 	}
 
-	@Override
-	public String toString() {
+
+	public String getKind() {
 		// TODO Auto-generated method stub
 		String line = "";
 		if(type == DATA_FLOW){
