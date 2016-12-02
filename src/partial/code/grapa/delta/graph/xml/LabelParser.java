@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.xmlgraph.data;
+package partial.code.grapa.delta.graph.xml;
 
 import java.util.ArrayList;
 

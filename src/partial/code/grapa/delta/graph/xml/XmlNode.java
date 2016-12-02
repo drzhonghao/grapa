@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.xmlgraph.data;
+package partial.code.grapa.delta.graph.xml;
 
 public class XmlNode {
 	public XmlNode(String l) {

@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.xmlgraph.data;
+package partial.code.grapa.delta.graph.xml;
 
 public class XmlEdge {
 	public int type;
@@ -13,6 +13,20 @@ public class XmlEdge {
 		this.from = from;
 		this.to = to;
 		type = m;
+	}
+
+
+	public XmlEdge(XmlNode f, XmlNode t, String label) {
+		// TODO Auto-generated constructor stub
+		from = f;
+		to = t;
+		if(label.compareTo("df")==0){
+			type = DATA_FLOW;
+		}else if(label.compareTo("cf")==0){
+			type = CONTROL_FLOW;
+		}else if(label.compareTo("m")==0){
+			type = CHANGE;
+		}
 	}
 
 

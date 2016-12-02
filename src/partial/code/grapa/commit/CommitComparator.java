@@ -27,21 +27,20 @@ import org.eclipse.jdt.internal.core.util.ASTNodeFinder;
 import partial.code.grapa.delta.graph.AbstractEdit;
 import partial.code.grapa.delta.graph.ChangeGraphBuilder;
 import partial.code.grapa.delta.graph.DeleteNode;
+import partial.code.grapa.delta.graph.DeltaGraphUtil;
 import partial.code.grapa.delta.graph.GraphEditScript;
 import partial.code.grapa.delta.graph.InsertNode;
 import partial.code.grapa.delta.graph.UpdateNode;
-import partial.code.grapa.delta.xmlgraph.data.XmlNode;
-
+import partial.code.grapa.delta.graph.xml.XmlNode;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
 import partial.code.grapa.dependency.graph.DeltaGraphDecorator;
-import partial.code.grapa.dependency.graph.DependencyGraphDotUtil;
+import partial.code.grapa.dependency.graph.DependencyGraphUtil;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.dependency.graph.StatementEdge;
 import partial.code.grapa.dependency.graph.StatementNode;
 import partial.code.grapa.mapping.AstTreeComparator;
 import partial.code.grapa.mapping.ClientMethod;
 import partial.code.grapa.tool.GraphUtil;
-import partial.code.grapa.tool.SdgDotUtil;
 import partial.code.grapa.tool.visual.JGraphTViewer;
 import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
@@ -264,11 +263,11 @@ public class CommitComparator {
 		System.out.println(oldMethod.methodName);
 		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 		IR lir = leftEngine.getCurrentIR();
-		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = GraphUtil.translateToJungGraph(lfg);
+		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = DependencyGraphUtil.translateToJungGraph(lfg);
 		
 		SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
 		IR rir = rightEngine.getCurrentIR();
-		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = GraphUtil.translateToJungGraph(rfg);
+		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = DependencyGraphUtil.translateToJungGraph(rfg);
 		
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = null;
 		if(leftGraph!=null&&rightGraph!=null){
@@ -350,7 +349,7 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
 			String filename) {
 		// TODO Auto-generated method stub
-		GraphUtil.writeGraphXMLFile(graph, ir, filename);
+		DependencyGraphUtil.writeToXmlFile(graph, ir, filename);
 //		GraphUtil.writePdfSDGraph(graph, ir, filename);
 	}	
 	
@@ -358,8 +357,8 @@ public class CommitComparator {
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
 			IR rir, String filename) {
 		// TODO Auto-generated method stub
-		GraphUtil.writeDeltaGraphXMLFile(graph, rir, rir, filename);
-		GraphUtil.writePdfDeltaGraph(graph, lir, rir, filename);
+		DeltaGraphUtil.writeToXmlFile(graph, rir, rir, filename);
+		DeltaGraphUtil.writeToPdfFile(graph, lir, rir, filename);
 	}
 	
 	private GraphEditScript extractEditScript(
