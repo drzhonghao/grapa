@@ -27,19 +27,20 @@ import org.eclipse.jdt.internal.core.util.ASTNodeFinder;
 import partial.code.grapa.delta.graph.AbstractEdit;
 import partial.code.grapa.delta.graph.ChangeGraphBuilder;
 import partial.code.grapa.delta.graph.DeleteNode;
+import partial.code.grapa.delta.graph.DeltaGraphDecorator;
+import partial.code.grapa.delta.graph.DeltaGraphUtil;
 import partial.code.grapa.delta.graph.DeltaGraphUtil;
 import partial.code.grapa.delta.graph.GraphEditScript;
 import partial.code.grapa.delta.graph.InsertNode;
 import partial.code.grapa.delta.graph.UpdateNode;
 import partial.code.grapa.delta.graph.xml.XmlNode;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
-import partial.code.grapa.dependency.graph.DeltaGraphDecorator;
-import partial.code.grapa.dependency.graph.DependencyGraphUtil;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.dependency.graph.StatementEdge;
 import partial.code.grapa.dependency.graph.StatementNode;
 import partial.code.grapa.mapping.AstTreeComparator;
 import partial.code.grapa.mapping.ClientMethod;
+import partial.code.grapa.tool.FileUtils;
 import partial.code.grapa.tool.GraphUtil;
 import partial.code.grapa.tool.visual.JGraphTViewer;
 import partial.code.grapa.version.detect.VersionDetector;
@@ -104,12 +105,18 @@ public class CommitComparator {
 	private String otherLibDir;
 	private String exclusionsFile;
 	private String bugName;
+//	private DeltaGraphUtil deltaGraphTool;
+
+	
+	
 	
 	public void setBugName(String bugName) {
 		this.bugName = bugName;
 	}
 
-
+//	public void initDotGraphUtil(String dotExe) {
+//		deltaGraphTool = new DeltaGraphUtil(dotExe);
+//	}
 	
 	public ArrayList<MethodDelta> analyzeCommit(File d, boolean bResolveAst) {
 		// TODO Auto-generated method stub
@@ -180,9 +187,7 @@ public class CommitComparator {
 	}
 
 
-	public void setDotExe(String dotExe) {
-		GraphUtil.dotExe = dotExe;
-	}
+
 
 	public ArrayList<MethodDelta> compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles, boolean bResolveAst) {
@@ -263,11 +268,11 @@ public class CommitComparator {
 		System.out.println(oldMethod.methodName);
 		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 		IR lir = leftEngine.getCurrentIR();
-		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = DependencyGraphUtil.translateToJungGraph(lfg);
+		DirectedSparseGraph<StatementNode, StatementEdge> leftGraph = translateToJungGraph(lfg);
 		
 		SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
 		IR rir = rightEngine.getCurrentIR();
-		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = DependencyGraphUtil.translateToJungGraph(rfg);
+		DirectedSparseGraph<StatementNode, StatementEdge> rightGraph = translateToJungGraph(rfg);
 		
 		DirectedSparseGraph<StatementNode, StatementEdge> graph = null;
 		if(leftGraph!=null&&rightGraph!=null){
@@ -279,6 +284,54 @@ public class CommitComparator {
 		DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph = extractDelta(graph); 
 		MethodDelta md = new MethodDelta(oldMethod, newMethod, graph, deltaGraph, lir, rir);
 		return md;
+	}
+	
+	public DirectedSparseGraph<StatementNode, StatementEdge> translateToJungGraph(
+			SDGwithPredicate flowGraph) {
+		// TODO Auto-generated method stub
+		if(flowGraph == null){
+			return null;
+		}
+		DirectedSparseGraph<StatementNode, StatementEdge> graph = new DirectedSparseGraph<StatementNode, StatementEdge>(); 
+		Hashtable<Statement, StatementNode> table = new Hashtable<Statement, StatementNode>();
+		Iterator<Statement> it = flowGraph.iterator();
+		while(it.hasNext()){
+			Statement statement = it.next();
+			StatementNode node = new StatementNode(statement);
+			table.put(statement, node);
+			graph.addVertex(node);
+		}
+		
+		flowGraph.reConstruct(DataDependenceOptions.NO_BASE_NO_EXCEPTIONS, ControlDependenceOptions.NONE);
+		it = flowGraph.iterator();
+		while(it.hasNext()){
+			Statement s1 = it.next();
+		
+			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
+			while(nodes.hasNext()){
+				Statement s2 = nodes.next();
+				StatementNode from = table.get(s1);
+				StatementNode to = table.get(s2);
+				graph.addEdge(new StatementEdge(from, to, StatementEdge.DATA_FLOW), from, to);
+			}
+		}
+		
+		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
+		it = flowGraph.iterator();
+		while(it.hasNext()){
+			Statement s1 = it.next();
+			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
+			while(nodes.hasNext()){
+				Statement s2 = nodes.next();
+				StatementNode from = table.get(s1);
+				StatementNode to = table.get(s2);
+				StatementEdge edge = graph.findEdge(from, to);
+				if(edge==null){
+					graph.addEdge(new StatementEdge(from, to, StatementEdge.CONTROL_FLOW), from, to);
+				}
+			}
+		}
+		return graph;
 	}
 	
 	private DirectedSparseGraph<StatementNode, StatementEdge> extractDelta(
@@ -345,21 +398,18 @@ public class CommitComparator {
 	}
 
 
-	public void writeSDGraph(
-			DirectedSparseGraph<StatementNode, StatementEdge> graph,IR ir, 
-			String filename) {
-		// TODO Auto-generated method stub
-		DependencyGraphUtil.writeToXmlFile(graph, ir, filename);
-//		GraphUtil.writePdfSDGraph(graph, ir, filename);
-	}	
-	
-	public void  writeDependencyGraph(
-			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
-			IR rir, String filename) {
-		// TODO Auto-generated method stub
-		DeltaGraphUtil.writeToXmlFile(graph, rir, rir, filename);
-		DeltaGraphUtil.writeToPdfFile(graph, lir, rir, filename);
-	}
+//	public void  writeDependencyGraph(
+//			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir,
+//			IR rir, String filename) {
+//		// TODO Auto-generated method stub
+//	
+//		FileUtils.writeToXmlFile(graph, rir, rir, filename);
+//		String psFile =  filename + ".pdf";
+//		psFile = psFile.replaceAll("<", "");
+//		psFile = psFile.replaceAll(">", "");
+//		
+//		deltaGraphTool.writeToPdfFile(graph, lir, rir, psFile);
+//	}
 	
 	private GraphEditScript extractEditScript(
 			DirectedSparseGraph<StatementNode, StatementEdge> leftGraph,
