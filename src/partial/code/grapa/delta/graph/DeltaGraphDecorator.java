@@ -9,8 +9,6 @@ import com.ibm.wala.ssa.IR;
 import com.ibm.wala.util.WalaException;
 import com.ibm.wala.viz.NodeDecorator;
 
-import partial.code.grapa.dependency.graph.StatementNode;
-
 public class DeltaGraphDecorator implements NodeDecorator<StatementNode>{
 
 	private IR lir;

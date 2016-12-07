@@ -1,6 +1,4 @@
-package partial.code.grapa.dependency.graph;
-
-import partial.code.grapa.delta.graph.GraphComparator;
+package partial.code.grapa.delta.graph;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -8,14 +6,11 @@ import com.ibm.wala.ipa.slicer.NormalStatement;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ssa.IR;
 
-public class StatementNode {
-	public int side = 0;
+public class StatementNode extends AbstractNode{
 	public Statement statement;
 	public ASTNode node;
 	public int lineNumber = 0;
-	public boolean bModified = true;
-	public static final int LEFT  = 1;
-	public static final int RIGHT = 2;
+
 	
 	public StatementNode(Statement statement) {
 		// TODO Auto-generated constructor stub
@@ -52,7 +47,5 @@ public class StatementNode {
 		}
 		return t1.compareTo(t2)==0;
 	}
-
-	
 
 }

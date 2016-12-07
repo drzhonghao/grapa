@@ -10,10 +10,10 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 import partial.code.grapa.delta.graph.xml.XmlEdge;
 import partial.code.grapa.delta.graph.xml.XmlNode;
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
 
 public class FileUtils {
 	 public static String getContent(File file) {

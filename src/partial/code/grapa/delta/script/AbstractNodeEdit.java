@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.script;
 
 public class AbstractNodeEdit extends AbstractEdit{
 	private String nodeName;

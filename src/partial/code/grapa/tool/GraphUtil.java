@@ -9,6 +9,10 @@ import com.ibm.wala.viz.DotUtil;
 import com.ibm.wala.viz.NodeDecorator;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.delta.graph.AbstractEdge;
+import partial.code.grapa.delta.graph.AbstractNode;
+import partial.code.grapa.delta.graph.StatementNode;
+
 
 
 
@@ -56,7 +60,7 @@ public abstract class GraphUtil extends DotUtil{
 	    }
 	}
 
-	private StringBuffer dotOutput(DirectedSparseGraph graph) throws WalaException {
+	private StringBuffer dotOutput(DirectedSparseGraph<AbstractNode, AbstractEdge> graph) throws WalaException {
 		// TODO Auto-generated method stub
 		StringBuffer result = new StringBuffer("digraph \"DirectedSDG\" {\n");
 		result.append("graph [concentrate = true];"); 
@@ -82,25 +86,109 @@ public abstract class GraphUtil extends DotUtil{
 
 		
 	    result.append("  subgraph cluster0{\n");
-	    result.append(outputLeftNodes(graph));
-		result.append(outputLeftEdges(graph));    
+	    result.append("   label = \"left side\";\n");
+		for(Object obj: graph.getVertices()){
+			AbstractNode node = (AbstractNode)obj;
+			if(node.side == AbstractNode.LEFT){
+				result.append("   ");
+			    result.append("\"");
+			    result.append(getLabel(node));
+			    result.append("\"");
+			    if(node.bModified){
+					  result.append(" [color=red]\n");
+				}else if(node.side == StatementNode.LEFT){
+					  result.append(" [color=limegreen]\n");
+				}else if(node.side == StatementNode.RIGHT){
+					  result.append(" [color=dodgerblue]\n");
+				}
+			}			
+		}	
+		
+		for (AbstractNode fn:graph.getVertices()) {
+	  	      for (AbstractNode tn:graph.getSuccessors(fn)) {
+	  	    	if(fn.side == AbstractNode.LEFT&&tn.side == AbstractNode.LEFT){  
+		    	        result.append(" ");
+		    	        result.append(getPort(fn));
+		    	        result.append(" -> ");
+		    	        result.append(getPort(tn));
+		    	        AbstractEdge edge = graph.findEdge(fn,tn);
+		    	        if(edge.type==AbstractEdge.DATA_FLOW){
+		    	        	result.append(" [color=red]\n");
+		    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+		    	        	result.append(" [color=blue]\n");
+		    	        }else if(edge.type==AbstractEdge.CHANGE){
+		    	        	result.append(" [color=green]\n");
+		    	        }else{
+		    	        	result.append(" \n");
+		    	        }
+	  	    	}
+	  	      }
+	  	 }
     	result.append("  \n}\n");
 		 
 		result.append("  subgraph cluster1{\n");
-		result.append(outputRightNodes(graph));
-		result.append(outputRightEdges(graph)); 
+		result.append("   label = \"right side\";\n");
+		for(Object obj: graph.getVertices()){
+			AbstractNode node = (AbstractNode)obj;
+			if(node.side == AbstractNode.RIGHT){
+				result.append("   ");
+			    result.append("\"");
+			    result.append(getLabel(node));
+			    result.append("\"");
+			    if(node.bModified){
+					  result.append(" [color=red]\n");
+				}else if(node.side == StatementNode.LEFT){
+					  result.append(" [color=limegreen]\n");
+				}else if(node.side == StatementNode.RIGHT){
+					  result.append(" [color=dodgerblue]\n");
+				}
+			}			
+		}
+		for (AbstractNode fn:graph.getVertices()) {
+	  	      for (AbstractNode tn:graph.getSuccessors(fn)) {
+	  	    	if(fn.side == AbstractNode.RIGHT&&tn.side == AbstractNode.RIGHT){  
+		    	        result.append(" ");
+		    	        result.append(getPort(fn));
+		    	        result.append(" -> ");
+		    	        result.append(getPort(tn));
+		    	        AbstractEdge edge = graph.findEdge(fn,tn);
+		    	        if(edge.type==AbstractEdge.DATA_FLOW){
+		    	        	result.append(" [color=red]\n");
+		    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+		    	        	result.append(" [color=blue]\n");
+		    	        }else if(edge.type==AbstractEdge.CHANGE){
+		    	        	result.append(" [color=green]\n");
+		    	        }else{
+		    	        	result.append(" \n");
+		    	        }
+	  	    	}
+	  	      }
+	  	 }
 		result.append("  \n}\n");
-		result.append(outputBetweenClusterEdges(graph));
+		 for (AbstractNode fn:graph.getVertices()) {
+	   	      for (AbstractNode tn:graph.getSuccessors(fn)) {
+		   	    	if(fn.side == AbstractNode.LEFT&&tn.side == AbstractNode.RIGHT){  
+			    	        result.append(" ");
+			    	        result.append(getPort(fn));
+			    	        result.append(" -> ");
+			    	        result.append(getPort(tn));
+			    	        AbstractEdge edge = graph.findEdge(fn,tn);
+			    	        if(edge.type==AbstractEdge.DATA_FLOW){
+			    	        	result.append(" [color=red]\n");
+			    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+			    	        	result.append(" [color=blue]\n");
+			    	        }else if(edge.type==AbstractEdge.CHANGE){
+			    	        	result.append(" [color=green]\n");
+			    	        }else{
+			    	        	result.append(" \n");
+			    	        }
+		   	    	}
+	   	      }
+	   	 }
 		result.append("\n}");
 		return result;
 	}
 
-	protected abstract StringBuffer outputLeftNodes(DirectedSparseGraph graph);
-	protected abstract StringBuffer outputLeftEdges(DirectedSparseGraph graph);
-	protected abstract StringBuffer outputRightNodes(DirectedSparseGraph graph);
-	protected abstract StringBuffer outputRightEdges(DirectedSparseGraph graph);	
-	protected abstract StringBuffer outputBetweenClusterEdges(DirectedSparseGraph graph);
-	protected abstract StringBuffer decorateNode(Object n);
 	
 	protected  String getLabel(Object n)  {
 	    String result = null;

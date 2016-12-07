@@ -2,8 +2,6 @@ package partial.code.grapa.delta.graph;
 
 import java.util.Hashtable;
 
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import util.EditDistance;
 

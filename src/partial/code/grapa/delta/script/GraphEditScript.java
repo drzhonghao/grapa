@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.script;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
+import partial.code.grapa.delta.graph.GraphComparator;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;

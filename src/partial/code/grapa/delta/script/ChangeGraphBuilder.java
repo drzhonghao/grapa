@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.script;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,19 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
-
-
-
-
-
-
-
-
-
-
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
+import partial.code.grapa.delta.graph.GraphComparator;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 
 import com.ibm.wala.ipa.slicer.NormalStatement;
 import com.ibm.wala.ssa.IR;

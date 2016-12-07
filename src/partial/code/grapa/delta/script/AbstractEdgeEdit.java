@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.script;
 
 abstract public class AbstractEdgeEdit extends AbstractEdit{
 	private String from;

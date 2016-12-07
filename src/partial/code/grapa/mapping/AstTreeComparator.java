@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import partial.code.grapa.delta.graph.HungarianAlgorithm;
-import partial.code.grapa.dependency.graph.StatementNode;
+import partial.code.grapa.delta.graph.StatementNode;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class AstTreeComparator {

@@ -8,10 +8,10 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.GraphComparator;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 import partial.code.grapa.delta.graph.xml.XmlEdge;
 import partial.code.grapa.delta.graph.xml.XmlNode;
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
 
 public class GraphTranslateTool {
 	

@@ -3,8 +3,8 @@ package partial.code.grapa.commit;
 import com.ibm.wala.ssa.IR;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 import partial.code.grapa.mapping.ClientMethod;
 
 public class MethodDelta {	

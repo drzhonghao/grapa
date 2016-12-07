@@ -9,8 +9,8 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.dependency.graph.StatementEdge;
-import partial.code.grapa.dependency.graph.StatementNode;
+import partial.code.grapa.delta.graph.StatementEdge;
+import partial.code.grapa.delta.graph.StatementNode;
 import partial.code.grapa.tool.GraphTranslateTool;
 
 public class XmlGraphFileTool {
