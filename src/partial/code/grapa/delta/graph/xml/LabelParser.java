@@ -40,56 +40,6 @@ public class LabelParser {
 		labelTypes.add("assert");	
 		labelTypes.add("bitnot");
 		labelTypes.add("lexical:");
-		
-//		labelTypes.add("lexical:bundleContext@");
-//		labelTypes.add("lexical:id");
-//		labelTypes.add("lexical:task");
-//		labelTypes.add("lexical:toBeConverted@");
-//		labelTypes.add("lexical:b@");
-//		labelTypes.add("lexical:event@");
-//		labelTypes.add("lexical:loader@");
-//		labelTypes.add("lexical:dispatcher@");
-//		labelTypes.add("lexical:toType@");
-//		labelTypes.add("lexical:fromValue@");
-//		labelTypes.add("lexical:type@");
-//		labelTypes.add("lexical:resName@");
-//		labelTypes.add("lexical:schemaMap@");
-//		labelTypes.add("lexical:container@");
-//		labelTypes.add("lexical:entry@");
-//		labelTypes.add("lexical:namingClass@");
-//		labelTypes.add("lexical:env@");		
-//		labelTypes.add("lexical:ctx@");
-//		labelTypes.add("lexical:pair@");
-//		labelTypes.add("lexical:filter@");
-//		labelTypes.add("lexical:rebind@");
-//		labelTypes.add("lexical:interface");
-//		labelTypes.add("lexical:value@");
-//		labelTypes.add("lexical:context@");
-//		labelTypes.add("lexical:urlScheme@");
-//		labelTypes.add("lexical:environment@");
-//		labelTypes.add("lexical:obj@");
-//		labelTypes.add("lexical:attrs@");
-//		labelTypes.add("lexical:nameCtx@");
-//		labelTypes.add("lexical:className@");
-//		labelTypes.add("lexical:cl2@");
-//		labelTypes.add("lexical:props@");
-//		labelTypes.add("lexical:m@");
-//		labelTypes.add("lexical:dataModel@");
-//		labelTypes.add("lexical:index@");
-//		labelTypes.add("lexical:consoleWriter@");
-//		labelTypes.add("lexical:url@");
-//		labelTypes.add("lexical:cl@");
-//		labelTypes.add("lexical:info@");
-//		labelTypes.add("lexical:xmlAsText@");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
-//		labelTypes.add("goto");
 	}
 
 	
@@ -108,6 +58,51 @@ public class LabelParser {
 			System.err.println(label);
 		};
 		return result;
+	}
+
+
+
+	public static String getCodeName(String label) {
+		// TODO Auto-generated method stub
+		String kind = parse(label);
+		String codename = null;
+		if(kind.compareTo("invokeinterface")==0||kind.compareTo("invokevirtual")==0||
+				kind.compareTo("invokestatic")==0||kind.compareTo("invokespecial")==0){
+			int mark = label.indexOf(", ");
+			codename = label.substring(mark+2);
+			mark = codename.indexOf(" > ");
+			codename = codename.substring(0, mark);
+			codename = codename.replace(", ", "#");			
+		}else if(kind.compareTo("getfield")==0||
+				kind.compareTo("putfield")==0||
+				kind.compareTo("getstatic")==0||
+				kind.compareTo("putstatic")==0){
+			int mark = label.indexOf(", ");
+			codename = label.substring(mark+2);
+			codename = codename.replace(", <", "_f_");
+			codename = codename.replace(", ", "#");
+			mark = codename.indexOf(">");
+			codename = codename.substring(0, mark);			
+		}else if(kind.compareTo("checkcast")==0){
+			int mark = label.indexOf(",");
+			codename = label.substring(mark+1);
+			mark = codename.indexOf(">");
+			codename = codename.substring(0, mark);			
+		}else if(kind.compareTo("enclosing")==0){
+			int mark = label.indexOf("enclosing");
+			codename = label.substring(mark+10);
+		}else if(kind.compareTo("instanceof")==0){
+			int mark = label.indexOf(",");
+			codename = label.substring(mark+1);
+			mark = codename.indexOf(">");
+			codename = codename.substring(0, mark);			
+		}else if(kind.compareTo("conversion")==0){
+			int mark = label.indexOf("(");
+			codename = label.substring(mark+1);
+			mark = codename.indexOf(")");
+			codename = codename.substring(0, mark);
+		}
+		return codename;
 	}
 
 }
