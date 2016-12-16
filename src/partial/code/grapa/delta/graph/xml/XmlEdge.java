@@ -39,4 +39,12 @@ public class XmlEdge extends AbstractEdge{
 		return line;
 	}
 
+	@Override
+	public int compareTo(Object obj) {
+		// TODO Auto-generated method stub
+		XmlEdge edge = (XmlEdge)obj;		
+		return (type-edge.type)*(edge.from.side-edge.to.side)
+				*((XmlNode)edge.from).label.compareTo(((XmlNode)from).label)
+				*((XmlNode)edge.to).label.compareTo(((XmlNode)to).label);
+	}
 }

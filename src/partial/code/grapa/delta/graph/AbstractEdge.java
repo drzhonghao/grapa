@@ -1,6 +1,6 @@
 package partial.code.grapa.delta.graph;
 
-public class AbstractEdge {
+public class AbstractEdge implements Comparable{
 	public int type;
 	public AbstractNode from;
 	public AbstractNode to;
@@ -13,5 +13,12 @@ public class AbstractEdge {
 		this.from = from;
 		this.to = to;
 		type = m;
+	}
+
+	@Override
+	public int compareTo(Object obj) {
+		// TODO Auto-generated method stub
+		AbstractEdge edge = (AbstractEdge)obj;		
+		return (type-edge.type)*(edge.from.side-edge.to.side);
 	}
 }

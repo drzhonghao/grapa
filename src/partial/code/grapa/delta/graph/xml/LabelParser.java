@@ -42,7 +42,19 @@ public class LabelParser {
 		labelTypes.add("lexical:");
 	}
 
-	
+	public static int parseId(String label) {
+		// TODO Auto-generated method stub
+		
+		int id = -1;
+		for(int i=0; i<labelTypes.size(); i++){
+			String type = labelTypes.get(i);
+			if(label.indexOf(type)>0){
+				id = i;
+				break;
+			}
+		}		
+		return id;
+	}
 
 	public static String parse(String label) {
 		// TODO Auto-generated method stub
