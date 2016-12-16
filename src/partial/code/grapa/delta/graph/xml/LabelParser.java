@@ -88,7 +88,7 @@ public class LabelParser {
 			codename = codename.substring(0, mark);
 			codename = codename.replace(", ", "#");
 			
-			mark = codename.indexOf("#");
+			mark = codename.indexOf("(");
 			codenames.add(codename.substring(0,  mark));
 			codename = codename.substring(mark+1);
 			mark = codename.indexOf(")");
