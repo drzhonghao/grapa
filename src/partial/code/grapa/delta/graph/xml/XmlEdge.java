@@ -5,6 +5,13 @@ import partial.code.grapa.delta.graph.AbstractEdge;
 
 public class XmlEdge extends AbstractEdge{
 
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return ((XmlNode)from).label+"->"+((XmlNode)to).label;
+	}
+
+
 	public XmlEdge(XmlNode from, XmlNode to, int m) {
 		// TODO Auto-generated constructor stub
 		super(from, to, m);
