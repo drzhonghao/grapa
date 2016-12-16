@@ -22,8 +22,5 @@ public class XmlNode extends AbstractNode{
 		return LabelParser.parse(label);
 	}
 
-	public String getCodeLabel() {
-		// TODO Auto-generated method stub		
-		return LabelParser.getCodeName(label);
-	}
+	
 }

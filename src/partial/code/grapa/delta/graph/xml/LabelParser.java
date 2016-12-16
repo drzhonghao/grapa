@@ -8,20 +8,21 @@ public class LabelParser {
 	
 	static{
 		labelTypes = new ArrayList<String>();
+		labelTypes.add("PARAM_CALLEE");
+		labelTypes.add("PARAM_CALLEE");
+		labelTypes.add("NORMAL_RET_CALLER");
 		labelTypes.add("conditional branch");
 		labelTypes.add("getfield");
 		labelTypes.add("invokeinterface");
 		labelTypes.add("invokevirtual");
 		labelTypes.add("goto");
 		labelTypes.add("arraystore");
-		labelTypes.add("putfield");
-		labelTypes.add("PARAM_CALLEE");
+		labelTypes.add("putfield");		
 		labelTypes.add("binaryop");
 		labelTypes.add("getstatic");
 		labelTypes.add("checkcast");
 		labelTypes.add("new");
-		labelTypes.add("enclosing");
-		labelTypes.add("PARAM_CALLEE");
+		labelTypes.add("enclosing");	
 		labelTypes.add("phi");
 		labelTypes.add("return");
 		labelTypes.add("invokespecial");
@@ -74,47 +75,73 @@ public class LabelParser {
 
 
 
-	public static String getCodeName(String label) {
+	public static ArrayList<String> getCodeNames(String label) {
 		// TODO Auto-generated method stub
 		String kind = parse(label);
-		String codename = null;
+		ArrayList<String> codenames = new ArrayList<String>();	
+		String codename;
 		if(kind.compareTo("invokeinterface")==0||kind.compareTo("invokevirtual")==0||
 				kind.compareTo("invokestatic")==0||kind.compareTo("invokespecial")==0){
 			int mark = label.indexOf(", ");
 			codename = label.substring(mark+2);
 			mark = codename.indexOf(" > ");
 			codename = codename.substring(0, mark);
-			codename = codename.replace(", ", "#");			
+			codename = codename.replace(", ", "#");
+			
+			mark = codename.indexOf("#");
+			codenames.add(codename.substring(0,  mark));
+			codename = codename.substring(mark+1);
+			mark = codename.indexOf(")");
+			codenames.add(codename.substring(mark+1));
+			codename = codename.substring(0, mark);
+			mark = codename.indexOf("(");
+			codename = codename.substring(mark+1);
+			mark = codename.indexOf(";");
+			while(mark>0){
+				codenames.add(codename.substring(0, mark));
+				codename = codename.substring(mark+1);
+				mark = codename.indexOf(";");
+			}
 		}else if(kind.compareTo("getfield")==0||
 				kind.compareTo("putfield")==0||
 				kind.compareTo("getstatic")==0||
 				kind.compareTo("putstatic")==0){
 			int mark = label.indexOf(", ");
 			codename = label.substring(mark+2);
-			codename = codename.replace(", <", "_f_");
-			codename = codename.replace(", ", "#");
+		
+			mark = codename.indexOf(", <");
+			codenames.add(codename.substring(0, mark).replace(", ", "#"));
+			
+			codename = codename.substring(mark+3);
 			mark = codename.indexOf(">");
-			codename = codename.substring(0, mark);			
+			codename = codename.substring(0, mark);	
+			mark = codename.indexOf(",");
+			
+			codenames.add(codename.substring(mark+2));
 		}else if(kind.compareTo("checkcast")==0){
 			int mark = label.indexOf(",");
 			codename = label.substring(mark+1);
 			mark = codename.indexOf(">");
-			codename = codename.substring(0, mark);			
+			codename = codename.substring(0, mark);		
+			codenames.add(codename);
 		}else if(kind.compareTo("enclosing")==0){
 			int mark = label.indexOf("enclosing");
 			codename = label.substring(mark+10);
+			codenames.add(codename);
 		}else if(kind.compareTo("instanceof")==0){
 			int mark = label.indexOf(",");
 			codename = label.substring(mark+1);
 			mark = codename.indexOf(">");
-			codename = codename.substring(0, mark);			
+			codename = codename.substring(0, mark);	
+			codenames.add(codename);
 		}else if(kind.compareTo("conversion")==0){
 			int mark = label.indexOf("(");
 			codename = label.substring(mark+1);
 			mark = codename.indexOf(")");
 			codename = codename.substring(0, mark);
+			codenames.add(codename);
 		}
-		return codename;
+		return codenames;
 	}
 
 }
