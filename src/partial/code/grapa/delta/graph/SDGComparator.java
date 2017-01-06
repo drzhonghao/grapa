@@ -18,47 +18,48 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.commit.MethodDelta;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.ClientMethod;
+import partial.code.grapa.tool.LabelUtil;
 
 public class SDGComparator {
 
 	private IR lir;
 	private IR rir;
 	private boolean bResolveAst;
-	private ASTNode lAst;
-	private ASTNode rAst;
 	private Hashtable<DeltaNode, ASTNode> astTable = new Hashtable<DeltaNode, ASTNode>();
+	private ClientMethod oldMethod;
+	private ClientMethod newMethod;
 
 	public SDGComparator(IR lir, IR rir, boolean bResolveAst, ClientMethod oldMethod, ClientMethod newMethod) {
 		// TODO Auto-generated constructor stub
 		this.lir = lir;
 		this.rir = rir;
 		this.bResolveAst = bResolveAst;
-		lAst = oldMethod.ast;
-		rAst = newMethod.ast;
+		this.oldMethod = oldMethod;
+		this.newMethod = newMethod;
 	}
 
 	public MethodDelta compare(SDGwithPredicate lfg, SDGwithPredicate rfg) {
 		// TODO Auto-generated method stub
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
 		if(lfg!=null&&rfg!=null){
-			LabelTool llt = new LabelTool(); 
+			LabelUtil llt = new LabelUtil(); 
 			llt.setIR(lir);
-			DirectedSparseGraph<DeltaNode, DeltaEdge> lg = translateSDGToXml(lfg, llt, lAst);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> lg = translateSDGToXml(lfg, llt, oldMethod.ast);
 			
-			LabelTool rlt = new LabelTool(); 
+			LabelUtil rlt = new LabelUtil(); 
 			rlt.setIR(rir);
-			DirectedSparseGraph<DeltaNode, DeltaEdge> rg = translateSDGToXml(rfg, rlt, rAst);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> rg = translateSDGToXml(rfg, rlt, newMethod.ast);
 			
 			graph = extractChangeGraph(lg, rg);
 			
 		}
 		DirectedSparseGraph<DeltaNode, DeltaEdge> smallGraph = extractDelta(graph); 
 		
-		MethodDelta md = new MethodDelta(graph, smallGraph, astTable);
+		MethodDelta md = new MethodDelta(graph, smallGraph, astTable, this.oldMethod, this.newMethod);
 		return md;
 	}
 	
-	private DirectedSparseGraph<DeltaNode, DeltaEdge> translateSDGToXml(SDGwithPredicate flowGraph, LabelTool lt, ASTNode ast) {
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> translateSDGToXml(SDGwithPredicate flowGraph, LabelUtil lt, ASTNode ast) {
 		// TODO Auto-generated method stub
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>(); 
 		Hashtable<Statement, DeltaNode> table = new Hashtable<Statement, DeltaNode>();

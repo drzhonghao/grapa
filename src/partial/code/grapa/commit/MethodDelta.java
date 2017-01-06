@@ -18,10 +18,12 @@ public class MethodDelta {
 	public Hashtable<DeltaNode, ASTNode> astTable;
 
 	
-	public MethodDelta(	DirectedSparseGraph<DeltaNode, DeltaEdge> g, DirectedSparseGraph<DeltaNode, DeltaEdge> dg, Hashtable<DeltaNode, ASTNode> table) {
+	public MethodDelta(	DirectedSparseGraph<DeltaNode, DeltaEdge> g, DirectedSparseGraph<DeltaNode, DeltaEdge> dg, Hashtable<DeltaNode, ASTNode> table, ClientMethod oldMethod, ClientMethod newMethod) {
 		// TODO Auto-generated constructor stub
 		graph = g;
 		deltaGraph = dg;
 		astTable = table;
+		this.oldMethod = oldMethod;
+		this.newMethod = newMethod;
 	}
 }

@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.tool;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -46,12 +46,12 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 //import partial.code.grapa.delta.graph.StatementEdge;
 //import partial.code.grapa.delta.graph.StatementNode;
 
-public class LabelTool {
+public class LabelUtil {
 
 	private ArrayList<String> labelTypes;
 	private IR ir;
 	
-	public LabelTool(){
+	public LabelUtil(){
 		
 		labelTypes = new ArrayList<String>();
 		labelTypes.add("PARAM_CALLEE");

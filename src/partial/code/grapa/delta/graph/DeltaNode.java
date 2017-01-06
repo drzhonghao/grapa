@@ -1,5 +1,7 @@
 package partial.code.grapa.delta.graph;
 
+import partial.code.grapa.tool.LabelUtil;
+
 public class DeltaNode extends AbstractNode{
 	public String label;
 	
@@ -18,7 +20,7 @@ public class DeltaNode extends AbstractNode{
 
 	public String getKind() {
 		// TODO Auto-generated method stub
-		LabelTool tool = new LabelTool();
+		LabelUtil tool = new LabelUtil();
 		return tool.parse(label);
 	}
 
