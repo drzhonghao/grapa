@@ -2,18 +2,7 @@ package partial.code.grapa.tool;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-
-import com.ibm.wala.ssa.IR;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
-
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.StatementEdge;
-import partial.code.grapa.delta.graph.StatementNode;
-import partial.code.grapa.delta.graph.xml.XmlEdge;
-import partial.code.grapa.delta.graph.xml.XmlNode;
 
 public class FileUtils {
 	 public static String getContent(File file) {
@@ -32,26 +21,4 @@ public class FileUtils {
         }
         return sb.toString();
 	}
-	 
-	 public static void writeToXmlFile(
-				DirectedSparseGraph<StatementNode, StatementEdge> graph,
-				IR lir,
-				IR rir,
-				String filename) {
-			String xmlFile = filename + ".xml";
-			xmlFile = xmlFile.replaceAll("<", "");
-			xmlFile = xmlFile.replaceAll(">", "");
-			DirectedSparseGraph<XmlNode, XmlEdge> g = GraphTranslateTool.translateDeltaToXmlGraph(graph, lir, rir);
-			XStream xstream = new XStream(new StaxDriver());
-			 try{
-				 File file = new File(xmlFile);
-				 FileWriter writer=new FileWriter(file);
-				 String content = xstream.toXML(g);
-				 writer.write(content);
-				 writer.close();
-			 } catch (IOException e){
-				 e.printStackTrace();
-			 }
-		}
- 
 }

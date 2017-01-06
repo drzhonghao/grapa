@@ -11,7 +11,7 @@ import com.ibm.wala.viz.NodeDecorator;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.AbstractEdge;
 import partial.code.grapa.delta.graph.AbstractNode;
-import partial.code.grapa.delta.graph.StatementNode;
+
 
 
 
@@ -96,9 +96,9 @@ public abstract class GraphUtil extends DotUtil{
 			    result.append("\"");
 			    if(node.bModified){
 					  result.append(" [color=red]\n");
-				}else if(node.side == StatementNode.LEFT){
+				}else if(node.side == AbstractNode.LEFT){
 					  result.append(" [color=limegreen]\n");
-				}else if(node.side == StatementNode.RIGHT){
+				}else if(node.side == AbstractNode.RIGHT){
 					  result.append(" [color=dodgerblue]\n");
 				}
 			}			
@@ -137,9 +137,9 @@ public abstract class GraphUtil extends DotUtil{
 			    result.append("\"");
 			    if(node.bModified){
 					  result.append(" [color=red]\n");
-				}else if(node.side == StatementNode.LEFT){
+				}else if(node.side == AbstractNode.LEFT){
 					  result.append(" [color=limegreen]\n");
-				}else if(node.side == StatementNode.RIGHT){
+				}else if(node.side == AbstractNode.RIGHT){
 					  result.append(" [color=dodgerblue]\n");
 				}
 			}			

@@ -5,90 +5,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.eclipse.jdt.internal.core.util.ASTNodeFinder;
-
-import partial.code.grapa.delta.graph.ChangeGraphBuilder;
-import partial.code.grapa.delta.graph.DeltaGraphDecorator;
-import partial.code.grapa.delta.graph.DeltaGraphUtil;
-import partial.code.grapa.delta.graph.StatementEdge;
-import partial.code.grapa.delta.graph.StatementNode;
-import partial.code.grapa.delta.graph.DeltaGraphUtil;
-import partial.code.grapa.delta.graph.xml.XmlEdge;
-import partial.code.grapa.delta.graph.xml.XmlNode;
-
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.AstTreeComparator;
 import partial.code.grapa.mapping.ClientMethod;
-import partial.code.grapa.tool.FileUtils;
-import partial.code.grapa.tool.GraphTranslateTool;
-
-import partial.code.grapa.tool.GraphUtil;
 import partial.code.grapa.tool.SDGComparator;
-import partial.code.grapa.tool.visual.JGraphTViewer;
 import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
 
-import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
-import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.ConcreteJavaMethod;
-import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
-import com.ibm.wala.classLoader.CallSiteReference;
-import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.classLoader.NewSiteReference;
-import com.ibm.wala.classLoader.ShrikeBTMethod;
-import com.ibm.wala.examples.drivers.PDFTypeHierarchy;
-import com.ibm.wala.ipa.callgraph.CGNode;
-import com.ibm.wala.ipa.callgraph.impl.ExplicitCallGraph;
-import com.ibm.wala.ipa.cha.IClassHierarchy;
-import com.ibm.wala.ipa.slicer.HeapStatement;
-import com.ibm.wala.ipa.slicer.NormalStatement;
-import com.ibm.wala.ipa.slicer.PDG.Dependency;
-import com.ibm.wala.ipa.slicer.ParamCallee;
-import com.ibm.wala.ipa.slicer.ParamCaller;
-import com.ibm.wala.ipa.slicer.SDG;
-import com.ibm.wala.ipa.slicer.Statement;
-import com.ibm.wala.ipa.slicer.Slicer.ControlDependenceOptions;
-import com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions;
 import com.ibm.wala.ssa.IR;
-import com.ibm.wala.ssa.SSAArrayStoreInstruction;
-import com.ibm.wala.ssa.SSABinaryOpInstruction;
-import com.ibm.wala.ssa.SSACheckCastInstruction;
-import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
-import com.ibm.wala.ssa.SSAGetInstruction;
-import com.ibm.wala.ssa.SSAGotoInstruction;
-import com.ibm.wala.ssa.SSAInstanceofInstruction;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSANewInstruction;
-import com.ibm.wala.ssa.SSAPutInstruction;
-import com.ibm.wala.ssa.SSAUnaryOpInstruction;
-import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.WalaException;
-import com.ibm.wala.util.graph.Graph;
-import com.ibm.wala.viz.DotUtil;
-import com.ibm.wala.viz.NodeDecorator;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
-
-
-
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class CommitComparator {
 
