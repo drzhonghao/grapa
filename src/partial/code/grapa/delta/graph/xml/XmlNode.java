@@ -5,11 +5,7 @@ import partial.code.grapa.delta.graph.AbstractNode;
 public class XmlNode extends AbstractNode{
 	public String label;
 	
-//	public XmlNode(String l) {
-//		// TODO Auto-generated constructor stub
-//		label = l;
-//	}
-	
+
 	public XmlNode(String l, int s, boolean b) {
 		// TODO Auto-generated constructor stub
 		label = l;
@@ -17,9 +13,15 @@ public class XmlNode extends AbstractNode{
 		bModified = b;
 	}
 	
+	public XmlNode(String l) {
+		// TODO Auto-generated constructor stub
+		label = l;
+	}
+
 	public String getKind() {
 		// TODO Auto-generated method stub
-		return LabelParser.parse(label);
+		LabelTool tool = new LabelTool(null);//to do zhh
+		return tool.parse(label);
 	}
 
 	

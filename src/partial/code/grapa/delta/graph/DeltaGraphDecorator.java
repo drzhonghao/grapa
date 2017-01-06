@@ -9,15 +9,18 @@ import com.ibm.wala.ssa.IR;
 import com.ibm.wala.util.WalaException;
 import com.ibm.wala.viz.NodeDecorator;
 
+import partial.code.grapa.delta.graph.xml.LabelTool;
+
 public class DeltaGraphDecorator implements NodeDecorator<StatementNode>{
 
-	private IR lir;
-	private IR rir;
+
+	private LabelTool leftTool;
+	private LabelTool rightTool;
 
 	public DeltaGraphDecorator(IR lir, IR rir) {
 		// TODO Auto-generated constructor stub
-		this.lir = lir;
-		this.rir = rir;
+		leftTool = new LabelTool(lir);
+		rightTool = new LabelTool(rir);
 	}
 
 	@Override
@@ -26,9 +29,9 @@ public class DeltaGraphDecorator implements NodeDecorator<StatementNode>{
 		Statement s = sn.statement;
 		
 		if(sn.side == StatementNode.LEFT){
-			return "l: "+GraphComparator.getVisualLabel(lir, s);
+			return "l: "+leftTool.getVisualLabel(s);
 		}else if(sn.side == StatementNode.RIGHT){
-			return "r: "+GraphComparator.getVisualLabel(rir, s);
+			return "r: "+rightTool.getVisualLabel(s);
 		}else{
 			return null;
 		}

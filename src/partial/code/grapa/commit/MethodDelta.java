@@ -1,28 +1,27 @@
 package partial.code.grapa.commit;
 
-import com.ibm.wala.ssa.IR;
+import java.util.Hashtable;
+
+import org.eclipse.jdt.core.dom.ASTNode;
+
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.StatementEdge;
-import partial.code.grapa.delta.graph.StatementNode;
+import partial.code.grapa.delta.graph.xml.XmlEdge;
+import partial.code.grapa.delta.graph.xml.XmlNode;
 import partial.code.grapa.mapping.ClientMethod;
 
 public class MethodDelta {	
 	public ClientMethod oldMethod;
 	public ClientMethod newMethod;
-	public DirectedSparseGraph<StatementNode, StatementEdge> graph;
-	public DirectedSparseGraph<StatementNode, StatementEdge> deltaGraph;
-	public IR lir;
-	public IR rir;
+	public DirectedSparseGraph<XmlNode, XmlEdge> graph;
+	public DirectedSparseGraph<XmlNode, XmlEdge> deltaGraph;
+	public Hashtable<XmlNode, ASTNode> astTable;
+
 	
-	public MethodDelta(ClientMethod om, ClientMethod nm,
-			DirectedSparseGraph<StatementNode, StatementEdge> g, DirectedSparseGraph<StatementNode, StatementEdge> dg, IR lir, IR rir) {
+	public MethodDelta(	DirectedSparseGraph<XmlNode, XmlEdge> g, DirectedSparseGraph<XmlNode, XmlEdge> dg, Hashtable<XmlNode, ASTNode> table) {
 		// TODO Auto-generated constructor stub
-		oldMethod = om;
-		newMethod = nm;
 		graph = g;
 		deltaGraph = dg;
-		this.lir = lir;
-		this.rir = rir;
+		astTable = table;
 	}
 }
