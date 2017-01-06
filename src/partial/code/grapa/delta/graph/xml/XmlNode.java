@@ -20,7 +20,7 @@ public class XmlNode extends AbstractNode{
 
 	public String getKind() {
 		// TODO Auto-generated method stub
-		LabelTool tool = new LabelTool(null);//to do zhh
+		LabelTool tool = new LabelTool();
 		return tool.parse(label);
 	}
 

@@ -19,8 +19,10 @@ public class DeltaGraphDecorator implements NodeDecorator<StatementNode>{
 
 	public DeltaGraphDecorator(IR lir, IR rir) {
 		// TODO Auto-generated constructor stub
-		leftTool = new LabelTool(lir);
-		rightTool = new LabelTool(rir);
+		leftTool = new LabelTool();
+		leftTool.setIR(lir);
+		rightTool = new LabelTool();
+		rightTool.setIR(rir);
 	}
 
 	@Override

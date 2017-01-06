@@ -72,8 +72,10 @@ public class GraphTranslateTool {
 	public static DirectedSparseGraph<XmlNode, XmlEdge> translateDeltaToXmlGraph(
 			DirectedSparseGraph<StatementNode, StatementEdge> graph, IR lir, IR rir) {
 		// TODO Auto-generated method stub
-		LabelTool lt = new LabelTool(lir);
-		LabelTool rt = new LabelTool(rir);
+		LabelTool lt = new LabelTool();
+		lt.setIR(lir);
+		LabelTool rt = new LabelTool();
+		rt.setIR(rir);
 		DirectedSparseGraph<XmlNode, XmlEdge> g = new DirectedSparseGraph<XmlNode, XmlEdge>(); 
 		Hashtable<StatementNode, XmlNode> table = new Hashtable<StatementNode, XmlNode>();
 		for(StatementNode sn:graph.getVertices()){		

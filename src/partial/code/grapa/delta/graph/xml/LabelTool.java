@@ -51,8 +51,8 @@ public class LabelTool {
 	private ArrayList<String> labelTypes;
 	private IR ir;
 	
-	public LabelTool(IR ir){
-		this.ir = ir;
+	public LabelTool(){
+		
 		labelTypes = new ArrayList<String>();
 		labelTypes.add("PARAM_CALLEE");
 		labelTypes.add("PARAM_CALLEE");
@@ -89,6 +89,9 @@ public class LabelTool {
 		labelTypes.add("lexical:");
 	}
 
+	public void setIR(IR ir){
+		this.ir = ir;
+	}
 	public int parseId(String label) {
 		// TODO Auto-generated method stub
 		

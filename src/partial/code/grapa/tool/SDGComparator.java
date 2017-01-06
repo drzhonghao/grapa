@@ -45,10 +45,12 @@ public class SDGComparator {
 		// TODO Auto-generated method stub
 		DirectedSparseGraph<XmlNode, XmlEdge> graph = null;
 		if(lfg!=null&&rfg!=null){
-			LabelTool llt = new LabelTool(lir); 
+			LabelTool llt = new LabelTool(); 
+			llt.setIR(lir);
 			DirectedSparseGraph<XmlNode, XmlEdge> lg = translateSDGToXml(lfg, llt, lAst);
 			
-			LabelTool rlt = new LabelTool(rir); 
+			LabelTool rlt = new LabelTool(); 
+			rlt.setIR(rir);
 			DirectedSparseGraph<XmlNode, XmlEdge> rg = translateSDGToXml(rfg, rlt, rAst);
 			
 			graph = extractChangeGraph(lg, rg);
