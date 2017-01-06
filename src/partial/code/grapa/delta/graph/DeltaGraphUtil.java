@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph.xml;
+package partial.code.grapa.delta.graph;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,16 +10,16 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 import partial.code.grapa.tool.GraphUtil;
 
-public class XmlGraphUtil extends GraphUtil{
+public class DeltaGraphUtil extends GraphUtil{
 
-	public XmlGraphUtil(String dotExe) {
+	public DeltaGraphUtil(String dotExe) {
 		super( dotExe);
 		// TODO Auto-generated constructor stub
 	}
 
-	public void writePdfXmlGraph(DirectedSparseGraph<XmlNode, XmlEdge> graph, String psFile) {
+	public void writePdfXmlGraph(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, String psFile) {
 		// TODO Auto-generated method stub		
-		fNodeDecorator = new XmlGraphDecorator();
+		fNodeDecorator = new DeltaGraphDecorator();
 		try {
 			dotify(graph, psFile);
 		} catch (WalaException e) {

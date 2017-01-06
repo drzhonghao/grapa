@@ -23,13 +23,11 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.xml.XmlEdge;
-import partial.code.grapa.delta.graph.xml.XmlNode;
 
 public class GraphComparator {
 	private double[][] costMatrix;
-	protected DirectedSparseGraph<XmlNode, XmlEdge> leftGraph;
-	protected DirectedSparseGraph<XmlNode, XmlEdge> rightGraph;
+	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
+	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
 
 	protected boolean mode;//true: does not swap left and right. false: does.
 	
@@ -43,8 +41,8 @@ public class GraphComparator {
 	
 	
 	public GraphComparator(
-			DirectedSparseGraph<XmlNode, XmlEdge> oldGraph,			
-			DirectedSparseGraph<XmlNode, XmlEdge> newGraph) {
+			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
+			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
 		// TODO Auto-generated constructor stub
 		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
 			leftGraph = newGraph;
@@ -63,17 +61,17 @@ public class GraphComparator {
 
 	
 
-	public Hashtable<XmlNode, XmlNode> extractNodeMappings() {
+	public Hashtable<DeltaNode, DeltaNode> extractNodeMappings() {
 		// TODO Auto-generated method stub
 		calculateCostMatrix();
 		HungarianAlgorithm ha = new HungarianAlgorithm();
         int[][] matching = ha.hgAlgorithm(costMatrix);
         
         //mapped nodes
-        Hashtable<XmlNode, XmlNode> vm = new Hashtable<XmlNode, XmlNode>();
+        Hashtable<DeltaNode, DeltaNode> vm = new Hashtable<DeltaNode, DeltaNode>();
         for(int i=0; i<matching.length; i++){
-			XmlNode v1 = (XmlNode)leftGraph.getVertices().toArray()[matching[i][0]];
-			XmlNode v2 = (XmlNode)rightGraph.getVertices().toArray()[matching[i][1]];
+			DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
+			DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
 			vm.put(v1, v2);
         }
         return vm;
@@ -88,10 +86,10 @@ public class GraphComparator {
 //		double lineCost;
 
 		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
-			XmlNode leftNode = (XmlNode)leftGraph.getVertices().toArray()[i];
+			DeltaNode leftNode = (DeltaNode)leftGraph.getVertices().toArray()[i];
 
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
-            	XmlNode rightNode = (XmlNode)rightGraph.getVertices().toArray()[j];
+            	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
             	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
                 nodeCost = calculateNodeCost(leftNode, rightNode);
@@ -117,8 +115,8 @@ public class GraphComparator {
 //		return cost;
 //	}
 
-	private double calculateOutDegreeCost(XmlNode leftNode,
-			XmlNode rightNode) {
+	private double calculateOutDegreeCost(DeltaNode leftNode,
+			DeltaNode rightNode) {
 		double outNodeCost = 0;
 		try{
 			if((leftGraph.outDegree(leftNode) + rightGraph.outDegree(rightNode))!=0){
@@ -132,8 +130,8 @@ public class GraphComparator {
 		return outNodeCost;
 	}
 
-	private double calculateIndegreeCost(XmlNode leftNode,
-			XmlNode rightNode) {
+	private double calculateIndegreeCost(DeltaNode leftNode,
+			DeltaNode rightNode) {
 		double inNodeCost = 0;
 		try{
 			if((leftGraph.inDegree(leftNode) + rightGraph.inDegree(rightNode))!=0){
@@ -147,8 +145,8 @@ public class GraphComparator {
 		return inNodeCost;
 	}
 
-	protected double calculateNodeCost(XmlNode leftNode,
-			XmlNode rightNode) {
+	protected double calculateNodeCost(DeltaNode leftNode,
+			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 //		String leftLine;
 //		String rightLine;
@@ -165,7 +163,7 @@ public class GraphComparator {
 	
 
 
-	protected double calculateCost(XmlNode v1, XmlNode v2) {
+	protected double calculateCost(DeltaNode v1, DeltaNode v2) {
 		// TODO Auto-generated method stub
 		double inNodeCost = calculateIndegreeCost(v1, v2);
     	double outNodeCost = calculateOutDegreeCost(v1, v2);

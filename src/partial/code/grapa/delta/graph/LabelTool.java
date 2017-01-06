@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph.xml;
+package partial.code.grapa.delta.graph;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

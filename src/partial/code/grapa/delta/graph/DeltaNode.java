@@ -1,19 +1,17 @@
-package partial.code.grapa.delta.graph.xml;
+package partial.code.grapa.delta.graph;
 
-import partial.code.grapa.delta.graph.AbstractNode;
-
-public class XmlNode extends AbstractNode{
+public class DeltaNode extends AbstractNode{
 	public String label;
 	
 
-	public XmlNode(String l, int s, boolean b) {
+	public DeltaNode(String l, int s, boolean b) {
 		// TODO Auto-generated constructor stub
 		label = l;
 		side = s;
 		bModified = b;
 	}
 	
-	public XmlNode(String l) {
+	public DeltaNode(String l) {
 		// TODO Auto-generated constructor stub
 		label = l;
 	}

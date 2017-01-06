@@ -1,24 +1,21 @@
-package partial.code.grapa.delta.graph.xml;
+package partial.code.grapa.delta.graph;
 
-import partial.code.grapa.delta.graph.AbstractEdge;
-
-
-public class XmlEdge extends AbstractEdge{
+public class DeltaEdge extends AbstractEdge{
 
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return ((XmlNode)from).label+"->"+((XmlNode)to).label;
+		return ((DeltaNode)from).label+"->"+((DeltaNode)to).label;
 	}
 
 
-	public XmlEdge(XmlNode from, XmlNode to, int m) {
+	public DeltaEdge(DeltaNode from, DeltaNode to, int m) {
 		// TODO Auto-generated constructor stub
 		super(from, to, m);
 	}
 
 
-	public XmlEdge(XmlNode f, XmlNode t, String label) {
+	public DeltaEdge(DeltaNode f, DeltaNode t, String label) {
 		// TODO Auto-generated constructor stub
 		super(f,t,-1);
 
@@ -49,9 +46,9 @@ public class XmlEdge extends AbstractEdge{
 	@Override
 	public int compareTo(Object obj) {
 		// TODO Auto-generated method stub
-		XmlEdge edge = (XmlEdge)obj;		
+		DeltaEdge edge = (DeltaEdge)obj;		
 		return (type-edge.type)*(edge.from.side-edge.to.side)
-				*((XmlNode)edge.from).label.compareTo(((XmlNode)from).label)
-				*((XmlNode)edge.to).label.compareTo(((XmlNode)to).label);
+				*((DeltaNode)edge.from).label.compareTo(((DeltaNode)from).label)
+				*((DeltaNode)edge.to).label.compareTo(((DeltaNode)to).label);
 	}
 }

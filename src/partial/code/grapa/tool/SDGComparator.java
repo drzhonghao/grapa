@@ -17,9 +17,9 @@ import com.ibm.wala.ssa.IR;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.commit.MethodDelta;
 import partial.code.grapa.delta.graph.ChangeGraphBuilder;
-import partial.code.grapa.delta.graph.xml.LabelTool;
-import partial.code.grapa.delta.graph.xml.XmlEdge;
-import partial.code.grapa.delta.graph.xml.XmlNode;
+import partial.code.grapa.delta.graph.LabelTool;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.ClientMethod;
 
@@ -30,7 +30,7 @@ public class SDGComparator {
 	private boolean bResolveAst;
 	private ASTNode lAst;
 	private ASTNode rAst;
-	private Hashtable<XmlNode, ASTNode> astTable = new Hashtable<XmlNode, ASTNode>();
+	private Hashtable<DeltaNode, ASTNode> astTable = new Hashtable<DeltaNode, ASTNode>();
 
 	public SDGComparator(IR lir, IR rir, boolean bResolveAst, ClientMethod oldMethod, ClientMethod newMethod) {
 		// TODO Auto-generated constructor stub
@@ -43,33 +43,33 @@ public class SDGComparator {
 
 	public MethodDelta compare(SDGwithPredicate lfg, SDGwithPredicate rfg) {
 		// TODO Auto-generated method stub
-		DirectedSparseGraph<XmlNode, XmlEdge> graph = null;
+		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
 		if(lfg!=null&&rfg!=null){
 			LabelTool llt = new LabelTool(); 
 			llt.setIR(lir);
-			DirectedSparseGraph<XmlNode, XmlEdge> lg = translateSDGToXml(lfg, llt, lAst);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> lg = translateSDGToXml(lfg, llt, lAst);
 			
 			LabelTool rlt = new LabelTool(); 
 			rlt.setIR(rir);
-			DirectedSparseGraph<XmlNode, XmlEdge> rg = translateSDGToXml(rfg, rlt, rAst);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> rg = translateSDGToXml(rfg, rlt, rAst);
 			
 			graph = extractChangeGraph(lg, rg);
 			
 		}
-		DirectedSparseGraph<XmlNode, XmlEdge> deltaGraph = extractDelta(graph); 
+		DirectedSparseGraph<DeltaNode, DeltaEdge> deltaGraph = extractDelta(graph); 
 		
 		MethodDelta md = new MethodDelta(graph, deltaGraph, astTable);
 		return md;
 	}
 	
-	private DirectedSparseGraph<XmlNode, XmlEdge> translateSDGToXml(SDGwithPredicate flowGraph, LabelTool lt, ASTNode ast) {
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> translateSDGToXml(SDGwithPredicate flowGraph, LabelTool lt, ASTNode ast) {
 		// TODO Auto-generated method stub
-		DirectedSparseGraph<XmlNode, XmlEdge> graph = new DirectedSparseGraph<XmlNode, XmlEdge>(); 
-		Hashtable<Statement, XmlNode> table = new Hashtable<Statement, XmlNode>();
+		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>(); 
+		Hashtable<Statement, DeltaNode> table = new Hashtable<Statement, DeltaNode>();
 		Iterator<Statement> it = flowGraph.iterator();
 		while(it.hasNext()){
 			Statement statement = it.next();
-			XmlNode node = new XmlNode(lt.getVisualLabel(statement));
+			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement));
 			table.put(statement, node);
 			graph.addVertex(node);
 			if(bResolveAst){
@@ -88,9 +88,9 @@ public class SDGComparator {
 			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
 			while(nodes.hasNext()){
 				Statement s2 = nodes.next();
-				XmlNode from = table.get(s1);
-				XmlNode to = table.get(s2);
-				graph.addEdge(new XmlEdge(from, to, XmlEdge.DATA_FLOW), from, to);
+				DeltaNode from = table.get(s1);
+				DeltaNode to = table.get(s2);
+				graph.addEdge(new DeltaEdge(from, to, DeltaEdge.DATA_FLOW), from, to);
 			}
 		}
 		
@@ -101,11 +101,11 @@ public class SDGComparator {
 			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
 			while(nodes.hasNext()){
 				Statement s2 = nodes.next();
-				XmlNode from = table.get(s1);
-				XmlNode to = table.get(s2);
-				XmlEdge edge = graph.findEdge(from, to);
+				DeltaNode from = table.get(s1);
+				DeltaNode to = table.get(s2);
+				DeltaEdge edge = graph.findEdge(from, to);
 				if(edge==null){
-					graph.addEdge(new XmlEdge(from, to, XmlEdge.CONTROL_FLOW), from, to);
+					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
 				}
 			}
 		}
@@ -114,29 +114,29 @@ public class SDGComparator {
 
 
 
-	private DirectedSparseGraph<XmlNode, XmlEdge> extractChangeGraph(//zhh
-			DirectedSparseGraph<XmlNode, XmlEdge> leftGraph,
-			DirectedSparseGraph<XmlNode, XmlEdge> rightGraph) {
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> extractChangeGraph(//zhh
+			DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph,
+			DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph) {
 		// TODO Auto-generated method stub
 		ChangeGraphBuilder builder = new ChangeGraphBuilder(leftGraph,  rightGraph);
-		DirectedSparseGraph<XmlNode, XmlEdge> graph = builder.extractChangeGraph();
+		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = builder.extractChangeGraph();
 		return graph;
 	}
 
-	private DirectedSparseGraph<XmlNode, XmlEdge> extractDelta(
-			DirectedSparseGraph<XmlNode, XmlEdge> graph) {
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> extractDelta(
+			DirectedSparseGraph<DeltaNode, DeltaEdge> graph) {
 		// TODO Auto-generated method stub
-		DirectedSparseGraph<XmlNode, XmlEdge> deltaGraph = new DirectedSparseGraph<XmlNode, XmlEdge>();
+		DirectedSparseGraph<DeltaNode, DeltaEdge> deltaGraph = new DirectedSparseGraph<DeltaNode, DeltaEdge>();
 		//add nodes
-		for(XmlNode node:graph.getVertices()){
+		for(DeltaNode node:graph.getVertices()){
 			if(node.bModified){
 				deltaGraph.addVertex(node);
 			}
 		}
 		
-		for(XmlNode n1:deltaGraph.getVertices()){
-			for(XmlNode n2:deltaGraph.getVertices()){
-				XmlEdge edge = graph.findEdge(n1, n2);
+		for(DeltaNode n1:deltaGraph.getVertices()){
+			for(DeltaNode n2:deltaGraph.getVertices()){
+				DeltaEdge edge = graph.findEdge(n1, n2);
 				if(edge != null){
 					deltaGraph.addEdge(edge, n1, n2);
 				}			
