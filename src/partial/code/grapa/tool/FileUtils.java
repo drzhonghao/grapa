@@ -2,7 +2,15 @@ package partial.code.grapa.tool;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
 
 public class FileUtils {
 	 public static String getContent(File file) {
@@ -20,5 +28,19 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
         return sb.toString();
+	}
+
+	public static void writeToXmlFile(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, String filename) {
+		// TODO Auto-generated method stub
+		XStream xstream = new XStream(new StaxDriver());
+		try{
+			 File file = new File(filename);
+			 FileWriter writer=new FileWriter(file);
+			 String content = xstream.toXML(graph);
+			 writer.write(content);
+			 writer.close();
+		} catch (IOException e){
+		 e.printStackTrace();
+		}
 	}
 }

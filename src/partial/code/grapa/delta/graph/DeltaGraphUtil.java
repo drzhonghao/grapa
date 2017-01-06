@@ -17,7 +17,7 @@ public class DeltaGraphUtil extends GraphUtil{
 		// TODO Auto-generated constructor stub
 	}
 
-	public void writePdfXmlGraph(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, String psFile) {
+	public void writeToPdfGraph(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, String psFile) {
 		// TODO Auto-generated method stub		
 		fNodeDecorator = new DeltaGraphDecorator();
 		try {

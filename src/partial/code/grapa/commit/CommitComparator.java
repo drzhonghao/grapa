@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.eclipse.jdt.core.dom.ASTNode;
+
+import partial.code.grapa.delta.graph.SDGComparator;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.AstTreeComparator;
 import partial.code.grapa.mapping.ClientMethod;
-import partial.code.grapa.tool.SDGComparator;
 import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
 
