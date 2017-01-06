@@ -40,5 +40,4 @@ Export-Package: edu.uci.ics.jung.graph,
  partial.code.grapa.dependency.graph,
  partial.code.grapa.mapping,
  partial.code.grapa.tool,
- partial.code.grapa.tool.visual,
  partial.code.grapa.version.detect
