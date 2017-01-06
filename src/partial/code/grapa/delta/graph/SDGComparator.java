@@ -115,7 +115,8 @@ public class SDGComparator {
 			DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph,
 			DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph) {
 		// TODO Auto-generated method stub
-		ChangeGraphBuilder builder = new ChangeGraphBuilder(leftGraph,  rightGraph);
+		ChangeGraphBuilder builder = new ChangeGraphBuilder(leftGraph,  rightGraph,
+				GraphComparator.ABSTRACT);
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = builder.extractChangeGraph();
 		return graph;
 	}

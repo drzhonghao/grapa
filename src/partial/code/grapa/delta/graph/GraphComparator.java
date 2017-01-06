@@ -25,11 +25,14 @@ import com.ibm.wala.types.FieldReference;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class GraphComparator {
+	public static final int CONCRETE = 0;
+	public static final int ABSTRACT = 0;
+	
 	private double[][] costMatrix;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
 
-	protected boolean mode;//true: does not swap left and right. false: does.
+	protected boolean bSwapSide;//true: does not swap left and right. false: does.
 	
 	protected Levenshtein stringComparator;
 	
@@ -38,22 +41,23 @@ public class GraphComparator {
 	
 	protected Hashtable<Integer, String> leftIndexTable;
 	protected Hashtable<Integer, String> rightIndexTable;
+	private int mode;
 	
 	
 	public GraphComparator(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
-			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
+			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph, int mode) {
 		// TODO Auto-generated constructor stub
 		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
 			leftGraph = newGraph;
 			rightGraph = oldGraph;
-			mode = false;
+			bSwapSide = false;
 		}else{
 			leftGraph = oldGraph;
 			rightGraph = newGraph;
-			mode = true;
+			bSwapSide = true;
 		}
-
+		this.mode = mode;
 		stringComparator = new Levenshtein();
 	}
 	
@@ -92,28 +96,12 @@ public class GraphComparator {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
             	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
-                nodeCost = calculateNodeCost(leftNode, rightNode);
-//                lineCost = calculateLineCost(leftGraph.getVertexCount(), leftNode, rightGraph.getVertexCount(), rightNode);
+                nodeCost = calculateNodeNameCost(leftNode, rightNode);
                 costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
             }
         }
 	}
 
-//	private double calculateLineCost(int leftSize, XmlNode leftNode,
-//			int rightSize, XmlNode rightNode) {
-//		// TODO Auto-generated method stub
-//		double cost = 0;
-//		if(leftNode.statement instanceof NormalStatement && rightNode.statement instanceof NormalStatement){
-//			NormalStatement leftstatement = (NormalStatement)leftNode.statement;
-//			NormalStatement rightstatement = (NormalStatement)rightNode.statement;
-//			SSAInstruction leftins = leftstatement.getInstruction();
-//			SSAInstruction rightins = rightstatement.getInstruction();
-//			cost = Math.abs(leftins.iindex-rightins.iindex);
-//			int size = leftSize>rightSize?leftSize:rightSize;
-//			cost = cost/size;
-//		}
-//		return cost;
-//	}
 
 	private double calculateOutDegreeCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
@@ -145,18 +133,15 @@ public class GraphComparator {
 		return inNodeCost;
 	}
 
-	protected double calculateNodeCost(DeltaNode leftNode,
+	protected double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-//		String leftLine;
-//		String rightLine;
-//		
-//		leftLine = getComparedLabel(leftNode);
-//		rightLine = getComparedLabel(rightNode);
-	
-		double distance = stringComparator.getUnNormalisedSimilarity(leftNode.label, rightNode.label);
-//		int length = leftLine.length()>rightLine.length()?leftLine.length():rightLine.length();
-//		return distance/length;
+		double distance = 0;
+		if(mode == GraphComparator.CONCRETE){
+			stringComparator.getUnNormalisedSimilarity(leftNode.label, rightNode.label);
+		}else if(mode == GraphComparator.ABSTRACT){
+			stringComparator.getUnNormalisedSimilarity(leftNode.getKind(), rightNode.getKind());
+		}
 		return distance;
 	}
 	
@@ -167,8 +152,8 @@ public class GraphComparator {
 		// TODO Auto-generated method stub
 		double inNodeCost = calculateIndegreeCost(v1, v2);
     	double outNodeCost = calculateOutDegreeCost(v1, v2);
-        double nodeCost = calculateNodeCost(v1, v2);
-        return inNodeCost+outNodeCost+nodeCost;
+        double nodeNameCost = calculateNodeNameCost(v1, v2);
+        return inNodeCost+outNodeCost+nodeNameCost;
 	}
 	
 	

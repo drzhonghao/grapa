@@ -6,10 +6,12 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class ChangeGraphBuilder extends GraphComparator{
 
+	
 	public ChangeGraphBuilder(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
-			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
-		super(oldGraph,  newGraph);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph,
+			int mode) {
+		super(oldGraph,  newGraph, mode);
 		// TODO Auto-generated constructor stub
 	}
 
