@@ -33,7 +33,7 @@ public class CommitComparator {
 	private String otherLibDir;
 	private String exclusionsFile;
 	private String bugName;
-//	private DeltaGraphUtil deltaGraphTool;
+
 
 	
 	
@@ -42,9 +42,7 @@ public class CommitComparator {
 		this.bugName = bugName;
 	}
 
-//	public void initDotGraphUtil(String dotExe) {
-//		deltaGraphTool = new DeltaGraphUtil(dotExe);
-//	}
+
 	
 	public ArrayList<MethodDelta> analyzeCommit(File d, boolean bResolveAst) {
 		// TODO Auto-generated method stub
@@ -88,32 +86,6 @@ public class CommitComparator {
 		}
 		return info;
 	}
-
-	private void writeToLog(String version, String name) {
-		// TODO Auto-generated method stub
-		File file = new File(this.resultDir+"/bugNames.txt");
-		FileWriter fw = null;
-		BufferedWriter writer = null;
-		try{
-	         fw = new FileWriter(file, true);
-	         writer = new BufferedWriter(fw);
-	         writer.write(version+"\t"+name);
-	         writer.newLine();
-	         writer.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }finally{
-            try {
-                writer.close();
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-	}
-
 
 
 

@@ -56,9 +56,9 @@ public class SDGComparator {
 			graph = extractChangeGraph(lg, rg);
 			
 		}
-		DirectedSparseGraph<DeltaNode, DeltaEdge> deltaGraph = extractDelta(graph); 
+		DirectedSparseGraph<DeltaNode, DeltaEdge> smallGraph = extractDelta(graph); 
 		
-		MethodDelta md = new MethodDelta(graph, deltaGraph, astTable);
+		MethodDelta md = new MethodDelta(graph, smallGraph, astTable);
 		return md;
 	}
 	
