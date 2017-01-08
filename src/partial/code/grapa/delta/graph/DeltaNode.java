@@ -1,5 +1,8 @@
 package partial.code.grapa.delta.graph;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import partial.code.grapa.tool.LabelUtil;
 
 public class DeltaNode extends AbstractNode{
@@ -17,11 +20,23 @@ public class DeltaNode extends AbstractNode{
 		// TODO Auto-generated constructor stub
 		label = l;
 	}
+	
+	
 
 	public String getKind() {
 		// TODO Auto-generated method stub
 		LabelUtil tool = new LabelUtil();
 		return tool.parse(label);
+	}
+
+	public String getComparedLabel() {
+		// TODO Auto-generated method stub
+		Pattern p = Pattern.compile("[\\d]");
+		Matcher matcher = p.matcher(label);
+		String result = matcher.replaceAll("");
+		int mark = result.indexOf(":");
+		result = result.substring(mark+1);
+		return result;
 	}
 
 	

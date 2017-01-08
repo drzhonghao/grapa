@@ -84,21 +84,12 @@ public class GraphComparator {
 	private void calculateCostMatrix() {
 		// TODO Auto-generated method stub
 		costMatrix =  new double[leftGraph.getVertexCount()][rightGraph.getVertexCount()];
-		double inNodeCost;
-		double outNodeCost;
-		double nodeCost;
-//		double lineCost;
-
 		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
 			DeltaNode leftNode = (DeltaNode)leftGraph.getVertices().toArray()[i];
 
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	costMatrix[i][j] =  calculateCost(leftNode, rightNode);
-//            	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
-//            	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
-//                nodeCost = calculateNodeNameCost(leftNode, rightNode);
-//                costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
             }
         }
 	}
@@ -139,7 +130,7 @@ public class GraphComparator {
 		// TODO Auto-generated method stub
 		double distance = 0;
 		if(mode == GraphComparator.CONCRETE){
-			stringComparator.getUnNormalisedSimilarity(leftNode.label, rightNode.label);
+			stringComparator.getUnNormalisedSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
 		}else if(mode == GraphComparator.ABSTRACT){
 			stringComparator.getUnNormalisedSimilarity(leftNode.getKind(), rightNode.getKind());
 		}
