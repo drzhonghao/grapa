@@ -94,10 +94,11 @@ public class GraphComparator {
 
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
-            	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
-            	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
-                nodeCost = calculateNodeNameCost(leftNode, rightNode);
-                costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
+            	costMatrix[i][j] =  calculateCost(leftNode, rightNode);
+//            	inNodeCost = calculateIndegreeCost(leftNode, rightNode);
+//            	outNodeCost = calculateOutDegreeCost(leftNode, rightNode);
+//                nodeCost = calculateNodeNameCost(leftNode, rightNode);
+//                costMatrix[i][j] = inNodeCost+outNodeCost+nodeCost;
             }
         }
 	}
