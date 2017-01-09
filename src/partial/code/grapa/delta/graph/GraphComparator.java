@@ -86,7 +86,7 @@ public class GraphComparator {
 		costMatrix =  new double[leftGraph.getVertexCount()][rightGraph.getVertexCount()];
 		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
 			DeltaNode leftNode = (DeltaNode)leftGraph.getVertices().toArray()[i];
-
+			
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	costMatrix[i][j] =  calculateCost(leftNode, rightNode);
@@ -128,11 +128,12 @@ public class GraphComparator {
 	protected double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
+		
 		double distance = 0;
 		if(mode == GraphComparator.CONCRETE){
-			stringComparator.getUnNormalisedSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
+			distance = stringComparator.getUnNormalisedSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
 		}else if(mode == GraphComparator.ABSTRACT){
-			stringComparator.getUnNormalisedSimilarity(leftNode.getKind(), rightNode.getKind());
+			distance = stringComparator.getUnNormalisedSimilarity(leftNode.getKind(), rightNode.getKind());
 		}
 		return distance;
 	}
@@ -145,6 +146,7 @@ public class GraphComparator {
 		double inNodeCost = calculateIndegreeCost(v1, v2);
     	double outNodeCost = calculateOutDegreeCost(v1, v2);
         double nodeNameCost = calculateNodeNameCost(v1, v2);
+       
         return inNodeCost+outNodeCost+nodeNameCost;
 	}
 	
