@@ -64,13 +64,13 @@ public class ChangeGraphBuilder extends GraphComparator{
 		}
 		return graph;
 	}
-	public double calculateDeltaValue() {
+	public double calculateNameDeltaValue() {
 		// TODO Auto-generated method stub
 		Hashtable<DeltaNode, DeltaNode> vm = this.extractNodeMappings();
 		double sim = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			sim += calculateCost(leftNode, rightNode);
+			sim += calculateNodeNameCost(leftNode, rightNode);
 		}
 		sim = sim/vm.size();
 		return sim;
