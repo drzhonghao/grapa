@@ -129,13 +129,13 @@ public class GraphComparator {
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		
-		double distance = 0;
+		double cost = 0;
 		if(mode == GraphComparator.CONCRETE){
-			distance = stringComparator.getUnNormalisedSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
+			cost = stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
 		}else if(mode == GraphComparator.ABSTRACT){
-			distance = stringComparator.getUnNormalisedSimilarity(leftNode.getKind(), rightNode.getKind());
+			cost = stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
 		}
-		return distance;
+		return cost;
 	}
 	
 	
