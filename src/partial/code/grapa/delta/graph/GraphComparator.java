@@ -131,9 +131,9 @@ public class GraphComparator {
 		
 		double cost = 0;
 		if(mode == GraphComparator.CONCRETE){
-			cost = stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
+			cost = 1 - stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
 		}else if(mode == GraphComparator.ABSTRACT){
-			cost = stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
+			cost = 1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
 		}
 		return cost;
 	}
