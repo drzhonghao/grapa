@@ -26,7 +26,7 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class GraphComparator {
 	public static final int CONCRETE = 0;
-	public static final int ABSTRACT = 0;
+	public static final int ABSTRACT = 1;
 	
 	private double[][] costMatrix;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
