@@ -25,8 +25,6 @@ import com.ibm.wala.types.FieldReference;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class GraphComparator {
-	public static final int CONCRETE = 0;
-	public static final int ABSTRACT = 1;
 	
 	private double[][] costMatrix;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
@@ -41,12 +39,12 @@ public class GraphComparator {
 	
 	protected Hashtable<Integer, String> leftIndexTable;
 	protected Hashtable<Integer, String> rightIndexTable;
-	private int mode;
+
 	
 	
 	public GraphComparator(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
-			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph, int mode) {
+			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
 		// TODO Auto-generated constructor stub
 		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
 			leftGraph = newGraph;
@@ -57,7 +55,6 @@ public class GraphComparator {
 			rightGraph = newGraph;
 			bSwapSide = true;
 		}
-		this.mode = mode;
 		stringComparator = new Levenshtein();
 	}
 	
@@ -95,7 +92,7 @@ public class GraphComparator {
 	}
 
 
-	private double calculateOutDegreeCost(DeltaNode leftNode,
+	protected double calculateOutDegreeCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		double outNodeCost = 0;
 		try{
@@ -110,7 +107,7 @@ public class GraphComparator {
 		return outNodeCost;
 	}
 
-	private double calculateIndegreeCost(DeltaNode leftNode,
+	protected double calculateIndegreeCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		double inNodeCost = 0;
 		try{
@@ -128,17 +125,16 @@ public class GraphComparator {
 	protected double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		
-		double cost = 0;
-		if(mode == GraphComparator.CONCRETE){
-			cost = 1 - stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
-		}else if(mode == GraphComparator.ABSTRACT){
-			cost = 1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
-		}
+		double cost =  1 - stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
 		return cost;
 	}
 	
-	
+	protected double calculateAbstractNodeNameCost(DeltaNode leftNode,
+			DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		double cost =  1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
+		return cost;
+	}
 
 
 	protected double calculateCost(DeltaNode v1, DeltaNode v2) {

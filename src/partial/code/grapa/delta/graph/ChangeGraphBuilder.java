@@ -9,9 +9,8 @@ public class ChangeGraphBuilder extends GraphComparator{
 	
 	public ChangeGraphBuilder(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
-			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph,
-			int mode) {
-		super(oldGraph,  newGraph, mode);
+			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
+		super(oldGraph,  newGraph);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -64,16 +63,37 @@ public class ChangeGraphBuilder extends GraphComparator{
 		}
 		return graph;
 	}
-	public double calculateNameDeltaValue() {
+	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
-		Hashtable<DeltaNode, DeltaNode> vm = this.extractNodeMappings();
-		double sim = 0;
+		double cost = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			sim += calculateNodeNameCost(leftNode, rightNode);
+			cost += calculateNodeNameCost(leftNode, rightNode);
 		}
-		sim = sim/vm.size();
-		return sim;
+		cost = cost/vm.size();
+		return cost;
+	}
+
+	public double calculateEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			cost += calculateIndegreeCost(leftNode, rightNode)+calculateOutDegreeCost(leftNode, rightNode);
+		}
+		cost = cost/vm.size();
+		return cost;
+	}
+
+	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+		}
+		cost = cost/vm.size();
+		return cost;
 	}
 	
 }
