@@ -74,17 +74,28 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return cost;
 	}
 
-	public double calculateEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+	public double calculateInEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			cost += calculateIndegreeCost(leftNode, rightNode)+calculateOutDegreeCost(leftNode, rightNode);
+			cost += calculateIndegreeCost(leftNode, rightNode);
 		}
 		cost = cost/vm.size();
 		return cost;
 	}
 
+	public double calculateOutEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			cost += calculateOutDegreeCost(leftNode, rightNode);
+		}
+		cost = cost/vm.size();
+		return cost;
+	}
+	
 	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
