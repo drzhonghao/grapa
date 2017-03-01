@@ -1,5 +1,6 @@
 package partial.code.grapa.delta.graph;
 
+import java.util.Collection;
 import java.util.Hashtable;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -102,6 +103,88 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
 			cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+		}
+		cost = cost/vm.size();
+		return cost;
+	}
+
+	public double calculateDataFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			int leftIn = 0;
+			int leftOut = 0;
+			int rightIn = 0;
+			int rightOut = 0;
+			Collection<DeltaEdge> edges = this.leftGraph.getInEdges(leftNode);
+			for(DeltaEdge edge:edges){
+				if(edge.type == DeltaEdge.DATA_FLOW){
+					if(edge.from.equals(leftNode)){
+						leftOut++;
+					}else{
+						leftIn++;
+					}
+				}
+			}
+			edges = this.rightGraph.getInEdges(rightNode);
+			for(DeltaEdge edge:edges){
+				if(edge.type == DeltaEdge.DATA_FLOW){
+					if(edge.from.equals(rightNode)){
+						rightOut++;
+					}else{
+						rightIn++;
+					}
+				}
+			}
+			if((leftOut+rightOut)>0){
+				cost = Math.abs(leftOut-rightOut)/(leftOut+rightOut);
+			}
+			if((leftIn+rightIn)>0){
+				cost += Math.abs(leftIn-rightIn)/(leftIn+rightIn);
+			}
+			cost = cost/2;
+		}
+		cost = cost/vm.size();
+		return cost;
+	}
+
+	public double calculateControlFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			int leftIn = 0;
+			int leftOut = 0;
+			int rightIn = 0;
+			int rightOut = 0;
+			Collection<DeltaEdge> edges = this.leftGraph.getInEdges(leftNode);
+			for(DeltaEdge edge:edges){
+				if(edge.type == DeltaEdge.CONTROL_FLOW){
+					if(edge.from.equals(leftNode)){
+						leftOut++;
+					}else{
+						leftIn++;
+					}
+				}
+			}
+			edges = this.rightGraph.getInEdges(rightNode);
+			for(DeltaEdge edge:edges){
+				if(edge.type == DeltaEdge.CONTROL_FLOW){
+					if(edge.from.equals(rightNode)){
+						rightOut++;
+					}else{
+						rightIn++;
+					}
+				}
+			}
+			if((leftOut+rightOut)>0){
+				cost = Math.abs(leftOut-rightOut)/(leftOut+rightOut);
+			}
+			if((leftIn+rightIn)>0){
+				cost += Math.abs(leftIn-rightIn)/(leftIn+rightIn);
+			}
+			cost = cost/2;
 		}
 		cost = cost/vm.size();
 		return cost;
