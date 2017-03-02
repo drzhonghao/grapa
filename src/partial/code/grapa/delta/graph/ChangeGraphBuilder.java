@@ -116,7 +116,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.DATA_FLOW);
 		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
-			cost = commonEdges/(double)(leftEdges+rightEdges-commonEdges);
+			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
 		return cost;
 	}
@@ -161,7 +161,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.CONTROL_FLOW);
 		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
-			cost = commonEdges/(double)(leftEdges+rightEdges-commonEdges);
+			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
 		return cost;
 	}
