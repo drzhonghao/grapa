@@ -2,6 +2,7 @@ package partial.code.grapa.delta.graph;
 
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Set;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
@@ -75,27 +76,27 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return cost;
 	}
 
-	public double calculateInEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-			cost += calculateIndegreeCost(leftNode, rightNode);
-		}
-		cost = cost/vm.size();
-		return cost;
-	}
-
-	public double calculateOutEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-			cost += calculateOutDegreeCost(leftNode, rightNode);
-		}
-		cost = cost/vm.size();
-		return cost;
-	}
+//	public double calculateInEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
+//			cost += calculateIndegreeCost(leftNode, rightNode);
+//		}
+//		cost = cost/vm.size();
+//		return cost;
+//	}
+//
+//	public double calculateOutEdgeCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
+//			cost += calculateOutDegreeCost(leftNode, rightNode);
+//		}
+//		cost = cost/vm.size();
+//		return cost;
+//	}
 	
 	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
@@ -111,82 +112,57 @@ public class ChangeGraphBuilder extends GraphComparator{
 	public double calculateDataFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-			int leftIn = 0;
-			int leftOut = 0;
-			int rightIn = 0;
-			int rightOut = 0;
-			Collection<DeltaEdge> edges = this.leftGraph.getInEdges(leftNode);
-			for(DeltaEdge edge:edges){
-				if(edge.type == DeltaEdge.DATA_FLOW){
-					if(edge.from.equals(leftNode)){
-						leftOut++;
-					}else{
-						leftIn++;
-					}
-				}
-			}
-			edges = this.rightGraph.getInEdges(rightNode);
-			for(DeltaEdge edge:edges){
-				if(edge.type == DeltaEdge.DATA_FLOW){
-					if(edge.from.equals(rightNode)){
-						rightOut++;
-					}else{
-						rightIn++;
-					}
-				}
-			}
-			if((leftOut+rightOut)>0){
-				cost = Math.abs(leftOut-rightOut)/(leftOut+rightOut);
-			}
-			if((leftIn+rightIn)>0){
-				cost += Math.abs(leftIn-rightIn)/(leftIn+rightIn);
-			}
-			cost = cost/2;
+		int commonEdges = calculateCommonEdges(vm, DeltaEdge.DATA_FLOW);
+		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.DATA_FLOW);
+		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW);
+		if((leftEdges+rightEdges-commonEdges)!=0){
+			cost = commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
-		cost = cost/vm.size();
 		return cost;
+	}
+
+	private int calculateEdges(Collection<DeltaNode> nodes, DirectedSparseGraph<DeltaNode, DeltaEdge> graph, int type) {
+		// TODO Auto-generated method stub
+		int edges = 0;
+		for(DeltaNode n1:nodes){
+			for(DeltaNode n2:nodes){
+				DeltaEdge edge = graph.findEdge(n1, n2);
+				if(edge!=null&&edge.type==type){
+					edges++;
+				}
+			}
+		}
+		return edges;
+	}
+
+	private int calculateCommonEdges(Hashtable<DeltaNode, DeltaNode> vm, int type) {
+		// TODO Auto-generated method stub
+		int commonEdges = 0;
+		for(DeltaNode l1:vm.keySet()){
+			for(DeltaNode l2:vm.keySet()){				
+				DeltaEdge leftEdge = leftGraph.findEdge(l1, l2);
+				if(leftEdge!=null&&leftEdge.type==type){
+					DeltaNode r1 = vm.get(l1);
+					DeltaNode r2 = vm.get(l2);
+					DeltaEdge rightEdge = rightGraph.findEdge(r1, r2);
+					if(rightEdge!=null&&rightEdge.type==type){
+						commonEdges++;
+					}				
+				}
+			}
+		}
+		return commonEdges;
 	}
 
 	public double calculateControlFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-			int leftIn = 0;
-			int leftOut = 0;
-			int rightIn = 0;
-			int rightOut = 0;
-			Collection<DeltaEdge> edges = this.leftGraph.getInEdges(leftNode);
-			for(DeltaEdge edge:edges){
-				if(edge.type == DeltaEdge.CONTROL_FLOW){
-					if(edge.from.equals(leftNode)){
-						leftOut++;
-					}else{
-						leftIn++;
-					}
-				}
-			}
-			edges = this.rightGraph.getInEdges(rightNode);
-			for(DeltaEdge edge:edges){
-				if(edge.type == DeltaEdge.CONTROL_FLOW){
-					if(edge.from.equals(rightNode)){
-						rightOut++;
-					}else{
-						rightIn++;
-					}
-				}
-			}
-			if((leftOut+rightOut)>0){
-				cost = Math.abs(leftOut-rightOut)/(leftOut+rightOut);
-			}
-			if((leftIn+rightIn)>0){
-				cost += Math.abs(leftIn-rightIn)/(leftIn+rightIn);
-			}
-			cost = cost/2;
+		int commonEdges = calculateCommonEdges(vm, DeltaEdge.CONTROL_FLOW);
+		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.CONTROL_FLOW);
+		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW);
+		if((leftEdges+rightEdges-commonEdges)!=0){
+			cost = commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
-		cost = cost/vm.size();
 		return cost;
 	}
 	
