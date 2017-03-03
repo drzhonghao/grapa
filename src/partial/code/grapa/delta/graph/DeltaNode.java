@@ -6,6 +6,12 @@ import java.util.regex.Pattern;
 import partial.code.grapa.tool.LabelUtil;
 
 public class DeltaNode extends AbstractNode{
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return label;
+	}
+
 	public String label;
 	
 

@@ -178,7 +178,9 @@ public class ChangeGraphBuilder extends GraphComparator{
 			ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
 			if(leftNames.size()>0&&rightNames.size()>0){
 				cost +=  1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0));
-			}else{				
+			}else if(leftNames.size()==0&&rightNames.size()==0){
+				cost += 0;				
+			}else{
 				cost += 1;	
 			}
 		}
