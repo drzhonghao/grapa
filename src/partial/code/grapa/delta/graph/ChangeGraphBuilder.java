@@ -1,10 +1,12 @@
 package partial.code.grapa.delta.graph;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.tool.LabelUtil;
 
 public class ChangeGraphBuilder extends GraphComparator{
 
@@ -163,6 +165,24 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
+		return cost;
+	}
+
+	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			LabelUtil lt = new LabelUtil();
+			ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+			ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+			if(leftNames.size()>0&&rightNames.size()>0){
+				cost +=  1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0));
+			}else{				
+				cost += 1;	
+			}
+		}
+		cost = cost/vm.size();
 		return cost;
 	}
 	
