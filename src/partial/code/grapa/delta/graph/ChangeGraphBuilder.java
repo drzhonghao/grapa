@@ -81,7 +81,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if(total>0){
 			cost = cost/total;
 		}else{
-			cost = 0.5;
+			cost = 1;
 		}
 		return cost;
 	}
@@ -101,7 +101,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if(total>0){
 			cost = cost/total;
 		}else{
-			cost = 0;
+			cost = 1;
 		}
 		return cost;
 	}
@@ -129,7 +129,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if(total>0){
 			cost = cost/total;
 		}else{
-			cost = 0;
+			cost = 1;
 		}
 		return cost;
 	}
@@ -143,7 +143,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}else{
-			cost = 0;
+			cost = 1;
 		}
 		return cost;
 	}
@@ -194,7 +194,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}else{
-			cost = 0;
+			cost = 1;
 		}
 		return cost;
 	}
