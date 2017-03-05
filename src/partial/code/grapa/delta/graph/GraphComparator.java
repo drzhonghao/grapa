@@ -137,7 +137,7 @@ public class GraphComparator {
 	}
 
 
-	protected double calculateCost(DeltaNode v1, DeltaNode v2) {
+	public double calculateCost(DeltaNode v1, DeltaNode v2) {
 		// TODO Auto-generated method stub
 		double inNodeCost = calculateIndegreeCost(v1, v2);
     	double outNodeCost = calculateOutDegreeCost(v1, v2);
