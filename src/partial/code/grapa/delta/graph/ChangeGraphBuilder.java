@@ -78,7 +78,11 @@ public class ChangeGraphBuilder extends GraphComparator{
 				total += 1;
 			}
 		}
-		cost = cost/total;
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 0.5;
+		}
 		return cost;
 	}
 
@@ -94,7 +98,11 @@ public class ChangeGraphBuilder extends GraphComparator{
 				total += 1;
 			}
 		}
-		cost = cost/total;
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 0;
+		}
 		return cost;
 	}
 	
@@ -118,7 +126,11 @@ public class ChangeGraphBuilder extends GraphComparator{
 				total++;
 			}
 		}
-		cost = cost/total;
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 0;
+		}
 		return cost;
 	}
 	
@@ -130,6 +142,8 @@ public class ChangeGraphBuilder extends GraphComparator{
 		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
+		}else{
+			cost = 0;
 		}
 		return cost;
 	}
@@ -179,6 +193,8 @@ public class ChangeGraphBuilder extends GraphComparator{
 		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
+		}else{
+			cost = 0;
 		}
 		return cost;
 	}
