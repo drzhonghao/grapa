@@ -67,18 +67,15 @@ public class ChangeGraphBuilder extends GraphComparator{
 		}
 		return graph;
 	}
-	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm, double weight) {
+	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			if(leftNode.bModified){
-				cost += calculateNodeNameCost(leftNode, rightNode)*weight;
-				total += weight;
-			}else{
+			if(leftNode.bModified||rightNode.bModified){
 				cost += calculateNodeNameCost(leftNode, rightNode);
-				total+=1;
+				total += 1;
 			}
 		}
 		cost = cost/total;
@@ -86,46 +83,38 @@ public class ChangeGraphBuilder extends GraphComparator{
 	}
 
 	
-	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm, double weight) {
+	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			if(leftNode.bModified){
-				cost += calculateAbstractNodeNameCost(leftNode, rightNode)*weight;
-				total += weight;
-			}else{
+			if(leftNode.bModified||rightNode.bModified){
 				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
-				total+=1;
+				total += 1;
 			}
 		}
 		cost = cost/total;
 		return cost;
 	}
 	
-	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm, double weight) {
+	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			LabelUtil lt = new LabelUtil();
-			ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
-			ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
-			if(leftNames.size()>0&&rightNames.size()>0){
-				if(leftNode.bModified){
-					cost +=  (1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0)))*weight;	
-					total += weight;
+			if(leftNode.bModified||rightNode.bModified){
+				LabelUtil lt = new LabelUtil();
+				ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+				ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+				if(leftNames.size()>0&&rightNames.size()>0){
+					cost +=  (1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0)));
+				}else if(leftNames.size()==0&&rightNames.size()==0){
+					cost += 0;
 				}else{
-					cost +=  1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0));
-					total++;
+					cost += 1;
 				}
-			}else if(leftNames.size()==0&&rightNames.size()==0){
-				cost += 0;	
-				total++;
-			}else{
-				cost += 1;
 				total++;
 			}
 		}
@@ -133,28 +122,26 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return cost;
 	}
 	
-	public double calculateDataFlowCosts(Hashtable<DeltaNode, DeltaNode> vm, double weight) {
+	public double calculateDataFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
-		int commonEdges = calculateCommonEdges(vm, DeltaEdge.DATA_FLOW, weight);
-		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.DATA_FLOW, weight);
-		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW, weight);
+		int commonEdges = calculateCommonEdges(vm, DeltaEdge.DATA_FLOW);
+		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.DATA_FLOW);
+		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
 		return cost;
 	}
 
-	private int calculateEdges(Collection<DeltaNode> nodes, DirectedSparseGraph<DeltaNode, DeltaEdge> graph, int type, double weight) {
+	private int calculateEdges(Collection<DeltaNode> nodes, DirectedSparseGraph<DeltaNode, DeltaEdge> graph, int type) {
 		// TODO Auto-generated method stub
 		int edges = 0;
 		for(DeltaNode n1:nodes){
 			for(DeltaNode n2:nodes){
-				DeltaEdge edge = graph.findEdge(n1, n2);
-				if(edge!=null&&edge.type==type){
-					if(n1.bModified||n2.bModified){
-						edges += weight;
-					}else{
+				if(n1.bModified||n2.bModified){
+					DeltaEdge edge = graph.findEdge(n1, n2);
+					if(edge!=null&&edge.type==type){
 						edges++;
 					}
 				}
@@ -163,35 +150,33 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return edges;
 	}
 
-	private int calculateCommonEdges(Hashtable<DeltaNode, DeltaNode> vm, int type, double weight) {
+	private int calculateCommonEdges(Hashtable<DeltaNode, DeltaNode> vm, int type) {
 		// TODO Auto-generated method stub
 		int commonEdges = 0;
 		for(DeltaNode l1:vm.keySet()){
-			for(DeltaNode l2:vm.keySet()){				
-				DeltaEdge leftEdge = leftGraph.findEdge(l1, l2);
-				if(leftEdge!=null&&leftEdge.type==type){
-					DeltaNode r1 = vm.get(l1);
-					DeltaNode r2 = vm.get(l2);
-					DeltaEdge rightEdge = rightGraph.findEdge(r1, r2);
-					if(rightEdge!=null&&rightEdge.type==type){
-						if(l1.bModified||l2.bModified){
-							commonEdges += weight;
-						}else{
+			for(DeltaNode l2:vm.keySet()){		
+				if(l1.bModified||l2.bModified){
+					DeltaEdge leftEdge = leftGraph.findEdge(l1, l2);
+					if(leftEdge!=null&&leftEdge.type==type){
+						DeltaNode r1 = vm.get(l1);
+						DeltaNode r2 = vm.get(l2);
+						DeltaEdge rightEdge = rightGraph.findEdge(r1, r2);
+						if(rightEdge!=null&&rightEdge.type==type){
 							commonEdges++;
-						}
-					}				
+						}				
+					}
 				}
 			}
 		}
 		return commonEdges;
 	}
 
-	public double calculateControlFlowCosts(Hashtable<DeltaNode, DeltaNode> vm, double weight) {
+	public double calculateControlFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
 		// TODO Auto-generated method stub
 		double cost = 0;
-		int commonEdges = calculateCommonEdges(vm, DeltaEdge.CONTROL_FLOW, weight);
-		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.CONTROL_FLOW, weight);
-		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW, weight);
+		int commonEdges = calculateCommonEdges(vm, DeltaEdge.CONTROL_FLOW);
+		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.CONTROL_FLOW);
+		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW);
 		if((leftEdges+rightEdges-commonEdges)!=0){
 			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
 		}
