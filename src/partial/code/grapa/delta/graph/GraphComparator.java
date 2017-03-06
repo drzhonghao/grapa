@@ -143,7 +143,7 @@ public class GraphComparator {
     	double outNodeCost = calculateOutDegreeCost(v1, v2);
         double nodeNameCost = calculateNodeNameCost(v1, v2);
        
-        return inNodeCost+outNodeCost+nodeNameCost;
+        return (inNodeCost+outNodeCost+nodeNameCost)/3;
 	}
 	
 	
