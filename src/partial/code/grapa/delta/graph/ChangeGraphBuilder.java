@@ -73,10 +73,10 @@ public class ChangeGraphBuilder extends GraphComparator{
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			if(leftNode.bModified||rightNode.bModified){
+//			if(leftNode.bModified||rightNode.bModified){
 				cost += calculateNodeNameCost(leftNode, rightNode);
 				total += 1;
-			}
+//			}
 		}
 		if(total>0){
 			cost = cost/total;
@@ -93,10 +93,10 @@ public class ChangeGraphBuilder extends GraphComparator{
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			if(leftNode.bModified||rightNode.bModified){
+//			if(leftNode.bModified||rightNode.bModified){
 				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
 				total += 1;
-			}
+//			}
 		}
 		if(total>0){
 			cost = cost/total;
@@ -112,7 +112,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		double total = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
-			if(leftNode.bModified||rightNode.bModified){
+//			if(leftNode.bModified||rightNode.bModified){
 				LabelUtil lt = new LabelUtil();
 				ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
 				ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
@@ -124,7 +124,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 					cost += 1;
 				}
 				total++;
-			}
+//			}
 		}
 		if(total>0){
 			cost = cost/total;
