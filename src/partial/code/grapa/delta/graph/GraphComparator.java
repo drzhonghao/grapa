@@ -60,6 +60,28 @@ public class GraphComparator {
 	
 
 
+	public double calculateCosts() {
+		// TODO Auto-generated method stub
+		calculateCostMatrix();
+		HungarianAlgorithm ha = new HungarianAlgorithm();
+        int[][] matching = ha.hgAlgorithm(costMatrix);
+        
+        double cost = 0;
+		double total = 0;
+        for(int i=0; i<matching.length; i++){
+			DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
+			DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
+			cost += calculateCost(v1, v2);
+			total += 1;
+        }
+	
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 1;
+		}
+		return cost;
+	}
 	
 
 	public Hashtable<DeltaNode, DeltaNode> extractNodeMappings() {
@@ -77,6 +99,8 @@ public class GraphComparator {
         }
         return vm;
 	}
+	
+	
 	
 	private void calculateCostMatrix() {
 		// TODO Auto-generated method stub

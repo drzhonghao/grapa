@@ -67,137 +67,95 @@ public class ChangeGraphBuilder extends GraphComparator{
 		}
 		return graph;
 	}
-	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		double total = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
+//	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		double total = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
 //			if(leftNode.bModified||rightNode.bModified){
-				cost += calculateNodeNameCost(leftNode, rightNode);
-				total += 1;
+//				cost += calculateNodeNameCost(leftNode, rightNode);
+//				total += 1;
 //			}
-		}
-		if(total>0){
-			cost = cost/total;
-		}else{
-			cost = 1;
-		}
-		return cost;
-	}
+//		}
+//		if(total>0){
+//			cost = cost/total;
+//		}else{
+//			cost = 1;
+//		}
+//		return cost;
+//	}
+//
+//	
+//	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		double total = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
+//			if(leftNode.bModified||rightNode.bModified){
+//				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+//				total += 1;
+//			}
+//		}
+//		if(total>0){
+//			cost = cost/total;
+//		}else{
+//			cost = 1;
+//		}
+//		return cost;
+//	}
+//	
+//	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		double total = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
+//			if(leftNode.bModified||rightNode.bModified){
+//				LabelUtil lt = new LabelUtil();
+//				ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+//				ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+//				if(leftNames.size()>0&&rightNames.size()>0){
+//					cost +=  (1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0)));
+//				}else if(leftNames.size()==0&&rightNames.size()==0){
+//					cost += 0;
+//				}else{
+//					cost += 1;
+//				}
+//				total++;
+//			}
+//		}
+//		if(total>0){
+//			cost = cost/total;
+//		}else{
+//			cost = 1;
+//		}
+//		return cost;
+//	}
+//
+//	public double calculateCosts(Hashtable<DeltaNode, DeltaNode> vm) {
+//		// TODO Auto-generated method stub
+//		double cost = 0;
+//		double total = 0;
+//		for(DeltaNode leftNode:vm.keySet()){
+//			DeltaNode rightNode = vm.get(leftNode);
+//			if(leftNode.bModified||rightNode.bModified){
+//				cost += calculateCost(leftNode, rightNode);
+//				total += 1;
+//			}
+//		}
+//		if(total>0){
+//			cost = cost/total;
+//		}else{
+//			cost = 1;
+//		}
+//		return cost;
+//	}
 
 	
-	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		double total = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
-				total += 1;
-//			}
-		}
-		if(total>0){
-			cost = cost/total;
-		}else{
-			cost = 1;
-		}
-		return cost;
-	}
 	
-	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		double total = 0;
-		for(DeltaNode leftNode:vm.keySet()){
-			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-				LabelUtil lt = new LabelUtil();
-				ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
-				ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
-				if(leftNames.size()>0&&rightNames.size()>0){
-					cost +=  (1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0)));
-				}else if(leftNames.size()==0&&rightNames.size()==0){
-					cost += 0;
-				}else{
-					cost += 1;
-				}
-				total++;
-//			}
-		}
-		if(total>0){
-			cost = cost/total;
-		}else{
-			cost = 1;
-		}
-		return cost;
-	}
-	
-	public double calculateDataFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		int commonEdges = calculateCommonEdges(vm, DeltaEdge.DATA_FLOW);
-		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.DATA_FLOW);
-		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.DATA_FLOW);
-		if((leftEdges+rightEdges-commonEdges)!=0){
-			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
-		}else{
-			cost = 1;
-		}
-		return cost;
-	}
 
-	private int calculateEdges(Collection<DeltaNode> nodes, DirectedSparseGraph<DeltaNode, DeltaEdge> graph, int type) {
-		// TODO Auto-generated method stub
-		int edges = 0;
-		for(DeltaNode n1:nodes){
-			for(DeltaNode n2:nodes){
-				if(n1.bModified||n2.bModified){
-					DeltaEdge edge = graph.findEdge(n1, n2);
-					if(edge!=null&&edge.type==type){
-						edges++;
-					}
-				}
-			}
-		}
-		return edges;
-	}
-
-	private int calculateCommonEdges(Hashtable<DeltaNode, DeltaNode> vm, int type) {
-		// TODO Auto-generated method stub
-		int commonEdges = 0;
-		for(DeltaNode l1:vm.keySet()){
-			for(DeltaNode l2:vm.keySet()){		
-				if(l1.bModified||l2.bModified){
-					DeltaEdge leftEdge = leftGraph.findEdge(l1, l2);
-					if(leftEdge!=null&&leftEdge.type==type){
-						DeltaNode r1 = vm.get(l1);
-						DeltaNode r2 = vm.get(l2);
-						DeltaEdge rightEdge = rightGraph.findEdge(r1, r2);
-						if(rightEdge!=null&&rightEdge.type==type){
-							commonEdges++;
-						}				
-					}
-				}
-			}
-		}
-		return commonEdges;
-	}
-
-	public double calculateControlFlowCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-		// TODO Auto-generated method stub
-		double cost = 0;
-		int commonEdges = calculateCommonEdges(vm, DeltaEdge.CONTROL_FLOW);
-		int leftEdges = calculateEdges(vm.keySet(), leftGraph,DeltaEdge.CONTROL_FLOW);
-		int rightEdges = calculateEdges(vm.values(), rightGraph,DeltaEdge.CONTROL_FLOW);
-		if((leftEdges+rightEdges-commonEdges)!=0){
-			cost = 1 - commonEdges/(double)(leftEdges+rightEdges-commonEdges);
-		}else{
-			cost = 1;
-		}
-		return cost;
-	}
 
 
 	
