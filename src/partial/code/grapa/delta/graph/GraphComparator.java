@@ -52,11 +52,11 @@ public class GraphComparator {
 		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
 			leftGraph = newGraph;
 			rightGraph = oldGraph;
-			bSwapSide = false;
+			bSwapSide = true;
 		}else{
 			leftGraph = oldGraph;
 			rightGraph = newGraph;
-			bSwapSide = true;
+			bSwapSide = false;
 		}
 		stringComparator = new Levenshtein();
 	}
