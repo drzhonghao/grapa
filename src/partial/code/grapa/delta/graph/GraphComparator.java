@@ -162,31 +162,38 @@ public class GraphComparator {
 
 	private double calculateOutControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, true);
-		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, true);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, true);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, true);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
 
 
-	private double calculateCost(ArrayList<String> leftKinds, ArrayList<String> rightKinds) {
+	private double calculateCost(Hashtable<String, Integer> leftTable, Hashtable<String, Integer> rightTable) {
 		// TODO Auto-generated method stub
 		double cost = 0;
-		if(leftKinds.size()==0&&rightKinds.size()==0){
+		if(leftTable.size()==0&&rightTable.size()==0){
 			cost = 0;
-		}else if(leftKinds.size()>0&&rightKinds.size()>0){
-			int count = 0;
-			for(String leftKind:leftKinds){
-				if(rightKinds.contains(leftKind)){
-					count++;
+		}else if(leftTable.size()>0&&rightTable.size()>0){
+			ArrayList<String> keys = new ArrayList<String>();
+			keys.addAll(leftTable.keySet());
+			for(String key:rightTable.keySet()){
+				if(!keys.contains(key)){
+					keys.add(key);
 				}
 			}
-			for(String leftKind:leftKinds){
-				if(!rightKinds.contains(leftKind)){
-					rightKinds.add(leftKind);
+			for(String key:keys){
+				Integer leftValue = leftTable.get(key);
+				if(leftValue == null){
+					leftValue = 0;
 				}
-			}
-			cost = ((double)count)/rightKinds.size();
+				Integer rightValue = rightTable.get(key);
+				if(rightValue == null){
+					rightValue = 0;
+				}
+				cost += Math.abs(leftValue-rightValue)/Math.max(leftValue,rightValue);
+			}			
+			cost = ((double)cost)/keys.size();
 		}else{
 			cost = 1;
 		}
@@ -195,10 +202,10 @@ public class GraphComparator {
 
 
 
-	private ArrayList<String> extractKinds(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, DeltaNode node,
+	private Hashtable<String, Integer> extractKinds(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, DeltaNode node,
 			int type, boolean bOut) {
 		// TODO Auto-generated method stub
-		ArrayList<String> kinds = new ArrayList<String>();
+		Hashtable<String, Integer> table = new Hashtable<String, Integer>();
 		Collection<DeltaEdge> edges = null;
 		if(bOut){
 			edges = graph.getOutEdges(node);
@@ -213,18 +220,25 @@ public class GraphComparator {
 				}else{
 					match = (DeltaNode)edge.from;
 				}
-				kinds.add(match.getKind());
+				String key = match.getKind();
+				Integer no = table.get(key);
+				if(no==null){
+					no = 1;
+				}else{
+					no++;
+				}
+				table.put(key, no);
 			}
 		}
-		return kinds;
+		return table;
 	}
 
 
 
 	private double calculateInControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, false);
-		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, false);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, false);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
@@ -232,8 +246,8 @@ public class GraphComparator {
 
 	private double calculateOutDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, true);
-		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, true);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, true);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, true);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
@@ -241,8 +255,8 @@ public class GraphComparator {
 
 	private double calculateInDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, false);
-		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, false);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, false);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
 	
