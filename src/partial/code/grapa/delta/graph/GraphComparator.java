@@ -1,5 +1,7 @@
 package partial.code.grapa.delta.graph;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
@@ -23,6 +25,7 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.tool.LabelUtil;
 
 public class GraphComparator {
 	
@@ -116,44 +119,28 @@ public class GraphComparator {
 	}
 
 
-	protected double calculateOutDegreeCost(DeltaNode leftNode,
-			DeltaNode rightNode) {
-		double outNodeCost = 0;
-		try{
-			if((leftGraph.outDegree(leftNode) + rightGraph.outDegree(rightNode))!=0){
-				outNodeCost = (double)Math.abs(leftGraph.outDegree(leftNode) -  rightGraph.outDegree(rightNode))/(leftGraph.outDegree(leftNode) + rightGraph.outDegree(rightNode));
-			}else{
-				outNodeCost = 0;
-			}
-		}catch(Exception e){
-//			System.out.println("jung internal error at: "+leftNode.toString());
-		}
-		return outNodeCost;
-	}
-
-	protected double calculateIndegreeCost(DeltaNode leftNode,
-			DeltaNode rightNode) {
-		double inNodeCost = 0;
-		try{
-			if((leftGraph.inDegree(leftNode) + rightGraph.inDegree(rightNode))!=0){
-				inNodeCost = (double)Math.abs(leftGraph.inDegree(leftNode) - rightGraph.inDegree(rightNode))/(leftGraph.inDegree(leftNode) + rightGraph.inDegree(rightNode));
-			}else{
-				inNodeCost = 0;
-			}
-		}catch(Exception e){
-//			System.out.println("jung internal error at "+leftNode.toString());
-		}
-		return inNodeCost;
-	}
+	
 
 	protected double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		double cost =  1 - stringComparator.getSimilarity(leftNode.getComparedLabel(), rightNode.getComparedLabel());
+		LabelUtil lt = new LabelUtil();
+		ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+		ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+		double cost = 0;
+		if(leftNames.size()>0&&rightNames.size()>0){
+			String leftName = leftNames.get(0);
+			String rightName = rightNames.get(0);
+			cost +=   1 - stringComparator.getSimilarity(leftName, rightName);;
+		}else if(leftNames.size()==0&&rightNames.size()==0){
+			cost += calculateNodeKindCost(leftNode, rightNode);
+		}else{
+			cost += 1;
+		}
 		return cost;
 	}
 	
-	protected double calculateAbstractNodeNameCost(DeltaNode leftNode,
+	protected double calculateNodeKindCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		double cost =  1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
@@ -161,13 +148,102 @@ public class GraphComparator {
 	}
 
 
-	public double calculateCost(DeltaNode v1, DeltaNode v2) {
+	public double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		double inNodeCost = calculateIndegreeCost(v1, v2);
-    	double outNodeCost = calculateOutDegreeCost(v1, v2);
-        double nodeNameCost = calculateNodeNameCost(v1, v2);
-       
-        return (inNodeCost+outNodeCost+nodeNameCost)/3;
+		double inDataNodeCost = calculateInDataCost(leftNode, rightNode);
+    	double outDataNodeCost = calculateOutDataCost(leftNode, rightNode);
+    	double inControlNodeCost = calculateInControlCost(leftNode, rightNode);
+    	double outControlNodeCost = calculateOutControlCost(leftNode, rightNode);
+        double nodeNameCost = calculateNodeNameCost(leftNode, rightNode);
+        return (inDataNodeCost+outDataNodeCost+inControlNodeCost+outControlNodeCost+3*nodeNameCost)/7;
+	}
+
+
+
+	private double calculateOutControlCost(DeltaNode leftNode, DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, true);
+		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, true);
+		return calculateCost(leftKinds, rightKinds);
+	}
+
+
+
+	private double calculateCost(ArrayList<String> leftKinds, ArrayList<String> rightKinds) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		if(leftKinds.size()==0&&rightKinds.size()==0){
+			cost = 0;
+		}else if(leftKinds.size()>0&&rightKinds.size()>0){
+			int count = 0;
+			for(String leftKind:leftKinds){
+				if(rightKinds.contains(leftKind)){
+					count++;
+				}
+			}
+			for(String leftKind:leftKinds){
+				if(!rightKinds.contains(leftKind)){
+					rightKinds.add(leftKind);
+				}
+			}
+			cost = ((double)count)/rightKinds.size();
+		}else{
+			cost = 1;
+		}
+		return cost;
+	}
+
+
+
+	private ArrayList<String> extractKinds(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, DeltaNode node,
+			int type, boolean bOut) {
+		// TODO Auto-generated method stub
+		ArrayList<String> kinds = new ArrayList<String>();
+		Collection<DeltaEdge> edges = null;
+		if(bOut){
+			edges = graph.getOutEdges(node);
+		}else{
+			edges = graph.getInEdges(node);
+		}
+		for(DeltaEdge edge:edges){
+			if(edge.type == type){
+				DeltaNode match = null;
+				if(bOut){
+					match = (DeltaNode)edge.to;
+				}else{
+					match = (DeltaNode)edge.from;
+				}
+				kinds.add(match.getKind());
+			}
+		}
+		return kinds;
+	}
+
+
+
+	private double calculateInControlCost(DeltaNode leftNode, DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, false);
+		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, false);
+		return calculateCost(leftKinds, rightKinds);
+	}
+
+
+
+	private double calculateOutDataCost(DeltaNode leftNode, DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, true);
+		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, true);
+		return calculateCost(leftKinds, rightKinds);
+	}
+
+
+
+	private double calculateInDataCost(DeltaNode leftNode, DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		ArrayList<String> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, false);
+		ArrayList<String> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, false);
+		return calculateCost(leftKinds, rightKinds);
 	}
 	
 	
