@@ -67,97 +67,103 @@ public class ChangeGraphBuilder extends GraphComparator{
 		}
 		return graph;
 	}
-//	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-//		// TODO Auto-generated method stub
-//		double cost = 0;
-//		double total = 0;
-//		for(DeltaNode leftNode:vm.keySet()){
-//			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-//				cost += calculateNodeNameCost(leftNode, rightNode);
-//				total += 1;
-//			}
-//		}
-//		if(total>0){
-//			cost = cost/total;
-//		}else{
-//			cost = 1;
-//		}
-//		return cost;
-//	}
-//
-//	
-//	public double calculateAbstactNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-//		// TODO Auto-generated method stub
-//		double cost = 0;
-//		double total = 0;
-//		for(DeltaNode leftNode:vm.keySet()){
-//			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-//				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
-//				total += 1;
-//			}
-//		}
-//		if(total>0){
-//			cost = cost/total;
-//		}else{
-//			cost = 1;
-//		}
-//		return cost;
-//	}
-//	
-//	public double calculateCodeNameCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-//		// TODO Auto-generated method stub
-//		double cost = 0;
-//		double total = 0;
-//		for(DeltaNode leftNode:vm.keySet()){
-//			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-//				LabelUtil lt = new LabelUtil();
-//				ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
-//				ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
-//				if(leftNames.size()>0&&rightNames.size()>0){
-//					cost +=  (1 - stringComparator.getSimilarity(leftNames.get(0), rightNames.get(0)));
-//				}else if(leftNames.size()==0&&rightNames.size()==0){
-//					cost += 0;
-//				}else{
-//					cost += 1;
-//				}
-//				total++;
-//			}
-//		}
-//		if(total>0){
-//			cost = cost/total;
-//		}else{
-//			cost = 1;
-//		}
-//		return cost;
-//	}
-//
-//	public double calculateCosts(Hashtable<DeltaNode, DeltaNode> vm) {
-//		// TODO Auto-generated method stub
-//		double cost = 0;
-//		double total = 0;
-//		for(DeltaNode leftNode:vm.keySet()){
-//			DeltaNode rightNode = vm.get(leftNode);
-//			if(leftNode.bModified||rightNode.bModified){
-//				cost += calculateCost(leftNode, rightNode);
-//				total += 1;
-//			}
-//		}
-//		if(total>0){
-//			cost = cost/total;
-//		}else{
-//			cost = 1;
-//		}
-//		return cost;
-//	}
-
-	
-	
 
 
+	public double calculateCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		double total = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			if(bOnlyModified){
+				if(leftNode.bModified){
+					cost += calculateCodeNameCost(leftNode, rightNode);
+					total += 1;
+				}
+			}else{
+				cost += calculateCodeNameCost(leftNode, rightNode);
+				total += 1;	
+			}
+		}
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 1;
+		}
+		return cost;
+	}
 
+	private double calculateCodeNameCost(DeltaNode leftNode, DeltaNode rightNode) {
+		// TODO Auto-generated method stub
+		LabelUtil lt = new LabelUtil();
+		ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+		ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+		double cost = 0;
+		if(leftNames.size()>0&&rightNames.size()>0){
+			String leftName = leftNames.get(0);
+			String rightName = rightNames.get(0);
+			cost +=   1 - stringComparator.getSimilarity(leftName, rightName);;
+		}else if(leftNames.size()==0&&rightNames.size()==0){
+			cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+		}else{
+			cost += 1;
+		}
+		cost += calculateIndegreeCost(leftNode, rightNode);
+    	cost += calculateOutDegreeCost(leftNode, rightNode);
+    	cost = cost/3;
+    	return cost;
+	}
+
+	public double calculateAbstractCost(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified, String prefix) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		double total = 0;
+		for(DeltaNode leftNode:vm.keySet()){
+			DeltaNode rightNode = vm.get(leftNode);
+			if(bOnlyModified){
+				if(leftNode.bModified){
+					cost = calculateAbstractCost(leftNode, rightNode, prefix);
+					total++;
+				}
+			}else{
+				cost = calculateAbstractCost(leftNode, rightNode, prefix);
+				total++;
+			}	
+		}
+		if(total>0){
+			cost = cost/total;
+		}else{
+			cost = 1;
+		}
+		return cost;
+	}
+
+	private double calculateAbstractCost(DeltaNode leftNode, DeltaNode rightNode, String prefix) {
+		// TODO Auto-generated method stub
+		LabelUtil lt = new LabelUtil();
+		ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
+		ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
+		double cost = 0;
+		if(leftNames.size()>0&&rightNames.size()>0){
+			String leftName = leftNames.get(0);
+			String rightName = rightNames.get(0);
+			if(leftName.startsWith(prefix)&&rightName.startsWith(prefix)){
+				cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+			}else if(leftName.startsWith(prefix)||rightName.startsWith(prefix)){
+				cost = 1;
+			}else{
+				cost +=   1 - stringComparator.getSimilarity(leftName,rightName);;
+			}
+		}else if(leftNames.size()==0&&rightNames.size()==0){
+			cost += calculateAbstractNodeNameCost(leftNode, rightNode);
+		}else{
+			cost += 1;
+		}
+		cost += calculateIndegreeCost(leftNode, rightNode);
+    	cost += calculateOutDegreeCost(leftNode, rightNode);
+    	cost = cost/3;
+    	return cost;
+	}
 	
 }
  

@@ -98,7 +98,7 @@ public class LabelUtil {
 		int id = -1;
 		for(int i=0; i<labelTypes.size(); i++){
 			String type = labelTypes.get(i);
-			if(label.indexOf(type)>0){
+			if(label.indexOf(type)>=0){
 				id = i;
 				break;
 			}
@@ -111,7 +111,7 @@ public class LabelUtil {
 		
 		String result = null;
 		for(String type:labelTypes){
-			if(label.indexOf(type)>0){
+			if(label.indexOf(type)>=0){
 				result = type;
 				break;
 			}
