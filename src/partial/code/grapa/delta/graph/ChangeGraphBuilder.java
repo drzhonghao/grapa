@@ -65,8 +65,15 @@ public class ChangeGraphBuilder extends GraphComparator{
 				}else{
 					n1.bModified = true;
 					n2.bModified = true;
-					DeltaEdge edge = new DeltaEdge(n1, n2, DeltaEdge.CHANGE);
-					graph.addEdge(edge, n1, n2);
+					DeltaEdge edge = null;
+					if(!this.bSwapSide){
+						edge = new DeltaEdge(n1, n2, DeltaEdge.CHANGE);
+						graph.addEdge(edge, n1, n2);
+					}else{
+						edge = new DeltaEdge(n2, n1, DeltaEdge.CHANGE);
+						graph.addEdge(edge, n2, n1);
+					}
+					
 					
 				}
 			}
