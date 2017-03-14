@@ -26,8 +26,10 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(DeltaNode s:leftGraph.getVertices()){
 			if(!this.bSwapSide){
 				s.side = DeltaNode.LEFT;
+				s.label = "l:"+s.label;
 			}else{
 				s.side = DeltaNode.RIGHT;
+				s.label = "r:"+s.label;
 			}
 			graph.addVertex(s);
 		}
@@ -36,8 +38,10 @@ public class ChangeGraphBuilder extends GraphComparator{
 		for(DeltaNode s:rightGraph.getVertices()){
 			if(!this.bSwapSide){
 				s.side = DeltaNode.RIGHT;
+				s.label = "r:"+s.label;
 			}else{
 				s.side = DeltaNode.LEFT;
+				s.label = "l:"+s.label;
 			}
 			graph.addVertex(s);
 		}
