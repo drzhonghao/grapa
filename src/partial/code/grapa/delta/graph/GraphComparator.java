@@ -131,11 +131,11 @@ public class GraphComparator {
 		if(leftNames.size()>0&&rightNames.size()>0){
 			String leftName = leftNames.get(0);
 			String rightName = rightNames.get(0);
-			cost +=   1 - stringComparator.getSimilarity(leftName, rightName);;
+			cost =   1 - stringComparator.getSimilarity(leftName, rightName);;
 		}else if(leftNames.size()==0&&rightNames.size()==0){
-			cost += calculateNodeKindCost(leftNode, rightNode);
+			cost = calculateNodeKindCost(leftNode, rightNode);
 		}else{
-			cost += 1;
+			cost = 1;
 		}
 		return cost;
 	}
@@ -155,7 +155,7 @@ public class GraphComparator {
     	double inControlNodeCost = calculateInControlCost(leftNode, rightNode);
     	double outControlNodeCost = calculateOutControlCost(leftNode, rightNode);
         double nodeNameCost = calculateNodeNameCost(leftNode, rightNode);
-        return (inDataNodeCost+outDataNodeCost+inControlNodeCost+outControlNodeCost+3*nodeNameCost)/7;
+        return (inDataNodeCost+outDataNodeCost+inControlNodeCost+outControlNodeCost+nodeNameCost)/5;
 	}
 
 

@@ -174,8 +174,7 @@ public class CommitComparator {
 		IR rir = rightEngine.getCurrentIR();
 		
 		SDGComparator gt = new SDGComparator(lir, rir, bResolveAst,oldMethod, newMethod);
-		MethodDelta md = gt.compare(lfg, rfg);
-	
+		MethodDelta md = gt.compare(lfg, rfg);	
 		return md;
 	}
 	

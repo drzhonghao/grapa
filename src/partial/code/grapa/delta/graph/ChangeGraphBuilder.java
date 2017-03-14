@@ -72,16 +72,55 @@ public class ChangeGraphBuilder extends GraphComparator{
 	public double calculateCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
 		// TODO Auto-generated method stub
 		double cost = 0;
+		cost = calculateNameCosts(vm, bOnlyModified);
+		cost += calcluateStructureCosts(vm, bOnlyModified);
+		cost = cost/2;
+		return cost;
+	}
+
+	private double calcluateStructureCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
+		// TODO Auto-generated method stub
+		double cost = 0;
+		if(vm.size()==0){
+			cost = 1;
+		}else{
+			int count = 0;
+			int total = 0;
+			for(DeltaNode l1:vm.keySet()){
+				for(DeltaNode l2:vm.keySet()){
+					DeltaEdge le = leftGraph.findEdge(l1, l2);
+					if(le!=null){
+						DeltaNode r1 = vm.get(l1);
+						DeltaNode r2 = vm.get(l2);
+						DeltaEdge re = leftGraph.findEdge(r1, r2);
+						if(re!=null&&re.type==le.type){
+							count++;
+						}
+						total++;
+					}
+				}
+			}
+			if(total!=0){
+				cost = 1 - ((double)count)/total;
+			}else{
+				cost = 0;
+			}
+		}
+		return cost;
+	}
+
+	private double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
 		double total = 0;
+		double cost = 0;
 		for(DeltaNode leftNode:vm.keySet()){
 			DeltaNode rightNode = vm.get(leftNode);
 			if(bOnlyModified){
 				if(leftNode.bModified){
-					cost += calculateCost(leftNode, rightNode);
+					cost += calculateNodeNameCost(leftNode, rightNode);
 					total += 1;
 				}
 			}else{
-				cost += calculateCost(leftNode, rightNode);
+				cost += calculateNodeNameCost(leftNode, rightNode);
 				total += 1;	
 			}
 		}
