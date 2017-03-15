@@ -32,14 +32,14 @@ public abstract class GraphUtil extends DotUtil{
 		if (graph == null) {
 	      throw new IllegalArgumentException("g is null");
 	    }
-				
-	    File f = writeDotFile(graph);
+		String dotFile = outputFile.replace(".pdf", ".dt");		
+	    File f = writeDotFile(graph,dotFile);
 	    if (fDotExe != null) {
 	      spawnDot(fDotExe, outputFile, f);
 	    }
 	}
 
-	protected File writeDotFile(DirectedSparseGraph graph) throws WalaException {
+	protected File writeDotFile(DirectedSparseGraph graph, String dotFile) throws WalaException {
 		// TODO Auto-generated method stub
 		if (graph == null) {
 	      throw new IllegalArgumentException("g is null");
@@ -49,7 +49,7 @@ public abstract class GraphUtil extends DotUtil{
 	    // retrieve the filename parameter to this component, a String
 	
 	    try {
-	      File f = new File(PDFTypeHierarchy.DOT_FILE);
+	      File f = new File(dotFile);
 	      FileWriter fw = new FileWriter(f);
 	      fw.write(dotStringBuffer.toString());
 	      fw.close();
