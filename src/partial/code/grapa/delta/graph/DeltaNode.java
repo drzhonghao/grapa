@@ -29,6 +29,13 @@ public class DeltaNode extends AbstractNode{
 	
 	
 
+	public DeltaNode(DeltaNode node) {
+		// TODO Auto-generated constructor stub
+		this.bModified = node.bModified;
+		this.label = node.label;
+		this.side = node.side;
+	}
+
 	public String getKind() {
 		// TODO Auto-generated method stub
 		LabelUtil tool = new LabelUtil();
