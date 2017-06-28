@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry exported="true" kind="lib" path="lib/GMT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.8.jar" sourcepath="C:/Users/HaoZhong/AppData/Local/Temp/decompiler/source/xstream-1.4.8-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-algorithms-2.0-beta1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-api-2.0-beta1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-graph-impl-2.0-beta1.jar"/>
