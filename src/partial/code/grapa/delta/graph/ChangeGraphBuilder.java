@@ -91,7 +91,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return cost;
 	}
 
-	private double calcluateStructureCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
+	public double calcluateStructureCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
 		// TODO Auto-generated method stub
 		double cost = 0;
 		if(vm.size()==0){
@@ -122,7 +122,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		return cost;
 	}
 
-	private double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
+	public double calculateNameCosts(Hashtable<DeltaNode, DeltaNode> vm, boolean bOnlyModified) {
 		double total = 0;
 		double cost = 0;
 		for(DeltaNode leftNode:vm.keySet()){
