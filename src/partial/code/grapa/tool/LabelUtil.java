@@ -57,10 +57,12 @@ public class LabelUtil {
 		labelTypes.add("PARAM_CALLEE");
 		labelTypes.add("PARAM_CALLEE");
 		labelTypes.add("NORMAL_RET_CALLER");
-		labelTypes.add("conditional branch");
-		labelTypes.add("getfield");
+		labelTypes.add("invokestatic");
+		labelTypes.add("invokespecial");
 		labelTypes.add("invokeinterface");
 		labelTypes.add("invokevirtual");
+		labelTypes.add("conditional branch");
+		labelTypes.add("getfield");
 		labelTypes.add("goto");
 		labelTypes.add("arraystore");
 		labelTypes.add("putfield");		
@@ -71,9 +73,7 @@ public class LabelUtil {
 		labelTypes.add("enclosing");	
 		labelTypes.add("phi");
 		labelTypes.add("return");
-		labelTypes.add("invokespecial");
 		labelTypes.add("neg");
-		labelTypes.add("invokestatic");
 		labelTypes.add("throw");
 		labelTypes.add("instanceof");
 		labelTypes.add("arraylength");

@@ -131,7 +131,7 @@ public class GraphComparator {
 		if(leftNames.size()>0&&rightNames.size()>0){
 			String leftName = leftNames.get(0);
 			String rightName = rightNames.get(0);
-			cost =   1 - stringComparator.getSimilarity(leftName, rightName);;
+			cost =  1 - stringComparator.getSimilarity(leftName, rightName);
 		}else if(leftNames.size()==0&&rightNames.size()==0){
 			cost = calculateNodeKindCost(leftNode, rightNode);
 		}else{
