@@ -53,6 +53,7 @@ import com.ibm.wala.ide.classloader.EclipseSourceFileModule;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
+import com.ibm.wala.ipa.callgraph.IAnalysisCacheView;
 import com.ibm.wala.ipa.callgraph.impl.DefaultEntrypoint;
 import com.ibm.wala.ipa.callgraph.impl.Everywhere;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
@@ -107,7 +108,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 			 if(loader instanceof JDTSourceLoaderImpl){
 				 JDTSourceLoaderImpl jdtloader = (JDTSourceLoaderImpl)loader;
 				 TypeName name = TypeName.findOrCreate(method.key);
-				 IClass type = jdtloader.lookupOwenClass(name);
+				 IClass type = jdtloader.lookupClass(name);
 				 if(type!=null){
 					 MethodReference mainRef = MethodReference.findOrCreate(type.getReference(), mainMethod, Descriptor
 					            .findOrCreateUTF8(method.sig));
@@ -124,8 +125,9 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 			options.setOnlyClientCode(true);
 			try {
 				builder = (AstJavaZeroXCFABuilder)buildCallGraph(cha, options, true, null);
-				AnalysisCache ce =  builder.getAnalysisCache();
-	        	ir = ce.getSSACache().findOrCreateIR(m, Everywhere.EVERYWHERE, options.getSSAOptions() );
+				IAnalysisCacheView ce = builder.getAnalysisCache();
+				ir = ce.getIR(m);
+//	        	ir = ce.getSSACache().findOrCreateIR(m, Everywhere.EVERYWHERE, options.getSSAOptions() );
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
