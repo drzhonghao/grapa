@@ -108,6 +108,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 			 if(loader instanceof JDTSourceLoaderImpl){
 				 JDTSourceLoaderImpl jdtloader = (JDTSourceLoaderImpl)loader;
 				 TypeName name = TypeName.findOrCreate(method.key);
+				 
 				 IClass type = jdtloader.lookupClass(name);
 				 if(type!=null){
 					 MethodReference mainRef = MethodReference.findOrCreate(type.getReference(), mainMethod, Descriptor
