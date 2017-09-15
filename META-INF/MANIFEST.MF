@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Comparator
+Bundle-Name: GRAPA
 Bundle-SymbolicName: grapa;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: partial.code.grapa.Activator
@@ -14,12 +14,12 @@ Require-Bundle: org.eclipse.ui,
  com.ibm.wala.ide;bundle-version="1.4.4",
  com.ibm.wala.ide.jdt;bundle-version="1.4.4",
  com.ibm.wala.shrike;bundle-version="1.4.4",
- com.ibm.wala.util;bundle-version="1.4.4",
  com.ibm.wala.cast.js;bundle-version="1.4.4",
  com.ibm.wala.core.tests;bundle-version="1.4.4",
  org.eclipse.jdt.launching,
  ca.mcgill.cs.swevo.ppa.ui,
- com.ibm.wala.core;bundle-version="1.4.4"
+ com.ibm.wala.core;bundle-version="1.4.4",
+ com.ibm.wala.util;bundle-version="1.4.4"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

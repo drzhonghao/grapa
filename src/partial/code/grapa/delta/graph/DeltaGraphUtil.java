@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 import com.ibm.wala.util.WalaException;
-import com.ibm.wala.viz.NodeDecorator;
+
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
