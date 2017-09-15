@@ -91,15 +91,17 @@ public class GraphComparator {
 		// TODO Auto-generated method stub
 		calculateCostMatrix();
 		HungarianAlgorithm ha = new HungarianAlgorithm();
-        int[][] matching = ha.hgAlgorithm(costMatrix);
-        
-        //mapped nodes
-        Hashtable<DeltaNode, DeltaNode> vm = new Hashtable<DeltaNode, DeltaNode>();
-        for(int i=0; i<matching.length; i++){
-			DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
-			DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
-			vm.put(v1, v2);
-        }
+		Hashtable<DeltaNode, DeltaNode> vm = new Hashtable<DeltaNode, DeltaNode>();
+		 
+		if(costMatrix.length>0){
+	        int[][] matching = ha.hgAlgorithm(costMatrix);
+	        //mapped nodes
+	        for(int i=0; i<matching.length; i++){
+				DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
+				DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
+				vm.put(v1, v2);
+	        }
+		}
         return vm;
 	}
 	
