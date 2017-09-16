@@ -99,7 +99,11 @@ public class GraphComparator {
 	        for(int i=0; i<matching.length; i++){
 				DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
 				DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
-				vm.put(v1, v2);
+				if(bSwapSide){
+					vm.put(v2, v1);
+				}else{
+					vm.put(v1, v2);
+				}
 	        }
 		}
         return vm;
