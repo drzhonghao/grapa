@@ -9,7 +9,7 @@ public class DeltaGraphDecorator implements NodeDecorator<DeltaNode>{
 	@Override
 	public String getLabel(DeltaNode n) throws WalaException {
 		// TODO Auto-generated method stub
-		return n.label;
+		return n.toString();
 	}
 
 }
