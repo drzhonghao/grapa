@@ -178,7 +178,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		return new JDTClassLoaderFactory(exclusions);	
 	}
 
-	public ArrayList<ASTNode> addtoScope(String prn, Hashtable<File, String> oldPackageTable, String j2seDir, String libDir, String otherLibDir, String version,
+	public ArrayList<ASTNode> parse(String prn, Hashtable<File, String> oldPackageTable, String j2seDir, String libDir, String otherLibDir, String version,
 			ArrayList<File> files) {
 		// TODO Auto-generated method stub
 		ArrayList<ASTNode> trees = null;

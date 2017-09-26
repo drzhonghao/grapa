@@ -1,10 +1,6 @@
 package partial.code.grapa.commit;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -101,7 +97,7 @@ public class CommitComparator {
 			try{
 				leftEngine = new DataFlowAnalysisEngine();
 				leftEngine.setExclusionsFile(this.exclusionsFile);
-				leftTrees = leftEngine.addtoScope("left", pair.left.pTable, j2seDir, libDir, otherLibDir, oldVersion, oldfiles);
+				leftTrees = leftEngine.parse("left", pair.left.pTable, j2seDir, libDir, otherLibDir, oldVersion, oldfiles);
 				leftEngine.initClassHierarchy();
 				bLeftSuccess = true;
 			}catch(Exception e){
@@ -126,7 +122,7 @@ public class CommitComparator {
 			try{
 				rightEngine = new DataFlowAnalysisEngine();
 				rightEngine.setExclusionsFile(this.exclusionsFile);	
-				rightTrees = rightEngine.addtoScope("right", pair.right.pTable, j2seDir, libDir, otherLibDir,  newVersion, newfiles);
+				rightTrees = rightEngine.parse("right", pair.right.pTable, j2seDir, libDir, otherLibDir,  newVersion, newfiles);
 				rightEngine.initClassHierarchy();
 				bRightSuccess = true;
 			}catch(Exception e){
