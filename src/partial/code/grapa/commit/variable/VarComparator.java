@@ -19,7 +19,7 @@ public class VarComparator extends Comparator{
 	@Override
 	protected void extractFinerMapping(ASTNode leftTree, ASTNode rightTree) {
 		// TODO Auto-generated method stub
-		
+		VarVisitor visitor = new VarVisitor();
 	}
 
 }

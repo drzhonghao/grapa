@@ -48,10 +48,8 @@ public class MethodComparator extends Comparator{
 	
 	private Hashtable<Object, Object> extractMethodMapping(
 			ASTNode leftTree, ASTNode rightTree) {
-		// TODO Auto-generated method stub
-		
-	
-		ClientMethodVisitor visitor = new ClientMethodVisitor();
+		// TODO Auto-generated method stub	
+		MethodVisitor visitor = new MethodVisitor();
 		leftTree.accept(visitor);
 		ArrayList<ClientMethod> leftMethods = new ArrayList<ClientMethod>();
 		leftMethods.addAll(visitor.methods);

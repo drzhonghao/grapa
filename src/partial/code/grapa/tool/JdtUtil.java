@@ -45,7 +45,7 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import partial.code.grapa.commit.method.ClientMethod;
-import partial.code.grapa.commit.method.ClientMethodVisitor;
+import partial.code.grapa.commit.method.MethodVisitor;
 
 public class JdtUtil {
 	 /** package separator in bytecode notation */

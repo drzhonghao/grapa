@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import partial.code.grapa.tool.JdtUtil;
 
-public class ClientMethodVisitor extends ASTVisitor {
+public class MethodVisitor extends ASTVisitor {
 
 	public ArrayList<ClientMethod> methods = new ArrayList<ClientMethod>();
 
