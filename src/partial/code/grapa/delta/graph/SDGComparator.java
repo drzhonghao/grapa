@@ -15,7 +15,7 @@ import com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions;
 import com.ibm.wala.ssa.IR;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.commit.MethodDelta;
+import partial.code.grapa.commit.method.MethodDelta;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.ClientMethod;
 import partial.code.grapa.tool.LabelUtil;
