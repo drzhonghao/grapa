@@ -45,14 +45,53 @@ public class MethodComparator extends Comparator{
 	}
 
 
-	@Override
-	protected void doCompare(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees) {
+	
+	private Hashtable<Object, Object> extractMethodMapping(
+			ASTNode leftTree, ASTNode rightTree) {
 		// TODO Auto-generated method stub
-		M2MComparator comparator = new M2MComparator(leftTrees, rightTrees);
-		comparator.extractMappings();
-		Hashtable<ClientMethod, ClientMethod> mps = comparator.getResults();
-		for(ClientMethod oldMethod:mps.keySet()){
-			ClientMethod newMethod = mps.get(oldMethod);					
+		
+	
+		ClientMethodVisitor visitor = new ClientMethodVisitor();
+		leftTree.accept(visitor);
+		ArrayList<ClientMethod> leftMethods = new ArrayList<ClientMethod>();
+		leftMethods.addAll(visitor.methods);
+		
+		visitor.clear();
+		rightTree.accept(visitor);
+		ArrayList<ClientMethod> rightMethods = new ArrayList<ClientMethod>();
+		rightMethods.addAll(visitor.methods);
+		
+		if(leftMethods.size()==0||rightMethods.size()==0){
+			return null;
+		}		
+		
+		MethodMapping comparator = new MethodMapping(leftMethods, rightMethods);
+		return comparator.extractNodeMappings();
+	}
+
+	@Override
+	protected void extractFinerMapping(ASTNode leftTree, ASTNode rightTree) {
+		// TODO Auto-generated method stub
+		Hashtable<Object, Object> mm = extractMethodMapping(leftTree, rightTree);
+		Hashtable<ClientMethod, ClientMethod> mms = new Hashtable<ClientMethod, ClientMethod>();
+		if(mm!=null){
+			for(Object o1:mm.keySet()){
+				ClientMethod m1 = (ClientMethod)o1;
+				ClientMethod m2 = (ClientMethod) mm.get(m1);
+				if(m1.methodbody.toString().compareTo(m2.methodbody.toString())!=0){
+					m1.ast = leftTree;
+					m2.ast = rightTree;
+					mms .put(m1, m2);
+				}
+			}
+		}
+		for(ClientMethod m1:mms.keySet()){
+			ClientMethod m2 = mms.get(m1);
+			m1.resolveSig();
+			m2.resolveSig();
+		}
+		for(ClientMethod oldMethod:mms.keySet()){
+			ClientMethod newMethod = mms.get(oldMethod);					
 			MethodDelta md = compareMethodPair(oldMethod, newMethod, bResolveAst);				
 			methods.add(md);
 		}

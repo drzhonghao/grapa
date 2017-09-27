@@ -169,11 +169,26 @@ abstract public class Comparator {
 //		}
 		
 		if(bLeftSuccess&&bRightSuccess){
-			doCompare(leftTrees, rightTrees);			
+			compareAstTrees(leftTrees, rightTrees);			
 		}else{
 			System.out.println("Error:"+bugName);
 		}
 	}
 
-	protected abstract void doCompare(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees);
+	protected void compareAstTrees(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees) {
+		ClassMapping comparator = new ClassMapping(leftTrees, rightTrees);
+		Hashtable<Object, Object> nm = comparator.extractNodeMappings();
+		
+		for(ASTNode leftTree:leftTrees){
+			ASTNode rightTree = (ASTNode) nm.get(leftTree);
+			if(rightTree!=null){
+				extractFinerMapping((ASTNode) leftTree, rightTree);				
+			}
+		}
+	}
+
+
+
+
+	protected abstract void extractFinerMapping(ASTNode leftTree, ASTNode rightTree);
 }
