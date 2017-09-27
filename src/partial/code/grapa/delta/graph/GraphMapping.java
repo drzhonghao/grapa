@@ -197,22 +197,24 @@ public class GraphMapping extends HungarianMapping{
 		}else{
 			edges = graph.getInEdges(node);
 		}
-		for(DeltaEdge edge:edges){
-			if(edge.type == type){
-				DeltaNode match = null;
-				if(bOut){
-					match = (DeltaNode)edge.to;
-				}else{
-					match = (DeltaNode)edge.from;
+		if(edges!=null) {
+			for(DeltaEdge edge:edges){
+				if(edge.type == type){
+					DeltaNode match = null;
+					if(bOut){
+						match = (DeltaNode)edge.to;
+					}else{
+						match = (DeltaNode)edge.from;
+					}
+					String key = match.getKind();
+					Integer no = table.get(key);
+					if(no==null){
+						no = 1;
+					}else{
+						no++;
+					}
+					table.put(key, no);
 				}
-				String key = match.getKind();
-				Integer no = table.get(key);
-				if(no==null){
-					no = 1;
-				}else{
-					no++;
-				}
-				table.put(key, no);
 			}
 		}
 		return table;
