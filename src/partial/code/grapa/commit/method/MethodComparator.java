@@ -20,6 +20,9 @@ public class MethodComparator extends Comparator{
 	private ArrayList<MethodDelta> methods = new ArrayList<MethodDelta>();
 	private boolean bResolveAst;
 
+	public ArrayList<MethodDelta> getResults(){
+		return methods;
+	}
 	
 	public void analyzeCommit(File d, boolean bResolveAst) {
 		methods.clear();
