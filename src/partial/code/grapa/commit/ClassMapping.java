@@ -34,7 +34,9 @@ public class ClassMapping extends HungarianMapping{
             	ASTNode rightNode = rightTrees.get(j);
             	String leftLine = ((CompilationUnit)leftNode).getTypeRoot().getElementName();
             	String rightLine = ((CompilationUnit)rightNode).getTypeRoot().getElementName();
-                costMatrix[i][j] = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);;
+            	if(leftLine!=null&&rightLine!=null) {
+            		costMatrix[i][j] = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
+            	}
             }
         }
 	}
