@@ -25,10 +25,10 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.HungarianComparator;
+import partial.code.grapa.delta.HungarianMapping;
 import partial.code.grapa.tool.LabelUtil;
 
-public class GraphComparator extends HungarianComparator{
+public class GraphMapping extends HungarianMapping{
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
 
@@ -44,7 +44,7 @@ public class GraphComparator extends HungarianComparator{
 
 	
 	
-	public GraphComparator(
+	public GraphMapping(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
 			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
 		// TODO Auto-generated constructor stub

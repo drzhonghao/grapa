@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import partial.code.grapa.delta.HungarianComparator;
+import partial.code.grapa.delta.HungarianMapping;
 
-public class ClassComparator extends HungarianComparator{
+public class ClassMapping extends HungarianMapping{
 
 	private ArrayList<ASTNode> leftTrees;
 	private ArrayList<ASTNode> rightTrees;
 
-	public ClassComparator(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees) {
+	public ClassMapping(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees) {
 		// TODO Auto-generated constructor stub
 		if(leftTrees.size()>rightTrees.size()){
 			bSwapSide = true;

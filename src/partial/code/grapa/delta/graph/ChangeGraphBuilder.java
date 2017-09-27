@@ -8,7 +8,7 @@ import java.util.Set;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.tool.LabelUtil;
 
-public class ChangeGraphBuilder extends GraphComparator{
+public class ChangeGraphBuilder extends GraphMapping{
 
 	
 	public ChangeGraphBuilder(

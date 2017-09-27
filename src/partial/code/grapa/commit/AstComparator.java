@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import partial.code.grapa.delta.HungarianComparator;
+import partial.code.grapa.delta.HungarianMapping;
 import partial.code.grapa.delta.graph.HungarianAlgorithm;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -25,7 +25,7 @@ abstract public class AstComparator{
 	
 	public void extractMappings() {
 		// TODO Auto-generated method stub
-		ClassComparator comparator = new ClassComparator(leftTrees, rightTrees);
+		ClassMapping comparator = new ClassMapping(leftTrees, rightTrees);
 		Hashtable<Object, Object> nm = comparator.extractNodeMappings();
 		
 		for(ASTNode leftTree:leftTrees){

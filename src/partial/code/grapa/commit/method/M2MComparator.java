@@ -43,7 +43,7 @@ public class M2MComparator extends AstComparator{
 			return null;
 		}		
 		
-		MethodComparator comparator = new MethodComparator(leftMethods, rightMethods);
+		MethodMapping comparator = new MethodMapping(leftMethods, rightMethods);
 		return comparator.extractNodeMappings();
 	}
 
