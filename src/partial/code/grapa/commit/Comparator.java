@@ -19,8 +19,7 @@ abstract public class Comparator {
 	protected String libDir;
 	protected String j2seDir;
 
-	protected String resultDir;
-	
+		
 	protected DataFlowAnalysisEngine leftEngine;
 	protected DataFlowAnalysisEngine rightEngine;
 	protected String otherLibDir;
@@ -31,9 +30,7 @@ abstract public class Comparator {
 		this.bugName = bugName;
 	}
 	
-	public String getResultDir() {
-		return resultDir;
-	}
+
 
 
 	public String getBugName() {
@@ -62,10 +59,7 @@ abstract public class Comparator {
 		j2seDir = dir;
 	}
 
-	public void setResultDir(String dir) {
-		// TODO Auto-generated method stub
-		resultDir = dir+pName+"/";
-	}
+	
 
 	public void setOtherLibDir(String dir) {
 		// TODO Auto-generated method stub
