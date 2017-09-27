@@ -8,7 +8,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaNode;
-import partial.code.grapa.mapping.ClientMethod;
 
 public class MethodDelta {	
 	public ClientMethod oldMethod;

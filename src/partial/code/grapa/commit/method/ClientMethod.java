@@ -1,4 +1,4 @@
-package partial.code.grapa.mapping;
+package partial.code.grapa.commit.method;
 
 import java.util.ArrayList;
 

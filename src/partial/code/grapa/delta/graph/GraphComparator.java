@@ -25,23 +25,22 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.delta.HungarianComparator;
 import partial.code.grapa.tool.LabelUtil;
 
-public class GraphComparator {
-	
-	private double[][] costMatrix;
+public class GraphComparator extends HungarianComparator{
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
 
-	protected boolean bSwapSide;//true: does not swap left and right. false: does.
 	
-	protected Levenshtein stringComparator;
 	
-	protected Hashtable<Integer, String> leftValueTable;
-	protected Hashtable<Integer, String> rightValueTable;
 	
-	protected Hashtable<Integer, String> leftIndexTable;
-	protected Hashtable<Integer, String> rightIndexTable;
+	
+//	protected Hashtable<Integer, String> leftValueTable;
+//	protected Hashtable<Integer, String> rightValueTable;
+//	
+//	protected Hashtable<Integer, String> leftIndexTable;
+//	protected Hashtable<Integer, String> rightIndexTable;
 
 	
 	
@@ -58,7 +57,7 @@ public class GraphComparator {
 			rightGraph = newGraph;
 			bSwapSide = false;
 		}
-		stringComparator = new Levenshtein();
+		
 	}
 	
 
@@ -87,31 +86,11 @@ public class GraphComparator {
 	}
 	
 
-	public Hashtable<DeltaNode, DeltaNode> extractNodeMappings() {
-		// TODO Auto-generated method stub
-		calculateCostMatrix();
-		HungarianAlgorithm ha = new HungarianAlgorithm();
-		Hashtable<DeltaNode, DeltaNode> vm = new Hashtable<DeltaNode, DeltaNode>();
-		 
-		if(costMatrix.length>0){
-	        int[][] matching = ha.hgAlgorithm(costMatrix);
-	        //mapped nodes
-	        for(int i=0; i<matching.length; i++){
-				DeltaNode v1 = (DeltaNode)leftGraph.getVertices().toArray()[matching[i][0]];
-				DeltaNode v2 = (DeltaNode)rightGraph.getVertices().toArray()[matching[i][1]];
-				if(bSwapSide){
-					vm.put(v2, v1);
-				}else{
-					vm.put(v1, v2);
-				}
-	        }
-		}
-        return vm;
-	}
 	
 	
 	
-	private void calculateCostMatrix() {
+	
+	protected void calculateCostMatrix() {
 		// TODO Auto-generated method stub
 		costMatrix =  new double[leftGraph.getVertexCount()][rightGraph.getVertexCount()];
 		for (int i = 0; i < leftGraph.getVertexCount(); i++) {
@@ -265,10 +244,22 @@ public class GraphComparator {
 		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
+
+
+
+	@Override
+	protected Object getLeftItem(int i) {
+		// TODO Auto-generated method stub
+		return leftGraph.getVertices().toArray()[i];
+	}
 	
 	
 
-	
+	@Override
+	protected Object getRightItem(int i) {
+		// TODO Auto-generated method stub
+		return rightGraph.getVertices().toArray()[i];
+	}
 	
 }
 

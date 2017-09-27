@@ -6,9 +6,8 @@ import java.util.Hashtable;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import partial.code.grapa.commit.method.ClientMethod;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
-import partial.code.grapa.mapping.AstTreeComparator;
-import partial.code.grapa.mapping.ClientMethod;
 import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
 
@@ -23,7 +22,7 @@ abstract public class Comparator {
 	protected DataFlowAnalysisEngine leftEngine;
 	protected DataFlowAnalysisEngine rightEngine;
 	protected String otherLibDir;
-	protected String exclusionsFile;
+	protected String exclusionsFile = "./Java60RegressionExclusions.txt";
 	protected String bugName;
 	
 	public void setBugName(String bugName) {

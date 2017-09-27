@@ -1,8 +1,9 @@
 package partial.code.grapa.dependency.graph;
 
-import partial.code.grapa.mapping.ClientMethod;
-
 import com.ibm.wala.util.Predicate;
+
+import partial.code.grapa.commit.method.ClientMethod;
+
 import com.ibm.wala.cast.ipa.callgraph.AstCallGraph.AstFakeRoot;
 import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.classLoader.IMethod;

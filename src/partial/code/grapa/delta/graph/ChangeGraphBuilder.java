@@ -20,7 +20,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 
 	public DirectedSparseGraph<DeltaNode, DeltaEdge> extractChangeGraph() {
 		// TODO Auto-generated method stub
-		Hashtable<DeltaNode, DeltaNode> vm = this.extractNodeMappings();
+		Hashtable<Object, Object> vm = this.extractNodeMappings();
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>();
 		//add left nodes
 		for(DeltaNode s:leftGraph.getVertices()){
@@ -57,7 +57,7 @@ public class ChangeGraphBuilder extends GraphComparator{
 		
 		//add modification edges
 		for(DeltaNode n1:graph.getVertices()){
-			DeltaNode n2 = vm.get(n1);
+			DeltaNode n2 = (DeltaNode) vm.get(n1);
 			if(n2!=null){
 				if(calculateCost(n1,n2)==0){
 					n1.bModified = false;

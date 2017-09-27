@@ -30,7 +30,8 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.launching.JavaRuntime;
-import partial.code.grapa.mapping.ClientMethod;
+
+import partial.code.grapa.commit.method.ClientMethod;
 import partial.code.grapa.tool.FileUtils;
 
 
