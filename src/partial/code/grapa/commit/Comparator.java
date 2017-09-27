@@ -3,45 +3,81 @@ package partial.code.grapa.commit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import partial.code.grapa.delta.graph.SDGComparator;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
-import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.mapping.AstTreeComparator;
 import partial.code.grapa.mapping.ClientMethod;
 import partial.code.grapa.version.detect.VersionDetector;
 import partial.code.grapa.version.detect.VersionPair;
 
-import com.ibm.wala.ssa.IR;
-
-public class CommitComparator {
-
-	private String pName;
-	private String elementListDir;
+abstract public class Comparator {
+	protected String pName;
+	protected String elementListDir;
 	
-	private String libDir;
-	private String j2seDir;
+	protected String libDir;
+	protected String j2seDir;
 
-	private String resultDir;
+	protected String resultDir;
 	
-	private DataFlowAnalysisEngine leftEngine;
-	private DataFlowAnalysisEngine rightEngine;
-	private String otherLibDir;
-	private String exclusionsFile;
-	private String bugName;
-
-
-	
-	
+	protected DataFlowAnalysisEngine leftEngine;
+	protected DataFlowAnalysisEngine rightEngine;
+	protected String otherLibDir;
+	protected String exclusionsFile;
+	protected String bugName;
 	
 	public void setBugName(String bugName) {
 		this.bugName = bugName;
 	}
+	
+	public String getResultDir() {
+		return resultDir;
+	}
 
+
+	public String getBugName() {
+		return bugName;
+	}
+
+	public void setProject(String name) {
+		// TODO Auto-generated method stub
+		pName = name;	
+	}
+
+	public void setElementListDir(String eld) {
+		// TODO Auto-generated method stub
+		elementListDir = eld+pName+"/";
+	}
 
 	
-	public ArrayList<MethodDelta> analyzeCommit(File d, boolean bResolveAst) {
+
+	public void setLibDir(String dir) {
+		// TODO Auto-generated method stub
+		libDir = dir+pName+"/";
+	}
+
+	public void setJ2seDir(String dir) {
+		// TODO Auto-generated method stub
+		j2seDir = dir;
+	}
+
+	public void setResultDir(String dir) {
+		// TODO Auto-generated method stub
+		resultDir = dir+pName+"/";
+	}
+
+	public void setOtherLibDir(String dir) {
+		// TODO Auto-generated method stub
+		otherLibDir = dir+pName+"/";
+	}
+
+	public void setExclusionFile(String file) {
+		// TODO Auto-generated method stub
+		exclusionsFile = file;
+	}
+	
+	public void analyzeCommit(File d) {
 		// TODO Auto-generated method stub
 		
 		VersionDetector detector = new VersionDetector();
@@ -77,19 +113,14 @@ public class CommitComparator {
 			}
 		}		
 		
-		ArrayList<MethodDelta> info = null;
 		if(pair.left.versions.size()!=0&&pair.right.versions.size()!=0){
-			info = compareVersions(pair, oldfiles, newfiles, bResolveAst);
-		}
-		return info;
+			compareVersions(pair, oldfiles, newfiles);
+		}	
 	}
-
-
-
-	public ArrayList<MethodDelta> compareVersions(VersionPair pair, ArrayList<File> oldfiles,
-			ArrayList<File> newfiles, boolean bResolveAst) {
+	
+	public void compareVersions(VersionPair pair, ArrayList<File> oldfiles,
+			ArrayList<File> newfiles) {
 		// TODO Auto-generated method stub\
-		ArrayList<MethodDelta> methods = new ArrayList<MethodDelta>();
 		boolean bLeftSuccess = false;
 		ArrayList<ASTNode> leftTrees = null; 
 		for(String oldVersion:pair.left.versions){
@@ -145,83 +176,11 @@ public class CommitComparator {
 //		}
 		
 		if(bLeftSuccess&&bRightSuccess){
-			AstTreeComparator comparator = new AstTreeComparator(leftTrees, rightTrees);
-			Hashtable<ClientMethod, ClientMethod> mps = comparator.extractMappings();
-			
-			for(ClientMethod oldMethod:mps.keySet()){
-				ClientMethod newMethod = mps.get(oldMethod);					
-				MethodDelta md = compareMethodPair(oldMethod, newMethod, bResolveAst);				
-				methods.add(md);
-			}
+			doCompare(leftTrees, rightTrees);			
 		}else{
 			System.out.println("Error:"+bugName);
 		}
-		return methods;
-	}
-	
-	private MethodDelta compareMethodPair(ClientMethod oldMethod,
-			ClientMethod newMethod, boolean bResolveAst) {
-		// TODO Auto-generated method stub
-		System.out.println(oldMethod.methodName);
-		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
-		IR lir = leftEngine.getCurrentIR();
-		
-		SDGwithPredicate rfg = rightEngine.buildSystemDependencyGraph(newMethod);
-		IR rir = rightEngine.getCurrentIR();
-		
-		SDGComparator gt = new SDGComparator(lir, rir, bResolveAst,oldMethod, newMethod);
-		MethodDelta md = gt.compare(lfg, rfg);	
-		return md;
-	}
-	
-	
-	
-	
-
-	public String getResultDir() {
-		return resultDir;
 	}
 
-
-	public String getBugName() {
-		return bugName;
-	}
-
-	public void setProject(String name) {
-		// TODO Auto-generated method stub
-		pName = name;	
-	}
-
-	public void setElementListDir(String eld) {
-		// TODO Auto-generated method stub
-		elementListDir = eld+pName+"/";
-	}
-
-	
-
-	public void setLibDir(String dir) {
-		// TODO Auto-generated method stub
-		libDir = dir+pName+"/";
-	}
-
-	public void setJ2seDir(String dir) {
-		// TODO Auto-generated method stub
-		j2seDir = dir;
-	}
-
-	public void setResultDir(String dir) {
-		// TODO Auto-generated method stub
-		resultDir = dir+pName+"/";
-	}
-
-	public void setOtherLibDir(String dir) {
-		// TODO Auto-generated method stub
-		otherLibDir = dir+pName+"/";
-	}
-
-	public void setExclusionFile(String file) {
-		// TODO Auto-generated method stub
-		exclusionsFile = file;
-	}
-
+	protected abstract void doCompare(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees);
 }
