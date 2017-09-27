@@ -26,6 +26,7 @@ public class MethodMapping extends HungarianMapping{
 	@Override
 	protected void calculateCostMatrix() {
 		// TODO Auto-generated method stub
+		costMatrix = new double[leftMethods.size()][rightMethods.size()];
 		for (int i = 0; i < leftMethods.size(); i++) {
 			ClientMethod leftNode = leftMethods.get(i);
             for (int j = 0; j < rightMethods.size(); j++) {

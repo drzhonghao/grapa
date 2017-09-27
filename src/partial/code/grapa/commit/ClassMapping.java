@@ -27,7 +27,7 @@ public class ClassMapping extends HungarianMapping{
 
 	@Override
 	protected void calculateCostMatrix() {
-		
+		costMatrix = new double[leftTrees.size()][rightTrees.size()];
 		for (int i = 0; i < leftTrees.size(); i++) {
 			ASTNode leftNode = leftTrees.get(i);
             for (int j = 0; j < rightTrees.size(); j++) {
