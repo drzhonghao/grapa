@@ -61,5 +61,35 @@ public class DeltaNode extends AbstractNode{
 		return result;
 	}
 
+	public boolean isVar() {
+		// TODO Auto-generated method stub
+		String type = getKind();
+		if(type.compareTo("getfield")==0) {
+			return true;
+		}else if(type.compareTo("putfield")==0) {
+			return true;
+		}else if(type.compareTo("getstatic")==0) {
+			return true;
+		}else if(type.compareTo("putstatic")==0) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isMethod() {
+		// TODO Auto-generated method stub
+		String type = getKind();
+		if(type.compareTo("invokestatic")==0) {
+			return true;
+		}else if(type.compareTo("invokespecial")==0) {
+			return true;
+		}else if(type.compareTo("invokeinterface")==0) {
+			return true;
+		}else if(type.compareTo("invokevirtual")==0) {
+			return true;
+		}
+		return false;
+	}
+
 	
 }
