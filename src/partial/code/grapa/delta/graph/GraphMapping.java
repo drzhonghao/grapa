@@ -33,17 +33,6 @@ public class GraphMapping extends HungarianMapping{
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
 
 	
-	
-	
-	
-//	protected Hashtable<Integer, String> leftValueTable;
-//	protected Hashtable<Integer, String> rightValueTable;
-//	
-//	protected Hashtable<Integer, String> leftIndexTable;
-//	protected Hashtable<Integer, String> rightIndexTable;
-
-	
-	
 	public GraphMapping(
 			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
 			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
@@ -99,6 +88,7 @@ public class GraphMapping extends HungarianMapping{
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	costMatrix[i][j] =  calculateCost(leftNode, rightNode);
+            
             }
         }
 	}
@@ -106,7 +96,7 @@ public class GraphMapping extends HungarianMapping{
 
 	
 
-	protected double calculateNodeNameCost(DeltaNode leftNode,
+	public double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		LabelUtil lt = new LabelUtil();
@@ -135,12 +125,14 @@ public class GraphMapping extends HungarianMapping{
 
 	public double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		double inDataNodeCost = calculateInDataCost(leftNode, rightNode);
-    	double outDataNodeCost = calculateOutDataCost(leftNode, rightNode);
-    	double inControlNodeCost = calculateInControlCost(leftNode, rightNode);
-    	double outControlNodeCost = calculateOutControlCost(leftNode, rightNode);
-        double nodeNameCost = calculateNodeNameCost(leftNode, rightNode);
-        return (inDataNodeCost+outDataNodeCost+inControlNodeCost+outControlNodeCost+nodeNameCost)/5;
+		double edgeCost = 1;
+		double nameCost = 2;
+		double inDataNodeCost = calculateInDataCost(leftNode, rightNode)*edgeCost;
+    	double outDataNodeCost = calculateOutDataCost(leftNode, rightNode)*edgeCost;
+    	double inControlNodeCost = calculateInControlCost(leftNode, rightNode)*edgeCost;
+    	double outControlNodeCost = calculateOutControlCost(leftNode, rightNode)*edgeCost;
+        double nodeNameCost = calculateNodeNameCost(leftNode, rightNode)*nameCost;
+        return (inDataNodeCost+outDataNodeCost+inControlNodeCost+outControlNodeCost+nodeNameCost)/(4*edgeCost+nameCost);
 	}
 
 
