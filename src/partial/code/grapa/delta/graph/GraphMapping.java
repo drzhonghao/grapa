@@ -88,7 +88,6 @@ public class GraphMapping extends HungarianMapping{
             for (int j = 0; j < rightGraph.getVertexCount(); j++) {
             	DeltaNode rightNode = (DeltaNode)rightGraph.getVertices().toArray()[j];
             	costMatrix[i][j] =  calculateCost(leftNode, rightNode);
-            
             }
         }
 	}
