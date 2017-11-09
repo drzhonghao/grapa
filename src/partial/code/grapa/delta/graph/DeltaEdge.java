@@ -1,10 +1,11 @@
 package partial.code.grapa.delta.graph;
 
 public class DeltaEdge extends AbstractEdge{
+	public double weight = 0;
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return ((DeltaNode)from).label+"->"+((DeltaNode)to).label;
+		return ((DeltaNode)from).label+"->"+((DeltaNode)to).label +":"+weight;
 	}
 
 

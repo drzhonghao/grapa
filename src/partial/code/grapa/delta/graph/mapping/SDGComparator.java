@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.graph.mapping;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -17,6 +17,8 @@ import com.ibm.wala.ssa.IR;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.commit.method.ClientMethod;
 import partial.code.grapa.commit.method.MethodDelta;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.tool.LabelUtil;
 

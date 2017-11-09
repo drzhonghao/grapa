@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.graph.mapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,31 +25,19 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.HungarianMapping;
+import partial.code.grapa.delta.graph.AbstractEdge;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
+import partial.code.grapa.hungarian.HungarianAlgorithm;
+import partial.code.grapa.hungarian.HungarianMapping;
 import partial.code.grapa.tool.LabelUtil;
 
-public class GraphMapping extends HungarianMapping{
-	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
-	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
-
-	
-	public GraphMapping(
-			DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,			
+public class UnweightedGraphMapping extends GraphMapping{
+	public UnweightedGraphMapping(DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,
 			DirectedSparseGraph<DeltaNode, DeltaEdge> newGraph) {
+		super(oldGraph, newGraph);
 		// TODO Auto-generated constructor stub
-		if (oldGraph.getVertexCount()>newGraph.getVertexCount()){
-			leftGraph = newGraph;
-			rightGraph = oldGraph;
-			bSwapSide = true;
-		}else{
-			leftGraph = oldGraph;
-			rightGraph = newGraph;
-			bSwapSide = false;
-		}
-		
 	}
-	
-
 
 	public double calculateCosts() {
 		// TODO Auto-generated method stub
@@ -239,20 +227,8 @@ public class GraphMapping extends HungarianMapping{
 	}
 
 
-
-	@Override
-	protected Object getLeftItem(int i) {
-		// TODO Auto-generated method stub
-		return leftGraph.getVertices().toArray()[i];
-	}
-	
 	
 
-	@Override
-	protected Object getRightItem(int i) {
-		// TODO Auto-generated method stub
-		return rightGraph.getVertices().toArray()[i];
-	}
 	
 }
 

@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.delta.graph.mapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,9 +6,11 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.tool.LabelUtil;
 
-public class ChangeGraphBuilder extends GraphMapping{
+public class ChangeGraphBuilder extends UnweightedGraphMapping{
 
 	
 	public ChangeGraphBuilder(

@@ -2,7 +2,7 @@ package partial.code.grapa.commit.method;
 
 import java.util.ArrayList;
 
-import partial.code.grapa.delta.HungarianMapping;
+import partial.code.grapa.hungarian.HungarianMapping;
 
 public class MethodMapping extends HungarianMapping{
 
