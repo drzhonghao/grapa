@@ -23,7 +23,7 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.AbstractEdge;
+import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.hungarian.HungarianAlgorithm;

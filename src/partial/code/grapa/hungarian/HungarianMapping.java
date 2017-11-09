@@ -3,7 +3,7 @@ package partial.code.grapa.hungarian;
 import java.util.Hashtable;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.DeltaEdge;
+
 import partial.code.grapa.delta.graph.DeltaNode;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 

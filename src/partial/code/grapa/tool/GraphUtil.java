@@ -9,8 +9,8 @@ import com.ibm.wala.viz.DotUtil;
 import com.ibm.wala.viz.NodeDecorator;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.AbstractEdge;
-import partial.code.grapa.delta.graph.AbstractNode;
+import partial.code.grapa.delta.graph.DeltaEdge;
+import partial.code.grapa.delta.graph.DeltaNode;
 
 
 
@@ -60,7 +60,7 @@ public abstract class GraphUtil extends DotUtil{
 	    }
 	}
 
-	private StringBuffer dotOutput(DirectedSparseGraph<AbstractNode, AbstractEdge> graph) throws WalaException {
+	private StringBuffer dotOutput(DirectedSparseGraph<DeltaNode, DeltaEdge> graph) throws WalaException {
 		// TODO Auto-generated method stub
 		StringBuffer result = new StringBuffer("digraph \"DirectedSDG\" {\n");
 		result.append("graph [concentrate = true];"); 
@@ -88,36 +88,36 @@ public abstract class GraphUtil extends DotUtil{
 	    result.append("  subgraph cluster0{\n");
 	    result.append("   label = \"left side\";\n");
 		for(Object obj: graph.getVertices()){
-			AbstractNode node = (AbstractNode)obj;
-			if(node.side == AbstractNode.LEFT){
+			DeltaNode node = (DeltaNode)obj;
+			if(node.side == DeltaNode.LEFT){
 				result.append("   ");
 			    result.append("\"");
 			    result.append(getLabel(node));
 			    result.append("\"");
 			    if(node.bModified){
 					  result.append(" [color=red]\n");
-				}else if(node.side == AbstractNode.LEFT){
+				}else if(node.side == DeltaNode.LEFT){
 					  result.append(" [color=limegreen]\n");
-				}else if(node.side == AbstractNode.RIGHT){
+				}else if(node.side == DeltaNode.RIGHT){
 					  result.append(" [color=dodgerblue]\n");
 				}
 			}			
 		}	
 		
-		for (AbstractNode fn:graph.getVertices()) {
-	  	      for (AbstractNode tn:graph.getSuccessors(fn)) {
-	  	    	if(fn.side == AbstractNode.LEFT&&tn.side == AbstractNode.LEFT){  
+		for (DeltaNode fn:graph.getVertices()) {
+	  	      for (DeltaNode tn:graph.getSuccessors(fn)) {
+	  	    	if(fn.side == DeltaNode.LEFT&&tn.side == DeltaNode.LEFT){  
 		    	        result.append(" ");
 		    	        result.append(getPort(fn));
 		    	        result.append(" -> ");
 		    	        result.append(getPort(tn));
-		    	        AbstractEdge edge = graph.findEdge(fn,tn);
+		    	        DeltaEdge edge = graph.findEdge(fn,tn);
 		    	        
-		    	        if(edge.type==AbstractEdge.DATA_FLOW){
+		    	        if(edge.type==DeltaEdge.DATA_FLOW){
 		    	        	result.append(" [color=red]\n");
-		    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+		    	        }else if(edge.type==DeltaEdge.CONTROL_FLOW){
 		    	        	result.append(" [color=blue]\n");
-		    	        }else if(edge.type==AbstractEdge.CHANGE){
+		    	        }else if(edge.type==DeltaEdge.CHANGE){
 		    	        	result.append(" [color=green]\n");
 		    	        }else{
 		    	        	result.append(" \n");
@@ -130,34 +130,34 @@ public abstract class GraphUtil extends DotUtil{
 		result.append("  subgraph cluster1{\n");
 		result.append("   label = \"right side\";\n");
 		for(Object obj: graph.getVertices()){
-			AbstractNode node = (AbstractNode)obj;
-			if(node.side == AbstractNode.RIGHT){
+			DeltaNode node = (DeltaNode)obj;
+			if(node.side == DeltaNode.RIGHT){
 				result.append("   ");
 			    result.append("\"");
 			    result.append(getLabel(node));
 			    result.append("\"");
 			    if(node.bModified){
 					  result.append(" [color=red]\n");
-				}else if(node.side == AbstractNode.LEFT){
+				}else if(node.side == DeltaNode.LEFT){
 					  result.append(" [color=limegreen]\n");
-				}else if(node.side == AbstractNode.RIGHT){
+				}else if(node.side == DeltaNode.RIGHT){
 					  result.append(" [color=dodgerblue]\n");
 				}
 			}			
 		}
-		for (AbstractNode fn:graph.getVertices()) {
-	  	      for (AbstractNode tn:graph.getSuccessors(fn)) {
-	  	    	if(fn.side == AbstractNode.RIGHT&&tn.side == AbstractNode.RIGHT){  
+		for (DeltaNode fn:graph.getVertices()) {
+	  	      for (DeltaNode tn:graph.getSuccessors(fn)) {
+	  	    	if(fn.side == DeltaNode.RIGHT&&tn.side == DeltaNode.RIGHT){  
 		    	        result.append(" ");
 		    	        result.append(getPort(fn));
 		    	        result.append(" -> ");
 		    	        result.append(getPort(tn));
-		    	        AbstractEdge edge = graph.findEdge(fn,tn);
-		    	        if(edge.type==AbstractEdge.DATA_FLOW){
+		    	        DeltaEdge edge = graph.findEdge(fn,tn);
+		    	        if(edge.type==DeltaEdge.DATA_FLOW){
 		    	        	result.append(" [color=red]\n");
-		    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+		    	        }else if(edge.type==DeltaEdge.CONTROL_FLOW){
 		    	        	result.append(" [color=blue]\n");
-		    	        }else if(edge.type==AbstractEdge.CHANGE){
+		    	        }else if(edge.type==DeltaEdge.CHANGE){
 		    	        	result.append(" [color=green]\n");
 		    	        }else{
 		    	        	result.append(" \n");
@@ -166,19 +166,19 @@ public abstract class GraphUtil extends DotUtil{
 	  	      }
 	  	 }
 		result.append("  \n}\n");
-		 for (AbstractNode fn:graph.getVertices()) {
-	   	      for (AbstractNode tn:graph.getSuccessors(fn)) {
-		   	    	if(fn.side == AbstractNode.LEFT&&tn.side == AbstractNode.RIGHT){  
+		 for (DeltaNode fn:graph.getVertices()) {
+	   	      for (DeltaNode tn:graph.getSuccessors(fn)) {
+		   	    	if(fn.side == DeltaNode.LEFT&&tn.side == DeltaNode.RIGHT){  
 			    	        result.append(" ");
 			    	        result.append(getPort(fn));
 			    	        result.append(" -> ");
 			    	        result.append(getPort(tn));
-			    	        AbstractEdge edge = graph.findEdge(fn,tn);
-			    	        if(edge.type==AbstractEdge.DATA_FLOW){
+			    	        DeltaEdge edge = graph.findEdge(fn,tn);
+			    	        if(edge.type==DeltaEdge.DATA_FLOW){
 			    	        	result.append(" [color=red]\n");
-			    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
+			    	        }else if(edge.type==DeltaEdge.CONTROL_FLOW){
 			    	        	result.append(" [color=blue]\n");
-			    	        }else if(edge.type==AbstractEdge.CHANGE){
+			    	        }else if(edge.type==DeltaEdge.CHANGE){
 			    	        	result.append(" [color=green]\n");
 			    	        }else{
 			    	        	result.append(" \n");

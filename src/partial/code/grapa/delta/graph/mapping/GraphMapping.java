@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import partial.code.grapa.delta.graph.AbstractEdge;
 import partial.code.grapa.delta.graph.DeltaEdge;
+
 import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.hungarian.HungarianAlgorithm;
 import partial.code.grapa.hungarian.HungarianMapping;
@@ -120,8 +120,8 @@ public abstract class GraphMapping extends HungarianMapping{
 	}
 	protected double calculateInControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, false);
-		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, false);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.CONTROL_FLOW, false);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.CONTROL_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
@@ -131,8 +131,8 @@ public abstract class GraphMapping extends HungarianMapping{
 
 	protected double calculateOutDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, true);
-		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, true);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.DATA_FLOW, true);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.DATA_FLOW, true);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
@@ -140,15 +140,15 @@ public abstract class GraphMapping extends HungarianMapping{
 
 	protected double calculateInDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.DATA_FLOW, false);
-		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.DATA_FLOW, false);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.DATA_FLOW, false);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.DATA_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
 	
 	protected double calculateOutControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
-		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, AbstractEdge.CONTROL_FLOW, true);
-		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, AbstractEdge.CONTROL_FLOW, true);
+		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.CONTROL_FLOW, true);
+		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.CONTROL_FLOW, true);
 		return calculateCost(leftKinds, rightKinds);
 	}
 
