@@ -111,16 +111,20 @@ public abstract class GraphUtil extends DotUtil{
 		    	        result.append(getPort(fn));
 		    	        result.append(" -> ");
 		    	        result.append(getPort(tn));
-		    	        DeltaEdge edge = graph.findEdge(fn,tn);
-		    	        
+		    	        DeltaEdge edge = graph.findEdge(fn,tn);		    	        
 		    	        if(edge.type==DeltaEdge.DATA_FLOW){
-		    	        	result.append(" [color=red]\n");
+		    	        	result.append(" [color=red");
 		    	        }else if(edge.type==DeltaEdge.CONTROL_FLOW){
-		    	        	result.append(" [color=blue]\n");
+		    	        	result.append(" [color=blue");
 		    	        }else if(edge.type==DeltaEdge.CHANGE){
-		    	        	result.append(" [color=green]\n");
+		    	        	result.append(" [color=green");
 		    	        }else{
-		    	        	result.append(" \n");
+		    	        	result.append(" [color=black");
+		    	        }
+		    	        if(edge.weight==0) {
+		    	        	result.append("]\n");
+		    	        }else {
+		    	        	result.append(", label=\""+String.format("%1$.2f", edge.weight)+"\"]\n");
 		    	        }
 	  	    	}
 	  	      }
@@ -175,13 +179,18 @@ public abstract class GraphUtil extends DotUtil{
 			    	        result.append(getPort(tn));
 			    	        DeltaEdge edge = graph.findEdge(fn,tn);
 			    	        if(edge.type==DeltaEdge.DATA_FLOW){
-			    	        	result.append(" [color=red]\n");
+			    	        	result.append(" [color=red");
 			    	        }else if(edge.type==DeltaEdge.CONTROL_FLOW){
-			    	        	result.append(" [color=blue]\n");
+			    	        	result.append(" [color=blue");
 			    	        }else if(edge.type==DeltaEdge.CHANGE){
-			    	        	result.append(" [color=green]\n");
+			    	        	result.append(" [color=green");
 			    	        }else{
-			    	        	result.append(" \n");
+			    	        	result.append(" [color=black");
+			    	        }
+			    	        if(edge.weight==0) {
+			    	        	result.append("]\n");
+			    	        }else {
+			    	        	result.append(", label=\""+String.format("%1$.2f", edge.weight)+"\"]\n");
 			    	        }
 		   	    	}
 	   	      }
