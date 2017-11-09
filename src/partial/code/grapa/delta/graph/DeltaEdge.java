@@ -28,6 +28,14 @@ public class DeltaEdge implements Comparable{
 		
 	}	
 	
+	public DeltaEdge(DeltaNode from, DeltaNode to, int type, int size) {
+		// TODO Auto-generated constructor stub
+		this(from, to, type);
+		weight = size;
+	}
+
+	
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
