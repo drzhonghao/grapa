@@ -112,6 +112,7 @@ public abstract class GraphUtil extends DotUtil{
 		    	        result.append(" -> ");
 		    	        result.append(getPort(tn));
 		    	        AbstractEdge edge = graph.findEdge(fn,tn);
+		    	        
 		    	        if(edge.type==AbstractEdge.DATA_FLOW){
 		    	        	result.append(" [color=red]\n");
 		    	        }else if(edge.type==AbstractEdge.CONTROL_FLOW){
