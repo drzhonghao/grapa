@@ -1,7 +1,6 @@
 package partial.code.grapa.delta.graph;
 
 public class DeltaEdge extends AbstractEdge{
-
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
