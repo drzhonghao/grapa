@@ -43,7 +43,7 @@ public abstract class GraphMapping extends HungarianMapping{
 	}
 	
 	
-	protected double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
+	public double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		double edgeCost = 1;
 		double nameCost = 2;
