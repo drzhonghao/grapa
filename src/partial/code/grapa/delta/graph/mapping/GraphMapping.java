@@ -14,8 +14,8 @@ import partial.code.grapa.tool.LabelUtil;
 public abstract class GraphMapping extends HungarianMapping{
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph;
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> rightGraph;
-	protected abstract Hashtable<String, Integer> extractKinds(DirectedSparseGraph<DeltaNode, DeltaEdge> leftGraph2,
-			DeltaNode leftNode, int controlFlow, boolean b);
+	protected abstract Hashtable<String, Integer> extractKinds(DirectedSparseGraph<DeltaNode, DeltaEdge> graph,
+			DeltaNode node, int controlFlow, boolean b);
 
 	
 	public GraphMapping(DirectedSparseGraph<DeltaNode, DeltaEdge> oldGraph,
@@ -42,8 +42,17 @@ public abstract class GraphMapping extends HungarianMapping{
 		return rightGraph.getVertices().toArray()[i];
 	}
 	
+	public double calculateNodeCost(DeltaNode from, DeltaNode to) {
+		// TODO Auto-generated method stub
+		if(this.bSwapSide) {
+			return calculateCost(to, from);
+		}else {
+			return calculateCost(from, to);
+		}
+		
+	}
 	
-	public double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
+	private double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		double edgeCost = 1;
 		double nameCost = 2;
@@ -74,7 +83,7 @@ public abstract class GraphMapping extends HungarianMapping{
 		return cost;
 	}
 	
-	protected double calculateNodeKindCost(DeltaNode leftNode,
+	private double calculateNodeKindCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		double cost =  1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
@@ -118,7 +127,8 @@ public abstract class GraphMapping extends HungarianMapping{
             }
         }
 	}
-	protected double calculateInControlCost(DeltaNode leftNode, DeltaNode rightNode) {
+	
+	private double calculateInControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.CONTROL_FLOW, false);
 		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.CONTROL_FLOW, false);
@@ -129,7 +139,7 @@ public abstract class GraphMapping extends HungarianMapping{
 
 
 
-	protected double calculateOutDataCost(DeltaNode leftNode, DeltaNode rightNode) {
+	private double calculateOutDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.DATA_FLOW, true);
 		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.DATA_FLOW, true);
@@ -138,14 +148,14 @@ public abstract class GraphMapping extends HungarianMapping{
 
 
 
-	protected double calculateInDataCost(DeltaNode leftNode, DeltaNode rightNode) {
+	private double calculateInDataCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.DATA_FLOW, false);
 		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.DATA_FLOW, false);
 		return calculateCost(leftKinds, rightKinds);
 	}
 	
-	protected double calculateOutControlCost(DeltaNode leftNode, DeltaNode rightNode) {
+	private double calculateOutControlCost(DeltaNode leftNode, DeltaNode rightNode) {
 		// TODO Auto-generated method stub
 		Hashtable<String, Integer> leftKinds = extractKinds(leftGraph, leftNode, DeltaEdge.CONTROL_FLOW, true);
 		Hashtable<String, Integer> rightKinds = extractKinds(rightGraph, rightNode, DeltaEdge.CONTROL_FLOW, true);

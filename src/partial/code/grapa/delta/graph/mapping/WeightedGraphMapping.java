@@ -38,9 +38,25 @@ public class WeightedGraphMapping extends GraphMapping{
 						no++;
 					}
 					table.put(key, no);
+					DeltaNode match;
+					if(bOut){
+						match = (DeltaNode)edge.to;
+					}else{
+						match = (DeltaNode)edge.from;
+					}
+					key = match.getKind();
+					no = table.get(key);
+					if(no==null){
+						no = 1;
+					}else{
+						no++;
+					}
+					table.put(key, no);
 				}
 			}
 		}
 		return table;
 	}
+
+	
 }
