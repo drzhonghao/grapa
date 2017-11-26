@@ -116,21 +116,6 @@ public class SDGwithPredicate implements Graph<Statement>{
 		Assertions.UNREACHABLE();
 	}
 
-//	public void setOnlyDataFlow() {
-//		// TODO Auto-generated method stub
-//		DataDependenceOptions dOptions = DataDependenceOptions.FULL; 
-//		ControlDependenceOptions cOptions = ControlDependenceOptions.NONE;
-//		g.setdOptions(dOptions);
-//		g.setcOptions(cOptions);
-//	}
-//
-//	public void setOnlyContralFlow() {
-//		// TODO Auto-generated method stub
-//		DataDependenceOptions dOptions = DataDependenceOptions.NONE; 
-//		ControlDependenceOptions cOptions = ControlDependenceOptions.FULL;
-//		g.setdOptions(dOptions);
-//		g.setcOptions(cOptions);
-//	}
 
 	public void reConstruct(DataDependenceOptions dOptions, ControlDependenceOptions cOptions) {
 		// TODO Auto-generated method stub
@@ -138,15 +123,5 @@ public class SDGwithPredicate implements Graph<Statement>{
 		g.reConstruct(dOptions, cOptions);
 	}
 
-	
 
-//	public Iterator<Statement> getDfgSuccNodes(Statement n) {
-//		// TODO Auto-generated method stub
-//		return Predicate.filter(g.getDfgSuccNodes(n), p).iterator();
-//	}
-//
-//	public Iterator<Statement> getCfgSuccNodes(Statement n) {
-//		// TODO Auto-generated method stub
-//		return Predicate.filter(g.getCfgSuccNodes(n), p).iterator();
-//	}
 }
