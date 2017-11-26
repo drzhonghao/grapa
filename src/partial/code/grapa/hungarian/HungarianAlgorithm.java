@@ -1,4 +1,4 @@
-package partial.code.grapa.delta.graph;
+package partial.code.grapa.hungarian;
 
 import java.util.Random;
 

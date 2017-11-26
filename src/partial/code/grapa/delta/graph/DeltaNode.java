@@ -5,7 +5,12 @@ import java.util.regex.Pattern;
 
 import partial.code.grapa.tool.LabelUtil;
 
-public class DeltaNode extends AbstractNode{
+public class DeltaNode {
+	public static final int LEFT  = 1;
+	public static final int RIGHT = 2;
+	public boolean bModified = true;
+	public int side = -1;
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
@@ -90,6 +95,4 @@ public class DeltaNode extends AbstractNode{
 		}
 		return false;
 	}
-
-	
 }

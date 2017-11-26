@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import partial.code.grapa.delta.HungarianMapping;
+import partial.code.grapa.hungarian.HungarianMapping;
 
 public class ClassMapping extends HungarianMapping{
 

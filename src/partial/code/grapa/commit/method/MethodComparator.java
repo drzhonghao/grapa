@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import partial.code.grapa.commit.Comparator;
-import partial.code.grapa.delta.graph.SDGComparator;
+import partial.code.grapa.delta.graph.mapping.SDGComparator;
 import partial.code.grapa.dependency.graph.DataFlowAnalysisEngine;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.version.detect.VersionDetector;

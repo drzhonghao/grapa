@@ -1,18 +1,21 @@
-package partial.code.grapa.delta;
+package partial.code.grapa.hungarian;
 
 import java.util.Hashtable;
 
-import partial.code.grapa.delta.graph.HungarianAlgorithm;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+
+import partial.code.grapa.delta.graph.DeltaNode;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 abstract public class HungarianMapping {
+
 	protected double[][] costMatrix;
 	protected boolean bSwapSide;//true: does not swap left and right. false: does.
 	protected Levenshtein stringComparator = new Levenshtein();
 	protected abstract void calculateCostMatrix();
-	protected abstract Object getLeftItem(int i);
-	protected abstract Object getRightItem(int i);
-	
+	protected abstract Object getLeftItem(int index);
+	protected abstract Object getRightItem(int index);
+
 	public Hashtable<Object, Object> extractNodeMappings() {
 		// TODO Auto-generated method stub
 		calculateCostMatrix();
@@ -35,5 +38,8 @@ abstract public class HungarianMapping {
         return vm;
 	}
 
+	
+	
+	
 	
 }

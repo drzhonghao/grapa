@@ -1,24 +1,23 @@
 package partial.code.grapa.delta.graph;
 
-public class DeltaEdge extends AbstractEdge{
-
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return ((DeltaNode)from).label+"->"+((DeltaNode)to).label;
-	}
-
-
+public class DeltaEdge implements Comparable{
+	public int type;
+	public DeltaNode from;
+	public DeltaNode to;
+	public static final int DATA_FLOW = 0;
+	public static final int CONTROL_FLOW = 1;
+	public static final int CHANGE = 2;
+	public double weight = 0;
+	
 	public DeltaEdge(DeltaNode from, DeltaNode to, int m) {
 		// TODO Auto-generated constructor stub
-		super(from, to, m);
+		this.from = from;
+		this.to = to;
+		type = m;
 	}
-
 
 	public DeltaEdge(DeltaNode f, DeltaNode t, String label) {
 		// TODO Auto-generated constructor stub
-		super(f,t,-1);
-
 		if(label.compareTo("df")==0){
 			type = DATA_FLOW;
 		}else if(label.compareTo("cf")==0){
@@ -27,9 +26,22 @@ public class DeltaEdge extends AbstractEdge{
 			type = CHANGE;
 		}
 		
+	}	
+	
+	public DeltaEdge(DeltaNode from, DeltaNode to, int type, int size) {
+		// TODO Auto-generated constructor stub
+		this(from, to, type);
+		weight = size;
 	}
 
+	
 
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return ((DeltaNode)from).label+"->"+((DeltaNode)to).label +":"+weight;
+	}
+	
 	public String getKind() {
 		// TODO Auto-generated method stub
 		String line = "";
