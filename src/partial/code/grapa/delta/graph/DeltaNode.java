@@ -9,7 +9,7 @@ public class DeltaNode {
 	public static final int LEFT  = 1;
 	public static final int RIGHT = 2;
 	public boolean bModified = true;
-	public int side = -1;
+	public int side = 1;
 	
 	@Override
 	public String toString() {

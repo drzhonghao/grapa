@@ -68,6 +68,7 @@ public class IntraPredicate extends Predicate{
 		  if(n1.compareTo(n2)==0){
 			  bIntraNode = true;
 		  }
+//		  return  true;
 		  return bIntraNode;
 	}
 
