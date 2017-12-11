@@ -46,6 +46,8 @@ public class MethodVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
+	
+
 	public void clear() {
 		// TODO Auto-generated method stub
 		this.methods.clear();
