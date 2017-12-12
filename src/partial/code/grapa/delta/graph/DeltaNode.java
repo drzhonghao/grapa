@@ -10,10 +10,10 @@ public class DeltaNode {
 	public static final int RIGHT = 2;
 	public boolean bModified = true;
 	public int side = 1;
+	public int lineNo;
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		String visualLabel;
 		if(side==DeltaNode.LEFT){
 			visualLabel = "l:"+label;
@@ -29,35 +29,33 @@ public class DeltaNode {
 	public String label;
 	
 
-	public DeltaNode(String l, int s, boolean b) {
-		// TODO Auto-generated constructor stub
+	public DeltaNode(String l, int no, int s, boolean b) {
 		label = l;
+		lineNo = no;
 		side = s;
 		bModified = b;
 	}
 	
-	public DeltaNode(String l) {
-		// TODO Auto-generated constructor stub
+	public DeltaNode(String l, int no) {
 		label = l;
+		lineNo = no;
 	}
 	
 	
 
 	public DeltaNode(DeltaNode node) {
-		// TODO Auto-generated constructor stub
 		this.bModified = node.bModified;
 		this.label = node.label;
 		this.side = node.side;
+		this.lineNo = node.lineNo;
 	}
 
 	public String getKind() {
-		// TODO Auto-generated method stub
 		LabelUtil tool = new LabelUtil();
 		return tool.parse(label);
 	}
 
 	public String getComparedLabel() {
-		// TODO Auto-generated method stub
 		Pattern p = Pattern.compile("[\\d]");
 		Matcher matcher = p.matcher(label);
 		String result = matcher.replaceAll("");
@@ -67,7 +65,6 @@ public class DeltaNode {
 	}
 
 	public boolean isVar() {
-		// TODO Auto-generated method stub
 		String type = getKind();
 		if(type.compareTo("getfield")==0) {
 			return true;
@@ -82,7 +79,6 @@ public class DeltaNode {
 	}
 
 	public boolean isMethod() {
-		// TODO Auto-generated method stub
 		String type = getKind();
 		if(type.compareTo("invokestatic")==0) {
 			return true;

@@ -68,7 +68,7 @@ public class SDGComparator {
 		Iterator<Statement> it = flowGraph.iterator();
 		while(it.hasNext()){
 			Statement statement = it.next();
-			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement));
+			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement), lt.getLineNo(statement));
 			table.put(statement, node);
 			graph.addVertex(node);
 			if(bResolveAst){

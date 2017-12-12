@@ -7,9 +7,13 @@ import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
 import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
 import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.ConcreteJavaMethod;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.classLoader.CallSiteReference;
+import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.NewSiteReference;
+import com.ibm.wala.classLoader.ShrikeBTMethod;
+import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.slicer.HeapStatement;
 import com.ibm.wala.ipa.slicer.NormalReturnCaller;
 import com.ibm.wala.ipa.slicer.NormalStatement;
@@ -484,6 +488,43 @@ public class LabelUtil {
 //		
 //		return valueTable;
 //	}
+
+	public int getLineNo(Statement statement) {
+		int lineNo = -1;
+		if (statement.getKind() == Statement.Kind.NORMAL) {			
+			IMethod method = statement.getNode().getMethod();
+			if(method instanceof ShrikeBTMethod) {
+				lineNo = getBytecodeLine((ShrikeBTMethod)method, (NormalStatement) statement);
+			}else if(method instanceof ConcreteJavaMethod) {
+				lineNo = getSourceLine((ConcreteJavaMethod)method, (NormalStatement) statement);
+			}			  
+		}
+		return lineNo;
+	}
+
+	private int getSourceLine(ConcreteJavaMethod method, NormalStatement statement) {
+		int instructionIndex = statement.getInstructionIndex();
+		int lineNum = method.getLineNumber(instructionIndex);
+		return lineNum;
+	}
+
+	private int getBytecodeLine(ShrikeBTMethod method, NormalStatement statement) {
+		int bcIndex, instructionIndex = ((NormalStatement) statement).getInstructionIndex();
+		int lineNo = -1;
+		try {
+		    bcIndex = method.getBytecodeIndex(instructionIndex);
+		    try {
+		    	lineNo = statement.getNode().getMethod().getLineNumber(bcIndex);
+		    } catch (Exception e) {
+		      System.err.println("Bytecode index no good");
+		      System.err.println(e.getMessage());
+		    }
+		} catch (Exception e ) {
+		    System.err.println("it's probably not a BT method (e.g. it's a fakeroot method)");
+		    System.err.println(e.getMessage());
+		}
+		return lineNo;
+	}
 	
 //	private Hashtable<Integer, String> extractIndexTable(
 //			DirectedSparseGraph<StatementNode, StatementEdge> graph) {
