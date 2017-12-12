@@ -10,7 +10,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 abstract public class HungarianMapping {
 
 	protected double[][] costMatrix;
-	protected boolean bSwapSide;//true: does not swap left and right. false: does.
+	public boolean bSwapSide;//true: does not swap left and right. false: does.
 	protected Levenshtein stringComparator = new Levenshtein();
 	protected abstract void calculateCostMatrix();
 	protected abstract Object getLeftItem(int index);
