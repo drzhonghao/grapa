@@ -91,14 +91,14 @@ public class JdtUtil {
     }
 
     /**
-     * @param childEl
+     * @param element
      * @return method signature, if given java element is either initializer or method,
      * otherwise returns null.
      */
-    public static String getMethodSignature(IJavaElement childEl) {
+    public static String getMethodSignature(IJavaElement element) {
         String methodName = null;
-        if (childEl.getElementType() == IJavaElement.INITIALIZER) {
-            IInitializer ini = (IInitializer) childEl;
+        if (element.getElementType() == IJavaElement.INITIALIZER) {
+            IInitializer ini = (IInitializer) element;
             try {
                 if (Flags.isStatic(ini.getFlags())) {
                     methodName = "<clinit>()V";
@@ -109,8 +109,8 @@ public class JdtUtil {
                 // this is compilation problem - don't show the message
               
             }
-        } else if (childEl.getElementType() == IJavaElement.METHOD) {
-            IMethod iMethod = (IMethod) childEl;
+        } else if (element.getElementType() == IJavaElement.METHOD) {
+            IMethod iMethod = (IMethod) element;
             try {
                 methodName = createMethodSignature(iMethod);
             } catch (JavaModelException e) {
