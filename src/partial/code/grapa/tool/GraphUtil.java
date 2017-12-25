@@ -32,7 +32,8 @@ public abstract class GraphUtil extends DotUtil{
 		if (graph == null) {
 	      throw new IllegalArgumentException("g is null");
 	    }
-		String dotFile = outputFile.replace(".pdf", ".dt");		
+		int mark = outputFile.lastIndexOf(".");
+		String dotFile = outputFile.substring(0, mark)+".dt";		
 	    File f = writeDotFile(graph,dotFile);
 	    if (fDotExe != null) {
 	      spawnDot(fDotExe, outputFile, f);
