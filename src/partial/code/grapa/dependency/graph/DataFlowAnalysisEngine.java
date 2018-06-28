@@ -29,6 +29,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.launching.JavaRuntime;
 
 import partial.code.grapa.commit.method.ClientMethod;
@@ -73,21 +75,22 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.config.SetOfClasses;
 import com.ibm.wala.util.strings.Atom;
 
+import ca.mcgill.cs.swevo.ppa.PPAOptions;
+import ca.mcgill.cs.swevo.ppa.ui.PPAUtil;
+
 public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	private IR ir;
 
 	public DataFlowAnalysisEngine() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public void initClassHierarchy() {
-		// TODO Auto-generated method stub
 		IClassHierarchy cha = buildClassHierarchy();
 		setClassHierarchy(cha);
 	}
 
 	public void clearAnalysisScope() throws JavaModelException {
-		// TODO Auto-generated method stub
 		if(scope!=null){
 			JavaSourceAnalysisScope js = (JavaSourceAnalysisScope)scope;
 			ClassLoaderReference loader = js.getSourceLoader();
@@ -99,8 +102,6 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	
 	
 	public AstJavaZeroXCFABuilder getCFGBuilder(ClientMethod method) {
-		// TODO Auto-generated method stub
-
 		IClassHierarchy cha = this.getClassHierarchy();
 		HashSet<Entrypoint> eps = HashSetFactory.make();
 		final Atom mainMethod = Atom.findOrCreateAsciiAtom(method.methodName);
@@ -175,13 +176,11 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 
 	@Override
 	protected ClassLoaderFactory getClassLoaderFactory(SetOfClasses exclusions) {
-		// TODO Auto-generated method stub
 		return new JDTClassLoaderFactory(exclusions);	
 	}
 
-	public ArrayList<ASTNode> parse(String prn, Hashtable<File, String> oldPackageTable, String j2seDir, String libDir, String otherLibDir, String version,
+	public ArrayList<ASTNode> parse(String prn, Hashtable<File, String> packageTable, String j2seDir, String libDir, String otherLibDir, String version,
 			ArrayList<File> files) {
-		// TODO Auto-generated method stub
 		ArrayList<ASTNode> trees = null;
 		try {
 			super.buildAnalysisScope();
@@ -189,7 +188,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 			String clibDir = libDir+version;
 			resolveLibraryPathEntry(clibDir);
 			resolveLibraryPathEntry(otherLibDir);
-			trees = resolveSourcePathyEntry(prn,  oldPackageTable, files,  clibDir, otherLibDir);
+			trees = resolveSourcePathyEntry(prn,  packageTable, files,  clibDir, otherLibDir);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -200,9 +199,155 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		return trees;
 	}
 	
+	public ArrayList<ASTNode> parse(String pn, String j2seDir, String libDir, ArrayList<File> files) {
+		Hashtable<File, String> table = resolvePackageTable(files);
+		ArrayList<ASTNode> trees = null;
+		try {
+			super.buildAnalysisScope();
+			resolveJ2sePathEntry(j2seDir);
+			resolveLibraryPathEntry(libDir);
+			trees = resolveSourcePathyEntry(pn,  table, files,  libDir);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return trees;
+	}
+
+	
+	private ArrayList<ASTNode> resolveSourcePathyEntry(String pn, Hashtable<File, String> table, ArrayList<File> files,
+			String libDir) throws CoreException {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root= workspace.getRoot();
+		IProject project= root.getProject(pn);
+		if(!project.exists()){
+			project.create(null);
+			project.open(null);
+			//set the Java nature
+			IProjectDescription description = project.getDescription();
+			description.setNatureIds(new String[] { JavaCore.NATURE_ID });
+			 
+			//create the project
+			project.setDescription(description, null);
+		}
+		IJavaProject javaProject = JavaCore.create(project);
+		IClasspathEntry[] buildPath = {
+				JavaCore.newSourceEntry(project.getFullPath().append("src")),
+						JavaRuntime.getDefaultJREContainerEntry() };
+		 
+		javaProject.setRawClasspath(buildPath, project.getFullPath().append(
+						"bin"), null);
+		
+		//create folder by using resources package
+		IFolder folder = project.getFolder("src");
+		if(folder.exists()){
+			folder.delete(true, null);
+		}
+		folder.create(true, true, null);
+		
+		Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
+		entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
+		File d = new File(libDir);
+		if(d.isDirectory()){
+			for(File f:d.listFiles()){
+				if(f.getName().endsWith(".jar")){
+					 IClasspathEntry libEntry = JavaCore.newLibraryEntry(
+							    new Path(f.getAbsolutePath()), // library location
+							    null, // source archive location
+							    null, // source archive root path
+							    true); // exported
+					 entries.add(libEntry);
+				}
+			}
+		}else if(d.isFile()){
+			 IClasspathEntry libEntry = JavaCore.newLibraryEntry(
+					    new Path(d.getAbsolutePath()), // library location
+					    null, // source archive location
+					    null, // source archive root path
+					    true); // exported
+			 entries.add(libEntry);
+		}
+		
+		javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), null);
+
+		//Add folder to Java element
+		IPackageFragmentRoot srcFolder = javaProject
+						.getPackageFragmentRoot(folder);
+		for(File file:files){
+			String packageName = table.get(file);
+			//create package fragment
+			IPackageFragment pf = srcFolder.getPackageFragment(packageName);
+			if(!pf.exists()){
+				pf = srcFolder.createPackageFragment(
+						packageName, true, null);
+			}
+			String source = FileUtils.getContent(file);
+			ICompilationUnit cu = pf.createCompilationUnit(file.getName(), source,
+					false, null);
+			IResource rs = cu.getResource();
+			IFile ifile= (IFile)rs;
+			EclipseSourceFileModule module = EclipseSourceFileModule.createEclipseSourceFileModule(ifile);
+			JavaSourceAnalysisScope s = (JavaSourceAnalysisScope)scope;
+			this.scope.addToScope(s.getSourceLoader(), module);
+		}
+		
+		ArrayList<ASTNode> trees = new  ArrayList<ASTNode>();
+		for(IPackageFragment pf:javaProject.getPackageFragments()){
+			if(pf.getKind() == IPackageFragmentRoot.K_SOURCE){
+				for(ICompilationUnit cu:pf.getCompilationUnits()){
+//					CompilerOptions options = new CompilerOptions();
+//				    options.docCommentSupport = true;
+//				    options.complianceLevel = ClassFileConstants.JDK1_8;
+//				    options.sourceLevel = ClassFileConstants.JDK1_8;
+//				    options.targetJDK = ClassFileConstants.JDK1_8;
+//				    
+//				    CommentRecorderParser commentParser =  new CommentRecorderParser(new ProblemReporter(
+//				                DefaultErrorHandlingPolicies.proceedWithAllProblems(),
+//				                options,
+//				                new DefaultProblemFactory()), false);
+//				    CompilationResult compilationResult =  new CompilationResult((org.eclipse.jdt.internal.compiler.env.ICompilationUnit) cu, 0, 0, options.maxProblemsPerUnit);
+//				    CompilationUnitDeclaration ast = commentParser.parse((org.eclipse.jdt.internal.compiler.env.ICompilationUnit) cu, compilationResult);
+//				    JavaCompilation jcu = new JavaCompilation(ast, commentParser.scanner);
+				    
+				    ASTParser parser = ASTParser.newParser(AST.JLS8);
+					parser.setKind(ASTParser.K_COMPILATION_UNIT);
+					parser.setProject(javaProject);
+					parser.setSource(cu);
+					parser.setResolveBindings(true);
+					ASTNode tree = parser.createAST(null);
+				    trees.add(tree);
+				}
+			}
+		}
+		return trees;
+	}
+
+	private Hashtable<File, String> resolvePackageTable(ArrayList<File> files) {
+		PPAOptions option = new PPAOptions();
+		option.setAllowMemberInference(true);
+		option.setAllowCollectiveMode(true);
+		option.setAllowTypeInferenceMode(true);
+		option.setAllowMethodBindingMode(true);
+		
+		Hashtable<File, String> table = new Hashtable<File, String>();
+		for(File file:files) {
+			String sourcecode = FileUtils.getContent(file);
+			CompilationUnit tree = PPAUtil.getCU(sourcecode, option);
+			PackageDeclaration p = tree.getPackage();
+			String paName = "";
+			if(p!=null){
+				paName = p.getName().getFullyQualifiedName();
+			}
+			table.put(file, paName);
+		}
+		return table;
+	}
+
 	public void addtoScope(String prn, Hashtable<File, String> pTable,
 			String j2seDir, String jarFileName, String otherLibDir, ArrayList<File> files) {
-		// TODO Auto-generated method stub
 		try {
 			super.buildAnalysisScope();
 			resolveJ2sePathEntry(j2seDir);	
@@ -246,7 +391,6 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	private ArrayList<ASTNode> resolveSourcePathyEntry(String prn,
 			Hashtable<File, String> pTable, ArrayList<File> files,
 			String clibDir, String otherLibDir) throws CoreException {
-		// TODO Auto-generated method stub
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root= workspace.getRoot();
 		IProject project= root.getProject(prn);
@@ -398,14 +542,9 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	
 
 	public IR getCurrentIR() {
-		// TODO Auto-generated method stub
 		return ir;
 	}
 
 	
-	
-
-
-
 	
 }

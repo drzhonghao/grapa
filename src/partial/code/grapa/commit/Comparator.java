@@ -113,7 +113,6 @@ abstract public class Comparator {
 	
 	public void compareVersions(VersionPair pair, ArrayList<File> oldfiles,
 			ArrayList<File> newfiles) {
-		// TODO Auto-generated method stub\
 		boolean bLeftSuccess = false;
 		ArrayList<ASTNode> leftTrees = null; 
 		for(String oldVersion:pair.left.versions){

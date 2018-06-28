@@ -31,7 +31,6 @@ public class MethodComparator extends Comparator{
 	
 	private MethodDelta compareMethodPair(ClientMethod oldMethod,
 			ClientMethod newMethod, boolean bResolveAst) {
-		// TODO Auto-generated method stub
 		System.out.println(oldMethod.methodName);
 		SDGwithPredicate lfg = leftEngine.buildSystemDependencyGraph(oldMethod);
 		IR lir = leftEngine.getCurrentIR();
@@ -69,7 +68,6 @@ public class MethodComparator extends Comparator{
 
 	@Override
 	protected void extractFinerMapping(ASTNode leftTree, ASTNode rightTree) {
-		// TODO Auto-generated method stub
 		Hashtable<Object, Object> mm = extractMethodMapping(leftTree, rightTree);
 		Hashtable<ClientMethod, ClientMethod> mms = new Hashtable<ClientMethod, ClientMethod>();
 		if(mm!=null){
