@@ -199,14 +199,15 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		return trees;
 	}
 	
-	public ArrayList<ASTNode> parse(String pn, String j2seDir, String libDir, ArrayList<File> files) {
+	public ArrayList<ASTNode> parse(String pn, String j2seDir, String libDir, String otherLib, ArrayList<File> files) {
 		Hashtable<File, String> table = resolvePackageTable(files);
 		ArrayList<ASTNode> trees = null;
 		try {
 			super.buildAnalysisScope();
 			resolveJ2sePathEntry(j2seDir);
 			resolveLibraryPathEntry(libDir);
-			trees = resolveSourcePathyEntry(pn,  table, files,  libDir);
+			resolveLibraryPathEntry(otherLib);
+			trees = resolveSourcePathyEntry(pn,  table, files,  libDir, otherLib);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -218,112 +219,6 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	}
 
 	
-	private ArrayList<ASTNode> resolveSourcePathyEntry(String pn, Hashtable<File, String> table, ArrayList<File> files,
-			String libDir) throws CoreException {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root= workspace.getRoot();
-		IProject project= root.getProject(pn);
-		if(!project.exists()){
-			project.create(null);
-			project.open(null);
-			//set the Java nature
-			IProjectDescription description = project.getDescription();
-			description.setNatureIds(new String[] { JavaCore.NATURE_ID });
-			 
-			//create the project
-			project.setDescription(description, null);
-		}
-		IJavaProject javaProject = JavaCore.create(project);
-		IClasspathEntry[] buildPath = {
-				JavaCore.newSourceEntry(project.getFullPath().append("src")),
-						JavaRuntime.getDefaultJREContainerEntry() };
-		 
-		javaProject.setRawClasspath(buildPath, project.getFullPath().append(
-						"bin"), null);
-		
-		//create folder by using resources package
-		IFolder folder = project.getFolder("src");
-		if(folder.exists()){
-			folder.delete(true, null);
-		}
-		folder.create(true, true, null);
-		
-		Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
-		entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
-		File d = new File(libDir);
-		if(d.isDirectory()){
-			for(File f:d.listFiles()){
-				if(f.getName().endsWith(".jar")){
-					 IClasspathEntry libEntry = JavaCore.newLibraryEntry(
-							    new Path(f.getAbsolutePath()), // library location
-							    null, // source archive location
-							    null, // source archive root path
-							    true); // exported
-					 entries.add(libEntry);
-				}
-			}
-		}else if(d.isFile()){
-			 IClasspathEntry libEntry = JavaCore.newLibraryEntry(
-					    new Path(d.getAbsolutePath()), // library location
-					    null, // source archive location
-					    null, // source archive root path
-					    true); // exported
-			 entries.add(libEntry);
-		}
-		
-		javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), null);
-
-		//Add folder to Java element
-		IPackageFragmentRoot srcFolder = javaProject
-						.getPackageFragmentRoot(folder);
-		for(File file:files){
-			String packageName = table.get(file);
-			//create package fragment
-			IPackageFragment pf = srcFolder.getPackageFragment(packageName);
-			if(!pf.exists()){
-				pf = srcFolder.createPackageFragment(
-						packageName, true, null);
-			}
-			String source = FileUtils.getContent(file);
-			ICompilationUnit cu = pf.createCompilationUnit(file.getName(), source,
-					false, null);
-			IResource rs = cu.getResource();
-			IFile ifile= (IFile)rs;
-			EclipseSourceFileModule module = EclipseSourceFileModule.createEclipseSourceFileModule(ifile);
-			JavaSourceAnalysisScope s = (JavaSourceAnalysisScope)scope;
-			this.scope.addToScope(s.getSourceLoader(), module);
-		}
-		
-		ArrayList<ASTNode> trees = new  ArrayList<ASTNode>();
-		for(IPackageFragment pf:javaProject.getPackageFragments()){
-			if(pf.getKind() == IPackageFragmentRoot.K_SOURCE){
-				for(ICompilationUnit cu:pf.getCompilationUnits()){
-//					CompilerOptions options = new CompilerOptions();
-//				    options.docCommentSupport = true;
-//				    options.complianceLevel = ClassFileConstants.JDK1_8;
-//				    options.sourceLevel = ClassFileConstants.JDK1_8;
-//				    options.targetJDK = ClassFileConstants.JDK1_8;
-//				    
-//				    CommentRecorderParser commentParser =  new CommentRecorderParser(new ProblemReporter(
-//				                DefaultErrorHandlingPolicies.proceedWithAllProblems(),
-//				                options,
-//				                new DefaultProblemFactory()), false);
-//				    CompilationResult compilationResult =  new CompilationResult((org.eclipse.jdt.internal.compiler.env.ICompilationUnit) cu, 0, 0, options.maxProblemsPerUnit);
-//				    CompilationUnitDeclaration ast = commentParser.parse((org.eclipse.jdt.internal.compiler.env.ICompilationUnit) cu, compilationResult);
-//				    JavaCompilation jcu = new JavaCompilation(ast, commentParser.scanner);
-				    
-				    ASTParser parser = ASTParser.newParser(AST.JLS8);
-					parser.setKind(ASTParser.K_COMPILATION_UNIT);
-					parser.setProject(javaProject);
-					parser.setSource(cu);
-					parser.setResolveBindings(true);
-					ASTNode tree = parser.createAST(null);
-				    trees.add(tree);
-				}
-			}
-		}
-		return trees;
-	}
 
 	private Hashtable<File, String> resolvePackageTable(ArrayList<File> files) {
 		PPAOptions option = new PPAOptions();
@@ -335,13 +230,15 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		Hashtable<File, String> table = new Hashtable<File, String>();
 		for(File file:files) {
 			String sourcecode = FileUtils.getContent(file);
-			CompilationUnit tree = PPAUtil.getCU(sourcecode, option);
-			PackageDeclaration p = tree.getPackage();
-			String paName = "";
-			if(p!=null){
-				paName = p.getName().getFullyQualifiedName();
+			String[] lines = sourcecode.split("\n");
+			for(String line:lines) {
+				line = line.trim();
+				if(line.startsWith("package")&&line.endsWith(";")) {
+					String paName = line.substring(7, line.length()-1).trim();
+					table.put(file, paName);
+					break;
+				}
 			}
-			table.put(file, paName);
 		}
 		return table;
 	}
