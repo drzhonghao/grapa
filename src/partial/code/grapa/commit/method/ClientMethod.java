@@ -56,5 +56,11 @@ public class ClientMethod {
 			sig = sig.substring(mark);
 		}
 	}
+
+	public String getMethodName() {
+		String out = methodName.replaceAll("<", "");
+		out = out.replaceAll(">", "");
+		return out;
+	}
 	
 }
