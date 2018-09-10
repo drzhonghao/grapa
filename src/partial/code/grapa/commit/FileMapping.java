@@ -26,15 +26,22 @@ public class FileMapping extends HungarianMapping{
 			File leftNode = leftFiles.get(i);
             for (int j = 0; j < rightFiles.size(); j++) {
             	File rightNode = rightFiles.get(j);
-            	String leftLine = leftNode.getName();
-            	String rightLine = rightNode.getName();
-            	if(leftLine!=null&&rightLine!=null) {
-            		costMatrix[i][j] = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
-            	}
+            	costMatrix[i][j] = calculateDistance(leftNode, rightNode);
+            	
             }
         }
 	}
 
+	public double calculateDistance(File leftNode, File rightNode) {
+		double distance = Double.MAX_VALUE;
+		String leftLine = leftNode.getName();
+    	String rightLine = rightNode.getName();
+    	if(leftLine!=null&&rightLine!=null) {
+    		distance = stringComparator.getUnNormalisedSimilarity(leftLine, rightLine);
+    	}
+		return distance;
+	}
+	
 	@Override
 	protected Object getLeftItem(int index) {
 		return leftFiles.get(index);
