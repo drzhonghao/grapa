@@ -1,6 +1,7 @@
 package partial.code.grapa.algorithm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Stack;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -39,6 +40,11 @@ public class PathTool {
 
 	public ArrayList<Stack<DeltaNode>> getConnectionPaths() {
 		return connectionPaths;
+	}
+
+	public void reset() {
+		this.connectionPath.clear();
+		this.connectionPaths.clear();
 	}
 	
 	
