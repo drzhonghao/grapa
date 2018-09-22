@@ -78,10 +78,23 @@ public class DirectedSparseGraph<V,E> extends AbstractTypedGraph<V, E> implement
         
         if (!vertices.containsKey(dest))
             this.addVertex(dest);
+       
         
         // map source of this edge to <dest, edge> and vice versa
         vertices.get(source).getSecond().put(dest, edge);
         vertices.get(dest).getFirst().put(source, edge);
+        
+//        if(source.toString().indexOf("CALLEE 2")>=0) {
+//        	System.out.println(dest+" is added.");
+//        	System.out.println(source.hashCode());
+////        	System.out.println( vertices.get(source).getSecond().hashCode());
+//        	for(V v:this.getSuccessors(source)) {
+//        		System.out.println(" "+v);
+//        	}
+//        	Map<V, E> se = vertices.get(source).getSecond();
+//        	System.out.println("------------------------------------");
+//        }
+        
 
         return true;
     }
@@ -152,6 +165,10 @@ public class DirectedSparseGraph<V,E> extends AbstractTypedGraph<V, E> implement
     {
         if (!containsVertex(vertex))
             return null;
+        //return Collections.unmodifiableCollection(getSuccs_internal(vertex));
+        
+        //zhh fix the bug that returns only one node.
+       
         return Collections.unmodifiableCollection(getSuccs_internal(vertex));
     }
 
