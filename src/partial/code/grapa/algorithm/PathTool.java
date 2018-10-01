@@ -20,11 +20,9 @@ public class PathTool {
 	
 	// Push to connectionsPath the object that would be passed as the parameter 'node' into the method below
 	public void findAllPaths(DeltaNode from, DeltaNode to) {
-//		connectionPath.push(from);
 		Collection<DeltaNode> nextNodes = graph.getSuccessors(from);
 	    for (DeltaNode nextNode : nextNodes) {
 	       if (nextNode.equals(to)) {
-//	    	   connectionPath.push(to);
 	    	   Stack<DeltaNode> temp = new Stack<DeltaNode>();
 	           for (DeltaNode node1 : connectionPath)
 	               temp.add(node1);
