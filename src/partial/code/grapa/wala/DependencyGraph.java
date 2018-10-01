@@ -48,13 +48,13 @@ public class DependencyGraph {
 		this.cha = cha;
 	}
 
-	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(String methodName, String sig, String key, Predicate predict) {
+	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(String methodName, String sig, String key, boolean bInter) {
 		MethodEntry point = buildEntryPoint(methodName, sig, key);
-		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = buildGraph(point, predict);
+		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = buildGraph(point, bInter);
 		return graph;
 	}
 	
-	private DirectedSparseGraph<DeltaNode, DeltaEdge> buildGraph(MethodEntry method, Predicate predict) {
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> buildGraph(MethodEntry method, boolean bInter) {
 		if(method==null) {
 			return null;
 		}
@@ -72,6 +72,12 @@ public class DependencyGraph {
 			SDG sdg = new SDG(cg, pointer, dOptions, cOptions);		
 			IAnalysisCacheView cache = builder.getAnalysisCache();
 			IR ir = cache.getIR(method.method);	
+			Predicate predict = null;
+			if(bInter) {
+				predict = new ApplicationPredicate();
+			}else {
+				predict = new IntraPredicate(method);
+			}
 			SDGwithPredicate g = new SDGwithPredicate(sdg, predict);
 			graph = transformatSDG2Jung(g, ir);
 		} catch (Exception | Error  e) {

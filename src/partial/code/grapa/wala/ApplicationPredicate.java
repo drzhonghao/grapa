@@ -14,11 +14,8 @@ import partial.code.grapa.wala.MethodEntry;
 
 
 public class ApplicationPredicate  extends Predicate{
-	private  MethodEntry currentMethod;
 
-	public ApplicationPredicate(MethodEntry method) {
-		// TODO Auto-generated constructor stub
-		currentMethod = method;
+	public ApplicationPredicate() {
 	}
 
 	@Override
