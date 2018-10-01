@@ -1,0 +1,109 @@
+package partial.code.grapa.wala;
+
+import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.ipa.callgraph.Entrypoint;
+
+import sun.reflect.generics.tree.MethodTypeSignature;
+import sun.reflect.generics.tree.TypeSignature;
+import sun.reflect.generics.tree.*;
+public class MethodEntry {
+	public String typeName;
+	public String name;
+	public String sig;
+	public Iterable<Entrypoint> entryPoint;
+	public IMethod method;
+	public String getSignature() {
+		String result = typeName.substring(1) + "." + name;
+		result = result.replaceAll("/", ".");
+		result += sig;
+		return result;
+	}
+	public String getShortTypeName() {
+		// TODO Auto-generated method stub
+		int mark = typeName.lastIndexOf("/");
+		return typeName.substring(mark+1);
+	}
+	public String getShortName() {
+		// TODO Auto-generated method stub
+		String result = name;
+		result = result.replaceAll("<", "");
+		result = result.replaceAll(">", "");
+		return result;
+	}
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		String line = getShortName()+getShortSig();
+		return line;
+	}
+	private String getShortSig() {
+		// TODO Auto-generated method stub
+		String line = "(";
+		SignatureParser parser = new SignatureParser();
+		MethodTypeSignature msig = parser.parseMethodSig(sig);
+		for(TypeSignature pt:msig.getParameterTypes()) {
+			if(pt instanceof ArrayTypeSignature) {
+				ArrayTypeSignature ats = (ArrayTypeSignature)pt;
+				line += getType(ats.getComponentType())+",";
+			}else {
+				line += getType(pt)+",";
+			}
+		}
+		if(line.endsWith(",")) {
+			line = line.substring(0, line.length()-1);
+		}
+		line = line+")";
+		return line;
+	}
+	private String getType(TypeSignature ts) {
+		// TODO Auto-generated method stub
+		String line = "";
+		if(ts instanceof BooleanSignature) {
+			line = "boolean";
+		}else if(ts instanceof ByteSignature) {
+			line = "byte";
+		}else if(ts instanceof CharSignature) {
+			line = "char";
+		}else if(ts instanceof DoubleSignature) {
+			line = "double";
+		}else if(ts instanceof FloatSignature) {
+			line = "float";
+		}else if(ts instanceof IntSignature) {
+			line = "int";
+		}else if(ts instanceof LongSignature) {
+			line = "long";
+		}else if(ts instanceof ShortSignature) {
+			line = "short";
+		}else if(ts instanceof BottomSignature) {
+			line = "bottom";
+		}else if(ts instanceof ClassTypeSignature) {
+			ClassTypeSignature cts = (ClassTypeSignature)ts;
+			for(SimpleClassTypeSignature scts:cts.getPath()) {
+				String name =  scts.getName();
+				int mark = name.lastIndexOf(".");
+				line += name.substring(mark+1)+",";
+			}
+			if(line.endsWith(",")) {
+				line = line.substring(0, line.length()-1);
+			}
+		}else if(ts instanceof SimpleClassTypeSignature) {
+			SimpleClassTypeSignature scts = (SimpleClassTypeSignature)ts;
+			String name =  scts.getName();
+			int mark = name.lastIndexOf(".");
+			line += name.substring(mark+1);
+		}else if(ts instanceof TypeVariableSignature) {
+			line = "typevar";
+		}
+		return line;
+	}
+	public String getLongTypeName() {
+		// TODO Auto-generated method stub
+		String result = typeName.substring(1);
+		result = result.replaceAll("/", ".");
+		return result;
+		
+	}
+	public String getFullName() {
+		// TODO Auto-generated method stub
+		return typeName+"#"+name+sig;
+	}
+}
