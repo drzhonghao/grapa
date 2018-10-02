@@ -22,11 +22,11 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.Predicate;
 
-public class IntraPredicate extends Predicate{
-	private String sig;
+public class ClassPredicate extends Predicate{
+	private String className;
 
-	public IntraPredicate(String sig) {
-		this.sig = sig;
+	public ClassPredicate(String className) {
+		this.className = className;
 	}
 
 	@Override
@@ -46,7 +46,8 @@ public class IntraPredicate extends Predicate{
 	  	 }else if(obj instanceof ParamCallee){
 	  		  ParamCallee pc = (ParamCallee)obj;
 	  		  IMethod method = pc.getNode().getMethod();
-	  		  return isValidNode(method)&&pc.getValueNumber()!=1;
+	  		  return isValidNode(method);
+//	  		  return isValidNode(method)&&pc.getValueNumber()!=1;
 	  	 }else if(obj instanceof PhiStatement){
 	  		  PhiStatement ns = (PhiStatement)obj;
 	  		  IMethod method = ns.getNode().getMethod();
@@ -62,7 +63,7 @@ public class IntraPredicate extends Predicate{
 	private boolean isValidNode(IMethod method) {
 		  boolean bIntraNode = false;
 		  String n1 = method.getSignature();
-		  if(n1.compareTo(sig)==0){
+		  if(n1.indexOf(className)>=0){
 			  bIntraNode = true;
 		  }
 //		  return  true;

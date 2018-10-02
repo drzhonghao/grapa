@@ -164,7 +164,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	private SDGwithPredicate pruneSDG(SDG g, ClientMethod method) {
 		// TODO Auto-generated method stub
 //		typeName = "L"+methodname.replace(".", "/");
-		IntraPredicate p = new IntraPredicate(method);
+		IntraPredicate p = new IntraPredicate(method.getSignature());
 		if (g == null) {
 		     throw new IllegalArgumentException("g is null");
 		}

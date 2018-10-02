@@ -25,28 +25,28 @@ public class ApplicationPredicate  extends Predicate{
 		if(obj instanceof NormalStatement){
 	  		  NormalStatement ns = (NormalStatement)obj;
 	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isApplicationNode(method);
+	  		  return isValidNode(method);
 	  	 }else if(obj instanceof NormalReturnCaller){
 	  		  NormalReturnCaller ns = (NormalReturnCaller)obj;
 	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isApplicationNode(method);
+	  		  return isValidNode(method);
 	  	 }else if(obj instanceof ParamCallee){
 	  		  ParamCallee pc = (ParamCallee)obj;
 	  		  IMethod method = pc.getNode().getMethod();
-	  		  return isApplicationNode(method);
+	  		  return isValidNode(method);
 	  	 }else if(obj instanceof PhiStatement){
 	  		  PhiStatement ns = (PhiStatement)obj;
 	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isApplicationNode(method);
+	  		  return isValidNode(method);
 	  	 }else if(obj instanceof NormalReturnCaller){
 	  		  NormalReturnCaller ns = (NormalReturnCaller)obj;
 	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isApplicationNode(method);
+	  		  return isValidNode(method);
 	  	 }
 	  	 return false;
 	}
 
-	private boolean isApplicationNode(IMethod method) {
+	private boolean isValidNode(IMethod method) {
 		String line = method.toString();
 		if(line.indexOf("Application,")>0) {
 			return true;

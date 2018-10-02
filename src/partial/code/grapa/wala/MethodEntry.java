@@ -54,7 +54,7 @@ public class MethodEntry {
 
 	public String getSignature() {
 		String result = typeName.substring(1) + "." + name;
-		result = result.replaceAll("/", ".");
+		result = result.replace("/", ".");
 		result += sig;
 		return result;
 	}
@@ -66,8 +66,8 @@ public class MethodEntry {
 	public String getShortName() {
 		// TODO Auto-generated method stub
 		String result = name;
-		result = result.replaceAll("<", "");
-		result = result.replaceAll(">", "");
+		result = result.replace("<", "");
+		result = result.replace(">", "");
 		return result;
 	}
 	public String getFileName() {
