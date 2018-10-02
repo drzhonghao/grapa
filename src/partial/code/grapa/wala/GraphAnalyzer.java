@@ -2,6 +2,8 @@ package partial.code.grapa.wala;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Stack;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.algorithm.PathTool;
@@ -60,4 +62,73 @@ public class GraphAnalyzer {
 		}
 		return match;
 	}
+
+	public ArrayList<Stack<DeltaNode>> findAllPaths(DeltaNode from, DeltaNode to) {
+		pt.reset();
+		pt.findAllPaths(from, to);
+		ArrayList<Stack<DeltaNode>> paths = pt.getConnectionPaths();
+		return paths;		
+	}
+
+	public ArrayList<Stack<DeltaNode>> findValidPath(DeltaNode from, DeltaNode to) {
+		ArrayList<Stack<DeltaNode>> paths = findAllPaths(from, to);
+		ArrayList<Stack<DeltaNode>> validPaths = new ArrayList<Stack<DeltaNode>>();
+		for(Stack<DeltaNode> path:paths) {
+			boolean bValid = true;
+			for(int i=0; i<path.size()-1; i++) {
+				DeltaNode fromNode = path.elementAt(i);
+				DeltaNode toNode = path.elementAt(i+1);
+				DeltaEdge edge = graph.findEdge(fromNode, toNode);
+				if(edge.type!=DeltaEdge.DATA_FLOW) {
+					if(isCheckCondition(edge)) {
+						bValid = false;
+						break;
+					}
+				}
+			}
+			DeltaEdge edge = graph.findEdge(from, path.get(0));
+			if(edge.type!=DeltaEdge.DATA_FLOW) {
+				if(isCheckCondition(edge)) {
+					bValid = false;
+				}
+			}
+			edge = graph.findEdge(path.get(path.size()-1), to);
+			if(edge.type!=DeltaEdge.DATA_FLOW) {
+				if(isCheckCondition(edge)) {
+					bValid = false;
+				}
+			}
+			
+			if(bValid) {
+				validPaths.add(path);
+			}
+		}
+		return validPaths;
+	}
+	
+
+	private boolean isCheckCondition(DeltaEdge edge) {
+		return isCheckCondition(edge.from)||isCheckCondition(edge.to);
+	}
+
+	private boolean isCheckCondition(DeltaNode node) {
+		return !(node.label.indexOf("conditional branch")<0&&node.label.indexOf("switch")<0);
+	}
+	
+	
+	public String extractExceptionName(DeltaNode exceptionNode) {
+		Collection<DeltaEdge> edges = graph.getInEdges(exceptionNode);
+		String name = null;
+		for(DeltaEdge edge:edges) {
+			if(edge.from.label.indexOf("new <Application")>=0) {
+				int mark = edge.from.label.indexOf(",");
+				name = edge.from.label.substring(mark+1);
+				mark = name.indexOf(">");
+				name = name.substring(0, mark);
+				break;
+			}
+		}
+		return name;
+	}
+
 }

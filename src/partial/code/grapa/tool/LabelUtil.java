@@ -377,7 +377,20 @@ public class LabelUtil {
 	          break;
 	        case PARAM_CALLEE:
 	          ParamCallee paramCallee = (ParamCallee) s;
-	          line = s.getKind() + " " + paramCallee.getValueNumber();
+	          IMethod method = paramCallee.getNode().getMethod();
+	          int index = paramCallee.getValueNumber();
+	          if(method.isStatic()) {
+	        	  index = index -1;
+	          }else {
+	        	  index = index -2;
+	          }
+	          String type;
+	          if(index>0) {
+	        	  type = method.getParameterType(index).toString();
+	          }else {
+	        	  type = "this";
+	          }
+	          line = s.getKind() + " " + paramCallee.getValueNumber()+":"+type;
 	          break;
 	        case PARAM_CALLER:
 	          ParamCaller paramCaller = (ParamCaller) s;
