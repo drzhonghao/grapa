@@ -38,22 +38,27 @@ import partial.code.grapa.delta.graph.DeltaNode;
 import partial.code.grapa.tool.LabelUtil;
 
 
-public class DependencyGraph {
+public class DependencyGraphBuilder {
 
 	private AnalysisScope scope;
 	private ClassHierarchy cha;
+	private MethodEntry point;
 	
-	public DependencyGraph(AnalysisScope scope, ClassHierarchy cha) {
+	public DependencyGraphBuilder(AnalysisScope scope, ClassHierarchy cha) {
 		this.scope = scope;
 		this.cha = cha;
 	}
 
 	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(String methodName, String sig, String key, boolean bInter) {
-		MethodEntry point = buildEntryPoint(methodName, sig, key);
+		point = new MethodEntry(methodName, sig, key, scope, cha);
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = buildGraph(point, bInter);
 		return graph;
 	}
 	
+	public MethodEntry getPoint() {
+		return point;
+	}
+
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> buildGraph(MethodEntry method, boolean bInter) {
 		if(method==null) {
 			return null;
@@ -137,25 +142,5 @@ public class DependencyGraph {
 	}
 	
 	
-	private MethodEntry buildEntryPoint(String methodName, String sig, String key) {
-		ClassLoaderReference loaderRef = scope.getApplicationLoader();
-		Atom mainMethod = Atom.findOrCreateAsciiAtom(methodName);
-		TypeReference type = TypeReference.findOrCreate(loaderRef, TypeName.string2TypeName(key));
-		MethodReference mainRef = MethodReference.findOrCreate(type, mainMethod, Descriptor
-                .findOrCreateUTF8(sig));
-		HashSet<Entrypoint> eps = HashSetFactory.make();
-		IMethod method = cha.resolveMethod(mainRef);
-		MethodEntry me = null;
-		if(method!=null) {
-			DefaultEntrypoint p = new DefaultEntrypoint(method, cha);		
-			eps.add(p);
-			me = new MethodEntry();
-			me.entryPoint = eps;
-			me.name = methodName;
-			me.typeName = key;
-			me.sig = sig;
-			me.method = method;
-		}
-		return me;
-	}
+	
 }

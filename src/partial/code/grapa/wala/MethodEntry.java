@@ -1,7 +1,19 @@
 package partial.code.grapa.wala;
 
+import java.util.HashSet;
+
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
+import com.ibm.wala.ipa.callgraph.impl.DefaultEntrypoint;
+import com.ibm.wala.ipa.cha.ClassHierarchy;
+import com.ibm.wala.types.ClassLoaderReference;
+import com.ibm.wala.types.Descriptor;
+import com.ibm.wala.types.MethodReference;
+import com.ibm.wala.types.TypeName;
+import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.strings.Atom;
 
 import sun.reflect.generics.tree.MethodTypeSignature;
 import sun.reflect.generics.tree.TypeSignature;
@@ -12,6 +24,34 @@ public class MethodEntry {
 	public String sig;
 	public Iterable<Entrypoint> entryPoint;
 	public IMethod method;
+	
+	public MethodEntry(String methodName, String sig, String key, AnalysisScope scope, ClassHierarchy cha) {
+		ClassLoaderReference loaderRef = scope.getApplicationLoader();
+		Atom mainMethod = Atom.findOrCreateAsciiAtom(methodName);
+		TypeReference type = TypeReference.findOrCreate(loaderRef, TypeName.string2TypeName(key));
+		MethodReference mainRef = MethodReference.findOrCreate(type, mainMethod, Descriptor
+                .findOrCreateUTF8(sig));
+		HashSet<Entrypoint> eps = HashSetFactory.make();
+		IMethod method = cha.resolveMethod(mainRef);
+		if(method!=null) {
+			DefaultEntrypoint p = new DefaultEntrypoint(method, cha);		
+			eps.add(p);
+			this.entryPoint = eps;
+			this.name = methodName;
+			this.typeName = key;
+			this.sig = sig;
+			this.method = method;
+		}
+	}
+	
+	public MethodEntry(HashSet<Entrypoint> eps, String name, String typeName, String desc, IMethod method) {
+		this.entryPoint = eps;
+		this.name = name;
+		this.typeName = typeName;
+		this.sig = desc;
+		this.method = method;
+	}
+
 	public String getSignature() {
 		String result = typeName.substring(1) + "." + name;
 		result = result.replaceAll("/", ".");
