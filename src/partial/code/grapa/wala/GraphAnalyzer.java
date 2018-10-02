@@ -29,7 +29,7 @@ public class GraphAnalyzer {
 		File d = new File(resultDir+"/"+point.getShortTypeName());
 		d.mkdirs();
 		DeltaGraphUtil gu =  new DeltaGraphUtil("c:/Program Files (x86)/Graphviz2.38/bin/dot.exe");
-		gu.writeToPdfGraph(graph, d.getAbsolutePath()+"/"+point.getShortName()+".pdf");
+		gu.writeToPdfGraph(graph, d.getAbsolutePath()+"/"+point.getFileName()+".pdf");
 
 	}
 	
@@ -55,7 +55,7 @@ public class GraphAnalyzer {
 		String label = "PARAM_CALLEE "+index;
 		DeltaNode match = null;
 		for(DeltaNode n:graph.getVertices()) {
-			if(n.label.compareTo(label)==0) {
+			if(n.label.startsWith(label)) {
 				match = n;
 				break;
 			}

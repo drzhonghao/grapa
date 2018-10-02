@@ -35,6 +35,7 @@ import com.ibm.wala.util.strings.Atom;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaNode;
+import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.tool.LabelUtil;
 
 
@@ -42,28 +43,16 @@ public class DependencyGraphBuilder {
 
 	private AnalysisScope scope;
 	private ClassHierarchy cha;
-	private MethodEntry point;
+
 	
 	public DependencyGraphBuilder(AnalysisScope scope, ClassHierarchy cha) {
 		this.scope = scope;
 		this.cha = cha;
 	}
 
-	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(String methodName, String sig, String key, boolean bInter) {
-		point = new MethodEntry(methodName, sig, key, scope, cha);
-		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = buildGraph(point, bInter);
-		return graph;
-	}
+	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(MethodEntry point, Predicate predict) {
 	
-	public MethodEntry getPoint() {
-		return point;
-	}
-
-	private DirectedSparseGraph<DeltaNode, DeltaEdge> buildGraph(MethodEntry method, boolean bInter) {
-		if(method==null) {
-			return null;
-		}
-		AnalysisOptions options = new AnalysisOptions(scope, method.entryPoint);
+		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
 		options.setReflectionOptions(ReflectionOptions.APPLICATION_GET_METHOD);	
 		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
           null);
@@ -76,21 +65,16 @@ public class DependencyGraphBuilder {
 			PointerAnalysis<InstanceKey> pointer = builder.getPointerAnalysis();
 			SDG sdg = new SDG(cg, pointer, dOptions, cOptions);		
 			IAnalysisCacheView cache = builder.getAnalysisCache();
-			IR ir = cache.getIR(method.method);	
-			Predicate predict = null;
-			if(bInter) {
-				predict = new ApplicationPredicate();
-			}else {
-				predict = new IntraPredicate(method);
-			}
+			IR ir = cache.getIR(point.method);
 			SDGwithPredicate g = new SDGwithPredicate(sdg, predict);
 			graph = transformatSDG2Jung(g, ir);
 		} catch (Exception | Error  e) {
-			System.out.println("Fail to build the SDG for "+method.getFullName());
+			System.out.println("Fail to build the SDG for "+point.getFullName());
 //			e.printStackTrace();
 		}
 		return graph;
 	}
+	
 	
 	
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> transformatSDG2Jung(

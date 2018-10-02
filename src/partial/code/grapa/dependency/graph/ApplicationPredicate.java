@@ -1,4 +1,4 @@
-package partial.code.grapa.wala;
+package partial.code.grapa.dependency.graph;
 
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.slicer.NormalReturnCaller;

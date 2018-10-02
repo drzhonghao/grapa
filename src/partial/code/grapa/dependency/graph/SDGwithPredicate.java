@@ -20,10 +20,10 @@ import com.ibm.wala.util.graph.NodeManager;
 public class SDGwithPredicate implements Graph<Statement>{
 
 	private SDG g;
-	private IntraPredicate p;
+	private Predicate p;
 	int nodeCount = -1;
 
-	public SDGwithPredicate(SDG g, IntraPredicate p) {
+	public SDGwithPredicate(SDG g, Predicate p) {
 		// TODO Auto-generated constructor stub
 		this.g = g;
 		this.p = p;
