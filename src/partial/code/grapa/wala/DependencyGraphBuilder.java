@@ -1,5 +1,6 @@
 package partial.code.grapa.wala;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -121,6 +122,17 @@ public class DependencyGraphBuilder {
 					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
 				}
 			}
+		}
+		
+		//remove orphan
+		ArrayList<DeltaNode> toDels = new ArrayList<DeltaNode>(); 
+		for(DeltaNode node:graph.getVertices()) {
+			if(graph.degree(node)==0) {
+				toDels.add(node);
+			}
+		}
+		for(DeltaNode node:toDels) {
+			graph.removeVertex(node);
 		}
 		return graph;
 	}

@@ -10,7 +10,7 @@ import partial.code.grapa.delta.graph.DeltaNode;
 
 public class PathTool {
 
-	private DirectedSparseGraph<DeltaNode, DeltaEdge> graph;
+	protected DirectedSparseGraph<DeltaNode, DeltaEdge> graph;
 	private Stack<DeltaNode> connectionPath = new Stack<DeltaNode> ();
 	private ArrayList<Stack<DeltaNode>> connectionPaths = new ArrayList<Stack<DeltaNode>>();
 
@@ -20,20 +20,23 @@ public class PathTool {
 	
 	// Push to connectionsPath the object that would be passed as the parameter 'node' into the method below
 	public void findAllPaths(DeltaNode from, DeltaNode to) {
-		Collection<DeltaNode> nextNodes = graph.getSuccessors(from);
-		
+		Collection<DeltaNode> nextNodes = graph.getSuccessors(from);		
 	    for (DeltaNode nextNode : nextNodes) {
 	       if (nextNode.equals(to)) {
 	    	   Stack<DeltaNode> temp = new Stack<DeltaNode>();
 	           for (DeltaNode node1 : connectionPath)
 	               temp.add(node1);
 	           connectionPaths.add(temp);
-	       } else if (!connectionPath.contains(nextNode)) {
+	       } else if (!connectionPath.contains(nextNode)&&isValid(connectionPath)) {
 	           connectionPath.push(nextNode);
 	           findAllPaths(nextNode, to);
 	           connectionPath.pop();
 	        }
 	    }
+	}
+
+	protected boolean isValid(Stack<DeltaNode> path) {
+		return true;
 	}
 
 	public ArrayList<Stack<DeltaNode>> getConnectionPaths() {

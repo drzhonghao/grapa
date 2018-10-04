@@ -14,14 +14,12 @@ import partial.code.grapa.delta.graph.DeltaNode;
 public class GraphAnalyzer {
 
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> graph;
-	private PathTool pt;
 	private MethodEntry point;
 
 	
 	
 	public GraphAnalyzer(DirectedSparseGraph<DeltaNode, DeltaEdge> graph, MethodEntry point) {
-		this.graph = graph;	
-		pt = new PathTool(graph);
+		this.graph = graph;			
 		this.point = point;
 	}
 
@@ -63,57 +61,14 @@ public class GraphAnalyzer {
 		return match;
 	}
 
-	public ArrayList<Stack<DeltaNode>> findAllPaths(DeltaNode from, DeltaNode to) {
-		pt.reset();
-		pt.findAllPaths(from, to);
-		ArrayList<Stack<DeltaNode>> paths = pt.getConnectionPaths();
-		return paths;		
-	}
 
 	public ArrayList<Stack<DeltaNode>> findValidPath(DeltaNode from, DeltaNode to) {
-		ArrayList<Stack<DeltaNode>> paths = findAllPaths(from, to);
-		ArrayList<Stack<DeltaNode>> validPaths = new ArrayList<Stack<DeltaNode>>();
-		for(Stack<DeltaNode> path:paths) {
-			boolean bValid = true;
-			for(int i=0; i<path.size()-1; i++) {
-				DeltaNode fromNode = path.elementAt(i);
-				DeltaNode toNode = path.elementAt(i+1);
-				DeltaEdge edge = graph.findEdge(fromNode, toNode);
-				if(edge.type!=DeltaEdge.DATA_FLOW) {
-					if(isCheckCondition(edge)) {
-						bValid = false;
-						break;
-					}
-				}
-			}
-			DeltaEdge edge = graph.findEdge(from, path.get(0));
-			if(edge.type!=DeltaEdge.DATA_FLOW) {
-				if(isCheckCondition(edge)) {
-					bValid = false;
-				}
-			}
-			edge = graph.findEdge(path.get(path.size()-1), to);
-			if(edge.type!=DeltaEdge.DATA_FLOW) {
-				if(isCheckCondition(edge)) {
-					bValid = false;
-				}
-			}
-			
-			if(bValid) {
-				validPaths.add(path);
-			}
-		}
-		return validPaths;
+		DependencyPathTool pt = new DependencyPathTool(graph, from, to);
+		pt.findAllPaths(from, to);
+		return pt.getConnectionPaths();
 	}
 	
 
-	private boolean isCheckCondition(DeltaEdge edge) {
-		return isCheckCondition(edge.from)||isCheckCondition(edge.to);
-	}
-
-	private boolean isCheckCondition(DeltaNode node) {
-		return !(node.label.indexOf("conditional branch")<0&&node.label.indexOf("switch")<0);
-	}
 	
 	
 	public String extractExceptionName(DeltaNode exceptionNode) {

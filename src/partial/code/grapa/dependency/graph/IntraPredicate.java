@@ -22,44 +22,14 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.Predicate;
 
-public class IntraPredicate extends Predicate{
+public class IntraPredicate extends BasePredicate{
 	private String sig;
 
 	public IntraPredicate(String sig) {
 		this.sig = sig;
 	}
-
-	@Override
-	public boolean test(Object obj) {
-		// TODO Auto-generated method stub
 	
-		if(obj instanceof NormalStatement){
-	  		  NormalStatement ns = (NormalStatement)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-//	  		  String name = ns.getInstruction().toString();
-//	  		  return isIntraNode(method)&&name.indexOf("<init>")<0;
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof NormalReturnCaller){
-	  		  NormalReturnCaller ns = (NormalReturnCaller)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof ParamCallee){
-	  		  ParamCallee pc = (ParamCallee)obj;
-	  		  IMethod method = pc.getNode().getMethod();
-	  		  return isValidNode(method)&&pc.getValueNumber()!=1;
-	  	 }else if(obj instanceof PhiStatement){
-	  		  PhiStatement ns = (PhiStatement)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof NormalReturnCaller){
-	  		  NormalReturnCaller ns = (NormalReturnCaller)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }
-	  	 return false;
-	}
-
-	private boolean isValidNode(IMethod method) {
+	protected boolean isValidNode(IMethod method) {
 		  boolean bIntraNode = false;
 		  String n1 = method.getSignature();
 		  if(n1.compareTo(sig)==0){
