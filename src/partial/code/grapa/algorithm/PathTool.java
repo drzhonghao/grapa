@@ -12,7 +12,7 @@ public class PathTool {
 
 	protected DirectedSparseGraph<DeltaNode, DeltaEdge> graph;
 	private Stack<DeltaNode> connectionPath = new Stack<DeltaNode> ();
-	private ArrayList<Stack<DeltaNode>> connectionPaths = new ArrayList<Stack<DeltaNode>>();
+	protected ArrayList<Stack<DeltaNode>> connectionPaths = new ArrayList<Stack<DeltaNode>>();
 
 	public PathTool(DirectedSparseGraph<DeltaNode, DeltaEdge> g) {
 		this.graph = g;
@@ -26,7 +26,7 @@ public class PathTool {
 	    	   Stack<DeltaNode> temp = new Stack<DeltaNode>();
 	           for (DeltaNode node1 : connectionPath)
 	               temp.add(node1);
-	           connectionPaths.add(temp);
+	           connectionPaths.add(temp);	           
 	       } else if (!connectionPath.contains(nextNode)&&isValid(connectionPath)) {
 	           connectionPath.push(nextNode);
 	           findAllPaths(nextNode, to);

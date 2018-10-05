@@ -70,8 +70,8 @@ public class DependencyGraphBuilder {
 			SDGwithPredicate g = new SDGwithPredicate(sdg, predict);
 			graph = transformatSDG2Jung(g, ir);
 		} catch (Exception | Error  e) {
-			System.out.println("Fail to build the SDG for "+point.getFullName());
 //			e.printStackTrace();
+			System.out.println("Fail to build the SDG for "+point.getFullName());
 		}
 		return graph;
 	}
@@ -84,26 +84,34 @@ public class DependencyGraphBuilder {
 		lt.setIR(ir);
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>(); 
 		Hashtable<String, DeltaNode> table = new Hashtable<String, DeltaNode>();
-		Iterator<Statement> it = flowGraph.iterator();
-		while(it.hasNext()){
-			Statement statement = it.next();
-			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement), lt.getLineNo(statement));
-			table.put(lt.getVisualLabel(statement), node);				
-		}
-		
-		for(DeltaNode node:table.values()) {
-			graph.addVertex(node);		
-		}
+//		Iterator<Statement> it = flowGraph.iterator();
+//		while(it.hasNext()){
+//			Statement statement = it.next();
+//			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement), lt.getLineNo(statement));
+//			table.put(lt.getVisualLabel(statement), node);				
+//		}
+//		
+//		for(DeltaNode node:table.values()) {
+//			graph.addVertex(node);		
+//		}
 		
 		flowGraph.reConstruct(DataDependenceOptions.FULL, ControlDependenceOptions.NONE);
-		it = flowGraph.iterator();
+		Iterator<Statement> it = flowGraph.iterator();
 		while(it.hasNext()){
 			Statement s1 = it.next();
 			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
 			while(nodes.hasNext()){
 				Statement s2 = nodes.next();
 				DeltaNode from = table.get(lt.getVisualLabel(s1));
+				if(from==null) {
+					from = new DeltaNode(lt.getVisualLabel(s1), lt.getLineNo(s1));
+					table.put(lt.getVisualLabel(s1), from);
+				}
 				DeltaNode to = table.get(lt.getVisualLabel(s2));
+				if(to==null) {
+					to = new DeltaNode(lt.getVisualLabel(s2), lt.getLineNo(s2));
+					table.put(lt.getVisualLabel(s2), to);
+				}
 				graph.addEdge(new DeltaEdge(from, to, DeltaEdge.DATA_FLOW), from, to);
 			}
 		}
@@ -116,7 +124,15 @@ public class DependencyGraphBuilder {
 			while(nodes.hasNext()){
 				Statement s2 = nodes.next();
 				DeltaNode from = table.get(lt.getVisualLabel(s1));
+				if(from==null) {
+					from = new DeltaNode(lt.getVisualLabel(s1), lt.getLineNo(s1));
+					table.put(lt.getVisualLabel(s1), from);
+				}
 				DeltaNode to = table.get(lt.getVisualLabel(s2));
+				if(to==null) {
+					to = new DeltaNode(lt.getVisualLabel(s2), lt.getLineNo(s2));
+					table.put(lt.getVisualLabel(s2), to);
+				}
 				DeltaEdge edge = graph.findEdge(from, to);
 				if(edge==null){
 					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);

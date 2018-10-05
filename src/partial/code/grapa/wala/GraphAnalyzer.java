@@ -36,28 +36,31 @@ public class GraphAnalyzer {
 		ArrayList<DeltaNode> nodes = new ArrayList<DeltaNode>();
 		for(DeltaNode node:graph.getVertices()) {
 			String label = node.label;
-			if(label.indexOf("throw ")>=0) {
+			if(label.indexOf(" = new ")>=0&&label.indexOf("Exception>@")>0) {
 				nodes.add(node);
 			}
 		}
 		return nodes;
 	}
 	
-	public DeltaNode extractParaNode(int i, boolean isStatic) {
+	public DeltaNode extractParaNode(int i, String sig, boolean isStatic) {
 		int index;
 		if(isStatic) {
 			index = i+1;//no this
 		}else {
 			index = i+2;//param1 is this
 		}		
-		String label = "PARAM_CALLEE "+index;
+		String pre = "PARAM_CALLEE:";
+		String post = "v"+index;
+	
 		DeltaNode match = null;
 		for(DeltaNode n:graph.getVertices()) {
-			if(n.label.startsWith(label)) {
-				match = n;
+			if(n.label.startsWith(pre)&&n.label.endsWith(post)&&n.label.indexOf(sig)>0) {
+				match = n;	
 				break;
 			}
 		}
+	
 		return match;
 	}
 
@@ -65,6 +68,7 @@ public class GraphAnalyzer {
 	public ArrayList<Stack<DeltaNode>> findValidPath(DeltaNode from, DeltaNode to) {
 		DependencyPathTool pt = new DependencyPathTool(graph, from, to);
 		pt.findAllPaths(from, to);
+//		pt.printPath();
 		return pt.getConnectionPaths();
 	}
 	
@@ -85,5 +89,7 @@ public class GraphAnalyzer {
 		}
 		return name;
 	}
+
+	
 
 }
