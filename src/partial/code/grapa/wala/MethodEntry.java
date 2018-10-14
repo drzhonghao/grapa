@@ -26,21 +26,25 @@ public class MethodEntry {
 	public IMethod method;
 	
 	public MethodEntry(String methodName, String sig, String key, AnalysisScope scope, ClassHierarchy cha) {
-		ClassLoaderReference loaderRef = scope.getApplicationLoader();
-		Atom mainMethod = Atom.findOrCreateAsciiAtom(methodName);
-		TypeReference type = TypeReference.findOrCreate(loaderRef, TypeName.string2TypeName(key));
-		MethodReference mainRef = MethodReference.findOrCreate(type, mainMethod, Descriptor
-                .findOrCreateUTF8(sig));
-		HashSet<Entrypoint> eps = HashSetFactory.make();
-		IMethod method = cha.resolveMethod(mainRef);
-		if(method!=null) {
-			DefaultEntrypoint p = new DefaultEntrypoint(method, cha);		
-			eps.add(p);
-			this.entryPoint = eps;
-			this.name = methodName;
-			this.typeName = key;
-			this.sig = sig;
-			this.method = method;
+		try {
+			ClassLoaderReference loaderRef = scope.getApplicationLoader();
+			Atom mainMethod = Atom.findOrCreateAsciiAtom(methodName);
+			TypeReference type = TypeReference.findOrCreate(loaderRef, TypeName.string2TypeName(key));
+			MethodReference mainRef = MethodReference.findOrCreate(type, mainMethod, Descriptor
+	                .findOrCreateUTF8(sig));
+			HashSet<Entrypoint> eps = HashSetFactory.make();
+			IMethod method = cha.resolveMethod(mainRef);
+			if(method!=null) {
+				DefaultEntrypoint p = new DefaultEntrypoint(method, cha);		
+				eps.add(p);
+				this.entryPoint = eps;
+				this.name = methodName;
+				this.typeName = key;
+				this.sig = sig;
+				this.method = method;
+			}
+		}catch(Exception e) {
+			System.err.println("Failed to create entry for"+ methodName+sig);
 		}
 	}
 	

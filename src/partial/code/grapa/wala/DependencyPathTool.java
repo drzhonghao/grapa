@@ -9,6 +9,7 @@ import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaNode;
 
 public class DependencyPathTool extends PathTool{
+
 	private DeltaNode from;
 	private DeltaNode to;
 
@@ -17,6 +18,42 @@ public class DependencyPathTool extends PathTool{
 		this.from = from;
 		this.to = to;
 	}
+
+	
+	@Override
+	public ArrayList<Stack<DeltaNode>> getConnectionPaths() {
+		ArrayList<Stack<DeltaNode>> paths = new ArrayList<Stack<DeltaNode>>();
+		for(Stack<DeltaNode> path:this.connectionPaths) {
+			if(isValidFinalPath(path)) {
+				paths.add(path);
+			}
+		}
+		return paths;
+	}
+	
+	private boolean isValidFinalPath(Stack<DeltaNode> path) {
+		ArrayList<DeltaNode> p = new ArrayList<DeltaNode>();
+		p.add(from);
+		boolean bHasCond = false;
+		for(DeltaNode node:path) {
+			p.add(node);
+			if(isCheckCondition(node)){
+				bHasCond = true;
+				break;
+			}
+		}
+		boolean bValid = true;
+		for(int i=0; i<p.size()-1; i++) {
+			DeltaNode f = p.get(i);
+			DeltaNode t = p.get(i+1);
+			DeltaEdge e = graph.findEdge(f,t);
+			if(e.type == DeltaEdge.CONTROL_FLOW) {
+				bValid = false;
+			}
+		}
+		return bValid&&bHasCond;
+	}
+
 
 	@Override
 	protected boolean isValid(Stack<DeltaNode> path) {
@@ -39,18 +76,11 @@ public class DependencyPathTool extends PathTool{
 					bValid = false;
 				}
 			}
-//			edge = graph.findEdge(path.get(path.size()-1), to);			
-//			if(edge!=null&&edge.type!=DeltaEdge.DATA_FLOW) {
-//				if(isCheckCondition(edge)) {
-//					bValid = false;
-//				}
-//			}
 		}
 		return bValid;
 	}
 
 	private boolean isCheckCondition(DeltaEdge edge) {
-//		return isCheckCondition(edge.from)||isCheckCondition(edge.to);
 		return isCheckCondition(edge.to);
 	}
 

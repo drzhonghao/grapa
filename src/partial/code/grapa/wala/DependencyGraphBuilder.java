@@ -54,7 +54,8 @@ public class DependencyGraphBuilder {
 	public DirectedSparseGraph<DeltaNode, DeltaEdge> build(MethodEntry point, Predicate predict) {
 	
 		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
-		options.setReflectionOptions(ReflectionOptions.APPLICATION_GET_METHOD);	
+		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
+//		options.setMaxNumberOfNodes(15560);
 		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
           null);
 		CallGraph cg = null;
@@ -149,6 +150,15 @@ public class DependencyGraphBuilder {
 		}
 		for(DeltaNode node:toDels) {
 			graph.removeVertex(node);
+		}
+		
+		//update method call entry
+		for(DeltaEdge edge:graph.getEdges()) {
+			if(edge.from.label.startsWith("NORMAL")&&edge.to.label.startsWith("METHOD_ENTRY")) {
+				edge.type = DeltaEdge.DATA_FLOW;
+			}else if(edge.from.label.startsWith("METHOD_ENTRY")&&edge.to.label.startsWith("NORMAL")) {
+				edge.type = DeltaEdge.DATA_FLOW;
+			}
 		}
 		return graph;
 	}
