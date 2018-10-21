@@ -140,7 +140,7 @@ public class MethodEntry {
 		return line;
 	}
 	public String getLongTypeName() {
-		// TODO Auto-generated method stub
+	
 		String result = typeName.substring(1);
 		result = result.replaceAll("/", ".");
 		return result;

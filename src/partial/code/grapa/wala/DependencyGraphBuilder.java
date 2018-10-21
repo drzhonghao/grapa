@@ -44,6 +44,7 @@ public class DependencyGraphBuilder {
 
 	private AnalysisScope scope;
 	private ClassHierarchy cha;
+	private int maxNode;
 
 	
 	public DependencyGraphBuilder(AnalysisScope scope, ClassHierarchy cha) {
@@ -85,16 +86,6 @@ public class DependencyGraphBuilder {
 		lt.setIR(ir);
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>(); 
 		Hashtable<String, DeltaNode> table = new Hashtable<String, DeltaNode>();
-//		Iterator<Statement> it = flowGraph.iterator();
-//		while(it.hasNext()){
-//			Statement statement = it.next();
-//			DeltaNode node = new DeltaNode(lt.getVisualLabel(statement), lt.getLineNo(statement));
-//			table.put(lt.getVisualLabel(statement), node);				
-//		}
-//		
-//		for(DeltaNode node:table.values()) {
-//			graph.addVertex(node);		
-//		}
 		
 		flowGraph.reConstruct(DataDependenceOptions.FULL, ControlDependenceOptions.NONE);
 		Iterator<Statement> it = flowGraph.iterator();
@@ -115,7 +106,11 @@ public class DependencyGraphBuilder {
 				}
 				graph.addEdge(new DeltaEdge(from, to, DeltaEdge.DATA_FLOW), from, to);
 			}
+			if(graph.getVertexCount()>maxNode) {
+				return null;
+			}
 		}
+		
 		
 		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
 		it = flowGraph.iterator();
@@ -139,6 +134,9 @@ public class DependencyGraphBuilder {
 					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
 				}
 			}
+			if(graph.getVertexCount()>maxNode) {
+				return null;
+			}
 		}
 		
 		//remove orphan
@@ -156,11 +154,16 @@ public class DependencyGraphBuilder {
 		for(DeltaEdge edge:graph.getEdges()) {
 			if(edge.from.label.startsWith("NORMAL")&&edge.to.label.startsWith("METHOD_ENTRY")) {
 				edge.type = DeltaEdge.DATA_FLOW;
-			}else if(edge.from.label.startsWith("METHOD_ENTRY")&&edge.to.label.startsWith("NORMAL")) {
-				edge.type = DeltaEdge.DATA_FLOW;
 			}
+//			else if(edge.from.label.startsWith("METHOD_ENTRY")&&edge.to.label.startsWith("NORMAL")) {
+//				edge.type = DeltaEdge.DATA_FLOW;
+//			}
 		}
 		return graph;
+	}
+
+	public void setMaxNode(int maxNode) {
+		this.maxNode = maxNode;		
 	}
 	
 	
