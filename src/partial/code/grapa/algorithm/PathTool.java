@@ -31,7 +31,7 @@ public class PathTool {
 	       } else if (!connectionPath.contains(nextNode)&&isValid(connectionPath)) {
 	           connectionPath.push(nextNode);
 	           findAllPaths(nextNode, to);
-	           connectionPath.pop();
+	           connectionPath.pop(); 
 	        }
 	    }
 	}

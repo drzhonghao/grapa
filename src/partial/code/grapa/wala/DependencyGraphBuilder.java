@@ -56,7 +56,7 @@ public class DependencyGraphBuilder {
 	
 		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
-//		options.setMaxNumberOfNodes(15560);
+		options.setMaxNumberOfNodes(maxNode);
 		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
           null);
 		CallGraph cg = null;
