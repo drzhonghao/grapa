@@ -72,7 +72,7 @@ public class DependencyGraphBuilder {
 			SDGwithPredicate g = new SDGwithPredicate(sdg, predict);
 			graph = transformatSDG2Jung(g, ir);
 		} catch (Exception | Error  e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 			System.out.println("Fail to build the SDG for "+point.getFullName());
 		}
 		return graph;
@@ -155,9 +155,22 @@ public class DependencyGraphBuilder {
 			if(edge.from.label.startsWith("NORMAL")&&edge.to.label.startsWith("METHOD_ENTRY")) {
 				edge.type = DeltaEdge.DATA_FLOW;
 			}
-//			else if(edge.from.label.startsWith("METHOD_ENTRY")&&edge.to.label.startsWith("NORMAL")) {
-//				edge.type = DeltaEdge.DATA_FLOW;
-//			}
+		}
+		
+		//update method calls in conditions
+		for(DeltaEdge edge:graph.getEdges()) {
+			if(edge.from.label.indexOf("invokevirtual")>0&&edge.to.label.indexOf("conditional branch")>0) {
+				edge.type = DeltaEdge.DATA_FLOW;
+			}
+		}
+		
+		//update string append
+		for(DeltaEdge edge:graph.getEdges()) {
+			if(edge.from.label.indexOf("Ljava/lang/StringBuilder, append(")>0
+					&&(edge.to.label.indexOf("Ljava/lang/StringBuilder, append(")>0
+					||edge.to.label.indexOf("Ljava/lang/StringBuilder, toString()")>0)) {
+				edge.type = DeltaEdge.DATA_FLOW;
+			}
 		}
 		return graph;
 	}

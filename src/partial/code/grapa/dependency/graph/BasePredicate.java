@@ -19,29 +19,30 @@ public abstract class BasePredicate extends Predicate{
 		
 		if(obj instanceof HeapStatement){
 			return false;
-	  	 }else if(obj instanceof NormalReturnCaller){
-	  		  NormalReturnCaller ns = (NormalReturnCaller)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof ParamCallee){
-	  		  ParamCallee pc = (ParamCallee)obj;
-	  		  IMethod method = pc.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof PhiStatement){
-	  		  PhiStatement ns = (PhiStatement)obj;
-	  		  IMethod method = ns.getNode().getMethod();
-	  		  return isValidNode(method);
-	  	 }else if(obj instanceof MethodEntryStatement) {
-	  		 MethodEntryStatement ms = (MethodEntryStatement)obj;
-	  		 IMethod method = ms.getNode().getMethod();
-	  		 return isValidNode(method);
-	  	 }else if(obj instanceof MethodExitStatement) {
-	  		MethodExitStatement ms = (MethodExitStatement)obj;
-	  		IMethod method = ms.getNode().getMethod();
-	  		return isValidNode(method);
-	  	 }		
-	   Statement s = (Statement)obj;
-	   IMethod method = s.getNode().getMethod();
-	   return isValidNode(method);
+	  	 }
+//		else if(obj instanceof NormalReturnCaller){
+//	  		NormalReturnCaller ns = (NormalReturnCaller)obj;
+//	  		IMethod method = ns.getNode().getMethod();
+//	  		return isValidNode(method);
+//	  	 }else if(obj instanceof ParamCallee){
+//	  		ParamCallee pc = (ParamCallee)obj;
+//	  		IMethod method = pc.getNode().getMethod();
+//	  		return isValidNode(method);
+//	  	 }else if(obj instanceof PhiStatement){
+//	  		 PhiStatement ns = (PhiStatement)obj;
+//	  		 IMethod method = ns.getNode().getMethod();
+//	  		 return isValidNode(method);
+//	  	 }else if(obj instanceof MethodEntryStatement) {
+//	  		 MethodEntryStatement ms = (MethodEntryStatement)obj;
+//	  		 IMethod method = ms.getNode().getMethod();
+//	  		 return isValidNode(method);
+//	  	 }else if(obj instanceof MethodExitStatement) {
+//	  		MethodExitStatement ms = (MethodExitStatement)obj;
+//	  		IMethod method = ms.getNode().getMethod();
+//	  		return isValidNode(method);
+//	  	 }		
+		Statement s = (Statement)obj;
+		IMethod method = s.getNode().getMethod();
+		return isValidNode(method);
 	}
 }

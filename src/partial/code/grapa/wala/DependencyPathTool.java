@@ -81,7 +81,7 @@ public class DependencyPathTool extends PathTool{
 	}
 
 	private boolean isCheckCondition(DeltaEdge edge) {
-		return isCheckCondition(edge.to);
+		return isCheckCondition(edge.from);
 	}
 
 	private boolean isCheckCondition(DeltaNode node) {
