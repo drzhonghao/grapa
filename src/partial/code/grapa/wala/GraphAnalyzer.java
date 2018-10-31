@@ -23,11 +23,11 @@ public class GraphAnalyzer {
 		this.point = point;
 	}
 
-	public void saveGraph(String resultDir) {
+	public void saveGraph(String resultDir, int index) {
 		File d = new File(resultDir+"/"+point.getShortTypeName());
 		d.mkdirs();
 		DeltaGraphUtil gu =  new DeltaGraphUtil("c:/Program Files (x86)/Graphviz2.38/bin/dot.exe");
-		gu.writeToPdfGraph(graph, d.getAbsolutePath()+"/"+point.getFileName()+".pdf");
+		gu.writeToPdfGraph(graph, d.getAbsolutePath()+"/"+point.getFileName()+index+".pdf");
 
 	}
 	

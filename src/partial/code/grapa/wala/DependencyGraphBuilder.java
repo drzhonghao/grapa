@@ -1,6 +1,7 @@
 package partial.code.grapa.wala;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.slicer.SDG;
+import com.ibm.wala.ipa.slicer.Slicer;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ipa.slicer.Slicer.ControlDependenceOptions;
 import com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions;
@@ -62,7 +64,7 @@ public class DependencyGraphBuilder {
 		CallGraph cg = null;
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
 		try {
-			cg = builder.makeCallGraph(options,null);			
+			cg = builder.makeCallGraph(options,null);
 			DataDependenceOptions dOptions = DataDependenceOptions.FULL; 
 			ControlDependenceOptions cOptions = ControlDependenceOptions.FULL;
 			PointerAnalysis<InstanceKey> pointer = builder.getPointerAnalysis();
@@ -78,8 +80,86 @@ public class DependencyGraphBuilder {
 		return graph;
 	}
 	
+	public ArrayList<DirectedSparseGraph<DeltaNode, DeltaEdge>> computeExceptionSubgraphs(MethodEntry point, Predicate predict) {
+		
+		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
+		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
+		options.setMaxNumberOfNodes(maxNode);
+		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
+          null);
+		CallGraph cg = null;
+		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
+		ArrayList<DirectedSparseGraph<DeltaNode, DeltaEdge>> graphs = new ArrayList<DirectedSparseGraph<DeltaNode, DeltaEdge>>();
+		try {
+			cg = builder.makeCallGraph(options,null);
+			DataDependenceOptions dOptions = DataDependenceOptions.FULL; 
+			ControlDependenceOptions cOptions = ControlDependenceOptions.FULL;
+			PointerAnalysis<InstanceKey> pointer = builder.getPointerAnalysis();
+			SDG sdg = new SDG(cg, pointer, dOptions, cOptions);		
+			IAnalysisCacheView cache = builder.getAnalysisCache();
+			IR ir = cache.getIR(point.method);
+			SDGwithPredicate g = new SDGwithPredicate(sdg, predict);
+			graph = transformatSDG2Jung(g, ir);
+			if(graph.getVertexCount()<200) {
+				graphs.add(graph);
+			}else {
+				ArrayList<Statement> exceptions = extractExceptions(sdg);
+				for(Statement exception:exceptions) {
+					Collection<Statement> slice = Slicer.computeBackwardSlice(sdg, exception);
+					slice.add(exception);
+					DirectedSparseGraph<DeltaNode, DeltaEdge> subgraph = extractSubGraph(graph, slice);
+					graphs.add(subgraph);
+				}
+			}
+//			graphs.add(graph);
+		} catch (Exception | Error  e) {
+			e.printStackTrace();
+			System.out.println("Fail to build the SDG for "+point.getFullName());
+		}
+		return graphs;
+	}
 	
 	
+	private DirectedSparseGraph<DeltaNode, DeltaEdge> extractSubGraph(DirectedSparseGraph<DeltaNode, DeltaEdge> graph,
+			Collection<Statement> slice) {
+		DirectedSparseGraph<DeltaNode, DeltaEdge> g = new DirectedSparseGraph<DeltaNode, DeltaEdge>();
+		for(Statement statement:slice) {
+			for(DeltaNode node:graph.getVertices()) {
+				if(statement.toString().compareTo(node.label)==0) {
+					g.addVertex(node);
+					break;
+				}
+			}			
+		}
+		for(DeltaNode node:graph.getVertices()) {
+			if(node.label.indexOf("PARAM_CALLEE:")>=0) {
+				g.addVertex(node);
+			}
+		}
+		for(DeltaNode from:g.getVertices()) {
+			for(DeltaNode to:g.getVertices()) {
+				DeltaEdge edge = graph.findEdge(from, to);
+				if(edge!=null) {
+					g.addEdge(edge, from, to);
+				}
+			}
+		}
+		return g;
+	}
+	
+	private ArrayList<Statement> extractExceptions(SDG sdg) {
+		ArrayList<Statement> statements = new ArrayList<Statement>();
+		for(int i=0; i<sdg.getNumberOfNodes(); i++) {
+			Object node = sdg.getNode(i);
+			String label = node.toString();
+			if(label.indexOf(" = new ")>=0&&label.indexOf("Exception>@")>0&&label.indexOf("NullPointerException")<0) {
+				Statement statement = (Statement)node;
+				statements.add(statement);
+			}
+		}
+		return statements;
+	}
+
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> transformatSDG2Jung(
 			SDGwithPredicate flowGraph, IR ir) {
 		LabelUtil lt = new LabelUtil();

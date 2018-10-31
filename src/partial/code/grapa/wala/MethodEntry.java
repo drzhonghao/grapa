@@ -140,7 +140,6 @@ public class MethodEntry {
 		return line;
 	}
 	public String getLongTypeName() {
-	
 		String result = typeName.substring(1);
 		result = result.replaceAll("/", ".");
 		return result;

@@ -35,11 +35,14 @@ public class DependencyPathTool extends PathTool{
 		ArrayList<DeltaNode> p = new ArrayList<DeltaNode>();
 		p.add(from);
 		boolean bHasCond = false;
+		boolean bHasPhi = false;
 		for(DeltaNode node:path) {
 			p.add(node);
 			if(isCheckCondition(node)){
 				bHasCond = true;
-				break;
+			}
+			if(node.toString().indexOf("PHI Node")>=0) {
+				bHasPhi = true;
 			}
 		}
 		boolean bValid = true;
@@ -48,10 +51,12 @@ public class DependencyPathTool extends PathTool{
 			DeltaNode t = p.get(i+1);
 			DeltaEdge e = graph.findEdge(f,t);
 			if(e.type == DeltaEdge.CONTROL_FLOW) {
-				bValid = false;
+				if(!isCheckCondition(e)) {
+					bValid = false;
+				}
 			}
 		}
-		return bValid&&bHasCond;
+		return bValid&&bHasCond&&!bHasPhi;
 	}
 
 
@@ -81,11 +86,13 @@ public class DependencyPathTool extends PathTool{
 	}
 
 	private boolean isCheckCondition(DeltaEdge edge) {
+//		return isCheckCondition(edge.from)||isCheckCondition(edge.to);
 		return isCheckCondition(edge.from);
 	}
 
 	private boolean isCheckCondition(DeltaNode node) {
-		return node.label.indexOf("conditional branch")>0||node.label.indexOf("switch")>0;
+//		return node.label.indexOf("conditional branch")>0||node.label.indexOf("switch")>0;
+		return node.label.indexOf("conditional branch")>0;
 	}
 	
 	public void printPath() {
