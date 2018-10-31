@@ -44,7 +44,7 @@ public class MethodEntry {
 				this.method = method;
 			}
 		}catch(Exception e) {
-			System.err.println("Failed to create entry for"+ methodName+sig);
+			System.err.println("Failed to create entry for "+ methodName+sig);
 		}
 	}
 	
