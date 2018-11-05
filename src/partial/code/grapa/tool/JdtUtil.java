@@ -118,12 +118,12 @@ public class JdtUtil {
                
             }
         }
-        try {
-			Thread.sleep(150);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        try {
+//			Thread.sleep(150);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         return methodName;
     }
 
