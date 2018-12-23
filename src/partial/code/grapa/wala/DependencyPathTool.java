@@ -56,7 +56,7 @@ public class DependencyPathTool extends PathTool{
 				}
 			}
 		}
-		return bValid&&bHasCond&&!bHasPhi;
+		return bValid&&bHasCond;
 	}
 
 

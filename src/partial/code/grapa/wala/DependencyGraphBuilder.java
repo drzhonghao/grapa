@@ -59,6 +59,7 @@ public class DependencyGraphBuilder {
 		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
 		options.setMaxNumberOfNodes(maxNode);
+		options.setOnlyClientCode(true);
 		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
           null);
 		CallGraph cg = null;
@@ -85,6 +86,7 @@ public class DependencyGraphBuilder {
 		AnalysisOptions options = new AnalysisOptions(scope, point.entryPoint);
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
 		options.setMaxNumberOfNodes(maxNode);
+		options.setOnlyClientCode(true);
 		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
           null);
 		CallGraph cg = null;
@@ -103,8 +105,9 @@ public class DependencyGraphBuilder {
 			if(graph.getVertexCount()<200) {
 				graphs.add(graph);
 			}else {
-				ArrayList<Statement> exceptions = extractExceptions(sdg);
-				for(Statement exception:exceptions) {
+				ArrayList<Statement> suspicousNodes = extractExceptions(sdg);
+				
+				for(Statement exception:suspicousNodes) {
 					Collection<Statement> slice = Slicer.computeBackwardSlice(sdg, exception);
 					slice.add(exception);
 					DirectedSparseGraph<DeltaNode, DeltaEdge> subgraph = extractSubGraph(graph, slice);
@@ -118,8 +121,20 @@ public class DependencyGraphBuilder {
 		}
 		return graphs;
 	}
+	private ArrayList<Statement> extractExceptions(SDG sdg) {
+		ArrayList<Statement> statements = new ArrayList<Statement>();
+		for(int i=0; i<sdg.getNumberOfNodes(); i++) {
+			Object node = sdg.getNode(i);
+			String label = node.toString();
+			if(label.indexOf(" = new ")>=0&&(label.indexOf("Exception>@")>0||label.indexOf("AssertionError>@")>0)) {
+				Statement statement = (Statement)node;
+				statements.add(statement);
+			}
+		}
+		return statements;
+	}
 	
-	
+
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> extractSubGraph(DirectedSparseGraph<DeltaNode, DeltaEdge> graph,
 			Collection<Statement> slice) {
 		DirectedSparseGraph<DeltaNode, DeltaEdge> g = new DirectedSparseGraph<DeltaNode, DeltaEdge>();
@@ -147,18 +162,7 @@ public class DependencyGraphBuilder {
 		return g;
 	}
 	
-	private ArrayList<Statement> extractExceptions(SDG sdg) {
-		ArrayList<Statement> statements = new ArrayList<Statement>();
-		for(int i=0; i<sdg.getNumberOfNodes(); i++) {
-			Object node = sdg.getNode(i);
-			String label = node.toString();
-			if(label.indexOf(" = new ")>=0&&label.indexOf("Exception>@")>0&&label.indexOf("NullPointerException")<0) {
-				Statement statement = (Statement)node;
-				statements.add(statement);
-			}
-		}
-		return statements;
-	}
+	
 
 	private DirectedSparseGraph<DeltaNode, DeltaEdge> transformatSDG2Jung(
 			SDGwithPredicate flowGraph, IR ir) {

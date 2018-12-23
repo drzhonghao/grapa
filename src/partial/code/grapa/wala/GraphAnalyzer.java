@@ -36,7 +36,7 @@ public class GraphAnalyzer {
 		ArrayList<DeltaNode> nodes = new ArrayList<DeltaNode>();
 		for(DeltaNode node:graph.getVertices()) {
 			String label = node.label;
-			if(label.indexOf(" = new ")>=0&&label.indexOf("Exception>@")>0&&label.indexOf("NullPointerException")<0) {
+			if(label.indexOf(" = new ")>=0&&(label.indexOf("Exception>@")>0||label.indexOf("AssertionError>@")>0)) {
 				nodes.add(node);
 			}
 		}
