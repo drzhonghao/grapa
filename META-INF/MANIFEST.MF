@@ -14,12 +14,11 @@ Require-Bundle: org.eclipse.ui,
  com.ibm.wala.ide,
  com.ibm.wala.ide.jdt,
  com.ibm.wala.shrike,
- com.ibm.wala.core.tests,
  org.eclipse.jdt.launching,
  ca.mcgill.cs.swevo.ppa.ui,
  com.ibm.wala.core,
  com.ibm.wala.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/collections-generic-4.01.jar,

@@ -3,7 +3,7 @@ package partial.code.grapa.tool;
 import java.io.File;
 import java.io.FileWriter;
 
-import com.ibm.wala.examples.drivers.PDFTypeHierarchy;
+
 import com.ibm.wala.util.WalaException;
 import com.ibm.wala.viz.DotUtil;
 import com.ibm.wala.viz.NodeDecorator;
