@@ -1,6 +1,6 @@
 package partial.code.grapa.dependency.graph;
 
-import com.ibm.wala.util.Predicate;
+
 
 import partial.code.grapa.commit.method.ClientMethod;
 
@@ -25,7 +25,7 @@ import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.Predicate;
+
 
 public class IntraPredicate extends BasePredicate{
 	private String sig;

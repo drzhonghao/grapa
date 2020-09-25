@@ -63,7 +63,7 @@ public class MethodComparator extends Comparator{
 		}		
 		
 		MethodMapping comparator = new MethodMapping(leftMethods, rightMethods);
-		return comparator.extractNodeMappings();
+		return comparator.extractItemMappings();
 	}
 
 	@Override

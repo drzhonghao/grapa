@@ -33,27 +33,22 @@ public abstract class GraphMapping extends HungarianMapping{
 	}
 	
 	protected Object getLeftItem(int i) {
-		// TODO Auto-generated method stub
 		return leftGraph.getVertices().toArray()[i];
 	}
 	
 	protected Object getRightItem(int i) {
-		// TODO Auto-generated method stub
 		return rightGraph.getVertices().toArray()[i];
 	}
 	
 	public double calculateNodeCost(DeltaNode from, DeltaNode to) {
-		// TODO Auto-generated method stub
 		if(this.bSwapSide) {
 			return calculateCost(to, from);
 		}else {
 			return calculateCost(from, to);
 		}
-		
 	}
 	
 	private double calculateCost(DeltaNode leftNode, DeltaNode rightNode) {
-		// TODO Auto-generated method stub
 		double edgeCost = 1;
 		double nameCost = 2;
 		double inDataNodeCost = calculateInDataCost(leftNode, rightNode)*edgeCost;
@@ -66,7 +61,6 @@ public abstract class GraphMapping extends HungarianMapping{
 	
 	public double calculateNodeNameCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
-		// TODO Auto-generated method stub
 		LabelUtil lt = new LabelUtil();
 		ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
 		ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
@@ -85,7 +79,6 @@ public abstract class GraphMapping extends HungarianMapping{
 	
 	private double calculateNodeKindCost(DeltaNode leftNode,
 			DeltaNode rightNode) {
-		// TODO Auto-generated method stub
 		double cost =  1 - stringComparator.getSimilarity(leftNode.getKind(), rightNode.getKind());
 		return cost;
 	}
@@ -198,7 +191,7 @@ public abstract class GraphMapping extends HungarianMapping{
 	
 	public DirectedSparseGraph<DeltaNode, DeltaEdge> extractChangeGraph() {
 		// TODO Auto-generated method stub
-		Hashtable<Object, Object> vm = this.extractNodeMappings();
+		Hashtable<Object, Object> vm = this.extractItemMappings();
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>();
 		//add left nodes
 		for(DeltaNode s:leftGraph.getVertices()){

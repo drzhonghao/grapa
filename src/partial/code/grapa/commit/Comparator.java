@@ -176,7 +176,7 @@ abstract public class Comparator {
 
 	protected void compareAstTrees(ArrayList<ASTNode> leftTrees, ArrayList<ASTNode> rightTrees) {
 		ClassMapping comparator = new ClassMapping(leftTrees, rightTrees);
-		Hashtable<Object, Object> nm = comparator.extractNodeMappings();
+		Hashtable<Object, Object> nm = comparator.extractItemMappings();
 		
 		for(ASTNode leftTree:leftTrees){
 			ASTNode rightTree = (ASTNode) nm.get(leftTree);

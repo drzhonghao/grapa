@@ -10,7 +10,7 @@ import com.ibm.wala.ipa.slicer.ParamCallee;
 import com.ibm.wala.ipa.slicer.PhiStatement;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ipa.slicer.StatementWithInstructionIndex;
-import com.ibm.wala.util.Predicate;
+
 
 public abstract class BasePredicate extends Predicate{
 	abstract protected boolean isValidNode(IMethod method);

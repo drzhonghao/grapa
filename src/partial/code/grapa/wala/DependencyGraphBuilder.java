@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.classLoader.Language;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
@@ -30,7 +31,7 @@ import com.ibm.wala.types.Descriptor;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.Predicate;
+
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.strings.Atom;
 
@@ -38,6 +39,7 @@ import com.ibm.wala.util.strings.Atom;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.DeltaEdge;
 import partial.code.grapa.delta.graph.DeltaNode;
+import partial.code.grapa.dependency.graph.Predicate;
 import partial.code.grapa.dependency.graph.SDGwithPredicate;
 import partial.code.grapa.tool.LabelUtil;
 
@@ -60,8 +62,7 @@ public class DependencyGraphBuilder {
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
 		options.setMaxNumberOfNodes(maxNode);
 		options.setOnlyClientCode(true);
-		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
-          null);
+		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(Language.JAVA, options, new AnalysisCacheImpl(), cha, scope);
 		CallGraph cg = null;
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
 		try {
@@ -87,8 +88,7 @@ public class DependencyGraphBuilder {
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_APPLICATION_GET_METHOD);	
 		options.setMaxNumberOfNodes(maxNode);
 		options.setOnlyClientCode(true);
-		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(options, new AnalysisCacheImpl(), cha, scope, null,
-          null);
+		com.ibm.wala.ipa.callgraph.CallGraphBuilder<InstanceKey> builder = Util.makeZeroCFABuilder(Language.JAVA, options, new AnalysisCacheImpl(), cha, scope);
 		CallGraph cg = null;
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = null;
 		ArrayList<DirectedSparseGraph<DeltaNode, DeltaEdge>> graphs = new ArrayList<DirectedSparseGraph<DeltaNode, DeltaEdge>>();
@@ -171,7 +171,7 @@ public class DependencyGraphBuilder {
 		DirectedSparseGraph<DeltaNode, DeltaEdge> graph = new DirectedSparseGraph<DeltaNode, DeltaEdge>(); 
 		Hashtable<String, DeltaNode> table = new Hashtable<String, DeltaNode>();
 		
-		flowGraph.reConstruct(DataDependenceOptions.FULL, ControlDependenceOptions.NONE);
+//		flowGraph.reConstruct(DataDependenceOptions.FULL, ControlDependenceOptions.NONE);
 		Iterator<Statement> it = flowGraph.iterator();
 		while(it.hasNext()){
 			Statement s1 = it.next();
@@ -196,32 +196,32 @@ public class DependencyGraphBuilder {
 		}
 		
 		
-		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
-		it = flowGraph.iterator();
-		while(it.hasNext()){
-			Statement s1 = it.next();
-			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
-			while(nodes.hasNext()){
-				Statement s2 = nodes.next();
-				DeltaNode from = table.get(lt.getVisualLabel(s1));
-				if(from==null) {
-					from = new DeltaNode(lt.getVisualLabel(s1), lt.getLineNo(s1));
-					table.put(lt.getVisualLabel(s1), from);
-				}
-				DeltaNode to = table.get(lt.getVisualLabel(s2));
-				if(to==null) {
-					to = new DeltaNode(lt.getVisualLabel(s2), lt.getLineNo(s2));
-					table.put(lt.getVisualLabel(s2), to);
-				}
-				DeltaEdge edge = graph.findEdge(from, to);
-				if(edge==null){
-					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
-				}
-			}
-			if(graph.getVertexCount()>maxNode) {
-				return null;
-			}
-		}
+//		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
+//		it = flowGraph.iterator();
+//		while(it.hasNext()){
+//			Statement s1 = it.next();
+//			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
+//			while(nodes.hasNext()){
+//				Statement s2 = nodes.next();
+//				DeltaNode from = table.get(lt.getVisualLabel(s1));
+//				if(from==null) {
+//					from = new DeltaNode(lt.getVisualLabel(s1), lt.getLineNo(s1));
+//					table.put(lt.getVisualLabel(s1), from);
+//				}
+//				DeltaNode to = table.get(lt.getVisualLabel(s2));
+//				if(to==null) {
+//					to = new DeltaNode(lt.getVisualLabel(s2), lt.getLineNo(s2));
+//					table.put(lt.getVisualLabel(s2), to);
+//				}
+//				DeltaEdge edge = graph.findEdge(from, to);
+//				if(edge==null){
+//					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
+//				}
+//			}
+//			if(graph.getVertexCount()>maxNode) {
+//				return null;
+//			}
+//		}
 		
 		//remove orphan
 		ArrayList<DeltaNode> toDels = new ArrayList<DeltaNode>(); 

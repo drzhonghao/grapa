@@ -16,8 +16,7 @@ abstract public class HungarianMapping {
 	protected abstract Object getLeftItem(int index);
 	protected abstract Object getRightItem(int index);
 
-	public Hashtable<Object, Object> extractNodeMappings() {
-		// TODO Auto-generated method stub
+	public Hashtable<Object, Object> extractItemMappings() {
 		calculateCostMatrix();
 		HungarianAlgorithm ha = new HungarianAlgorithm();
 		Hashtable<Object, Object> vm = new Hashtable<Object, Object>();
@@ -38,7 +37,26 @@ abstract public class HungarianMapping {
         return vm;
 	}
 
-	
+	public Hashtable<DeltaNode, DeltaNode> extractNodeMappings() {
+		calculateCostMatrix();
+		HungarianAlgorithm ha = new HungarianAlgorithm();
+		Hashtable<DeltaNode, DeltaNode> vm = new Hashtable<DeltaNode, DeltaNode>();
+		 
+		if(costMatrix.length>0){
+	        int[][] matching = ha.hgAlgorithm(costMatrix);
+	        //mapped nodes
+	        for(int i=0; i<matching.length; i++){
+	        	DeltaNode v1 = (DeltaNode) getLeftItem(matching[i][0]);	
+	        	DeltaNode v2 = (DeltaNode) getRightItem(matching[i][1]);
+				if(bSwapSide){
+					vm.put(v2, v1);
+				}else{
+					vm.put(v1, v2);
+				}
+	        }
+		}
+        return vm;
+	}
 	
 	
 	

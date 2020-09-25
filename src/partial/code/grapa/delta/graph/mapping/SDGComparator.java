@@ -79,7 +79,7 @@ public class SDGComparator {
 			}
 		}
 		
-		flowGraph.reConstruct(DataDependenceOptions.NO_BASE_NO_EXCEPTIONS, ControlDependenceOptions.NONE);
+//		flowGraph.reConstruct(DataDependenceOptions.NO_BASE_NO_EXCEPTIONS, ControlDependenceOptions.NONE);
 		it = flowGraph.iterator();
 		while(it.hasNext()){
 			Statement s1 = it.next();
@@ -93,21 +93,21 @@ public class SDGComparator {
 			}
 		}
 		
-		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
-		it = flowGraph.iterator();
-		while(it.hasNext()){
-			Statement s1 = it.next();
-			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
-			while(nodes.hasNext()){
-				Statement s2 = nodes.next();
-				DeltaNode from = table.get(s1);
-				DeltaNode to = table.get(s2);
-				DeltaEdge edge = graph.findEdge(from, to);
-				if(edge==null){
-					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
-				}
-			}
-		}
+//		flowGraph.reConstruct(DataDependenceOptions.NONE, ControlDependenceOptions.FULL);
+//		it = flowGraph.iterator();
+//		while(it.hasNext()){
+//			Statement s1 = it.next();
+//			Iterator<Statement> nodes = flowGraph.getSuccNodes(s1);
+//			while(nodes.hasNext()){
+//				Statement s2 = nodes.next();
+//				DeltaNode from = table.get(s1);
+//				DeltaNode to = table.get(s2);
+//				DeltaEdge edge = graph.findEdge(from, to);
+//				if(edge==null){
+//					graph.addEdge(new DeltaEdge(from, to, DeltaEdge.CONTROL_FLOW), from, to);
+//				}
+//			}
+//		}
 		return graph;
 	}
 

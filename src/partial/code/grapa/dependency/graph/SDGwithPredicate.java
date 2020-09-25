@@ -1,6 +1,7 @@
 package partial.code.grapa.dependency.graph;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import com.ibm.wala.cast.java.ipa.modref.AstJavaModRef;
 import com.ibm.wala.ipa.callgraph.CallGraph;
@@ -11,7 +12,7 @@ import com.ibm.wala.ipa.slicer.SDG;
 import com.ibm.wala.ipa.slicer.Statement;
 import com.ibm.wala.ipa.slicer.Slicer.ControlDependenceOptions;
 import com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions;
-import com.ibm.wala.util.Predicate;
+
 import com.ibm.wala.util.collections.IteratorUtil;
 import com.ibm.wala.util.debug.Assertions;
 import com.ibm.wala.util.graph.Graph;
@@ -116,12 +117,16 @@ public class SDGwithPredicate implements Graph<Statement>{
 		Assertions.UNREACHABLE();
 	}
 
-
-	public void reConstruct(DataDependenceOptions dOptions, ControlDependenceOptions cOptions) {
+	@Override
+	public Stream<Statement> stream() {
 		// TODO Auto-generated method stub
-		
-		g.reConstruct(dOptions, cOptions);
+		return null;
 	}
+
+
+//	public void reConstruct(DataDependenceOptions dOptions, ControlDependenceOptions cOptions) {
+//		g.reConstruct(dOptions, cOptions);
+//	}
 
 
 }
