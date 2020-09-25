@@ -50,6 +50,10 @@ public class DeltaNode {
 		this.lineNo = node.lineNo;
 	}
 
+	public DeltaNode(String visualLabel) {
+		label = visualLabel;
+	}
+
 	public String getKind() {
 		LabelUtil tool = new LabelUtil();
 		return tool.parse(label);

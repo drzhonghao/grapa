@@ -243,8 +243,9 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		return table;
 	}
 
-	public void addtoScope(String prn, Hashtable<File, String> pTable,
+	public ArrayList<ASTNode> addtoScope(String prn, Hashtable<File, String> pTable,
 			String j2seDir, String jarFileName, String otherLibDir, ArrayList<File> files) {
+		ArrayList<ASTNode> trees = null;
 		try {
 			super.buildAnalysisScope();
 			resolveJ2sePathEntry(j2seDir);	
@@ -263,6 +264,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return trees;
 	}
 
 	private JarFile resolveJarFileName(String jarFileName) throws IOException {
