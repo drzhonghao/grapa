@@ -47,6 +47,7 @@ import com.ibm.wala.cast.java.translator.jdt.JDTClassLoaderFactory;
 import com.ibm.wala.cast.java.translator.jdt.JDTSourceLoaderImpl;
 import com.ibm.wala.classLoader.BinaryDirectoryTreeModule;
 import com.ibm.wala.classLoader.ClassLoaderFactory;
+import com.ibm.wala.classLoader.ClassLoaderFactoryImpl;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IClassLoader;
 import com.ibm.wala.classLoader.IMethod;
@@ -176,6 +177,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 
 	@Override
 	protected ClassLoaderFactory getClassLoaderFactory(SetOfClasses exclusions) {
+	
 		return new JDTClassLoaderFactory(exclusions);	
 	}
 
@@ -244,15 +246,15 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	}
 
 	public ArrayList<ASTNode> addtoScope(String prn, Hashtable<File, String> pTable,
-			String j2seDir, String jarFileName, String otherLibDir, ArrayList<File> files) {
+			String j2seDir, String jarPath, String otherLibDir, ArrayList<File> files) {
 		ArrayList<ASTNode> trees = null;
 		try {
 			super.buildAnalysisScope();
 			resolveJ2sePathEntry(j2seDir);	
 			
-			resolveSourcePathyEntry(prn,  pTable, files,  jarFileName, "");
+			resolveSourcePathyEntry(prn,  pTable, files,  jarPath, "");
 			
-			resolveJarFileName(jarFileName);
+			resolveJarFileName(jarPath);
 			File d = new File(otherLibDir);
 			for(File f:d.listFiles()){
 				resolveJarFileName(f.getAbsolutePath());				
@@ -267,12 +269,19 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 		return trees;
 	}
 
-	private JarFile resolveJarFileName(String jarFileName) throws IOException {
+	private void resolveJarFileName(String jarFileName) throws IOException {
 		File f = new File(jarFileName);
-		JarFile j = new JarFile(f);
-		Module module = (f.isDirectory() ? (Module) new BinaryDirectoryTreeModule(f) : (Module) new JarFileModule(j));
-		scope.addToScope(scope.getApplicationLoader(), module);
-		return j;
+		if(f.isFile()) {
+			JarFile j = new JarFile(f);
+			Module module = (f.isDirectory() ? (Module) new BinaryDirectoryTreeModule(f) : (Module) new JarFileModule(j));
+			scope.addToScope(scope.getApplicationLoader(), module);
+		}else {
+			for(File jf:f.listFiles()) {
+				JarFile j = new JarFile(jf);
+				Module module = (f.isDirectory() ? (Module) new BinaryDirectoryTreeModule(f) : (Module) new JarFileModule(j));
+				scope.addToScope(scope.getApplicationLoader(), module);
+			}
+		}
 	}
 
 	
@@ -423,19 +432,19 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 
 	private void resolveJ2sePathEntry(String j2seDir) throws IOException {
 		// TODO Auto-generated method stub
-		File file = new File(j2seDir+"rt.jar");
+		File file = new File(j2seDir+"tools.jar");
 		JarFile j = new JarFile(file);
 		Module module = (file.isDirectory() ? (Module) new BinaryDirectoryTreeModule(file) : (Module) new JarFileModule(j));
 		scope.addToScope(scope.getPrimordialLoader(), module);
 		
-		File d = new File(j2seDir+"/ext/");
-		for(File f:d.listFiles()){
-			if(f.getName().endsWith(".jar")){
-				j = new JarFile(f);
-				module = (f.isDirectory() ? (Module) new BinaryDirectoryTreeModule(f) : (Module) new JarFileModule(j));
-				scope.addToScope(scope.getExtensionLoader(), module);
-			}
-		}
+//		File d = new File(j2seDir+"/ext/");
+//		for(File f:d.listFiles()){
+//			if(f.getName().endsWith(".jar")){
+//				j = new JarFile(f);
+//				module = (f.isDirectory() ? (Module) new BinaryDirectoryTreeModule(f) : (Module) new JarFileModule(j));
+//				scope.addToScope(scope.getExtensionLoader(), module);
+//			}
+//		}
 	}
 
 	
