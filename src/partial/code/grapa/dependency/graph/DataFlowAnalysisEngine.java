@@ -87,9 +87,11 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	}
 
 	public void initClassHierarchy() {
-		IClassHierarchy cha = buildClassHierarchy();
+		IClassHierarchy cha = buildClassHierarchyWithPPA();
 		setClassHierarchy(cha);
 	}
+
+
 
 	public void clearAnalysisScope() throws JavaModelException {
 		if(scope!=null){
@@ -376,8 +378,10 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 						pn, true, null);
 			}
 			String source = FileUtils.getContent(file);
-			ICompilationUnit cu = pf.createCompilationUnit(file.getName(), source,
-					false, null);
+			String unitname = file.getName();
+			int mark = unitname.lastIndexOf("_");
+			unitname = unitname.substring(mark+1);
+			ICompilationUnit cu = pf.createCompilationUnit(unitname, source, false, null);
 			IResource rs = cu.getResource();
 			IFile ifile= (IFile)rs;
 			EclipseSourceFileModule module = EclipseSourceFileModule.createEclipseSourceFileModule(ifile);
@@ -432,7 +436,7 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 
 	private void resolveJ2sePathEntry(String j2seDir) throws IOException {
 		// TODO Auto-generated method stub
-		File file = new File(j2seDir+"tools.jar");
+		File file = new File(j2seDir+"rt.jar");
 		JarFile j = new JarFile(file);
 		Module module = (file.isDirectory() ? (Module) new BinaryDirectoryTreeModule(file) : (Module) new JarFileModule(j));
 		scope.addToScope(scope.getPrimordialLoader(), module);
@@ -452,6 +456,8 @@ public class DataFlowAnalysisEngine extends JavaSourceAnalysisEngine{
 	public IR getCurrentIR() {
 		return ir;
 	}
+
+	
 
 	
 	

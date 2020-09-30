@@ -91,6 +91,7 @@ public class LabelUtil {
 		labelTypes.add("assert");	
 		labelTypes.add("bitnot");
 		labelTypes.add("lexical:");
+		labelTypes.add("Node:");
 	}
 
 	public void setIR(IR ir){
