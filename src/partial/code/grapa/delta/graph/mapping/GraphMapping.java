@@ -65,12 +65,23 @@ public abstract class GraphMapping extends HungarianMapping{
 		ArrayList<String> leftNames = lt.getCodeNames(leftNode.label);
 		ArrayList<String> rightNames = lt.getCodeNames(rightNode.label);
 		double cost = 0;
+//		if(leftNames.size()>0&&rightNames.size()>0){			
+//			String leftName = leftNames.get(0);
+//			String rightName = rightNames.get(0);
+//			cost =  1 - stringComparator.getSimilarity(leftName, rightName);
+//		}else if(leftNames.size()==0&&rightNames.size()==0){
+//			cost = calculateNodeKindCost(leftNode, rightNode);
+//		}else{
+//			cost = 1;
+//		}
 		if(leftNames.size()>0&&rightNames.size()>0){
-			String leftName = leftNames.get(0);
-			String rightName = rightNames.get(0);
-			cost =  1 - stringComparator.getSimilarity(leftName, rightName);
-		}else if(leftNames.size()==0&&rightNames.size()==0){
-			cost = calculateNodeKindCost(leftNode, rightNode);
+			int size = leftNames.size()<rightNames.size()?leftNames.size():rightNames.size(); 
+			for(int i=0; i<size; i++) {
+				String leftName = leftNames.get(i);
+				String rightName = rightNames.get(i);
+				cost +=  1 - stringComparator.getSimilarity(leftName, rightName);
+			}
+			cost = cost/size;
 		}else{
 			cost = 1;
 		}
@@ -276,8 +287,9 @@ public abstract class GraphMapping extends HungarianMapping{
 					if(le!=null){
 						DeltaNode r1 = vm.get(l1);
 						DeltaNode r2 = vm.get(l2);
-						DeltaEdge re = leftGraph.findEdge(r1, r2);
-						if(re!=null&&re.type==le.type){
+						DeltaEdge re = rightGraph.findEdge(r1, r2);
+//						if(re!=null&&re.type==le.type){
+						if(re!=null){
 							count++;
 						}
 						total++;

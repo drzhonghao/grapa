@@ -93,6 +93,12 @@ public class LabelUtil {
 		labelTypes.add("lexical:");
 		labelTypes.add("Node:");
 	}
+	
+	public static void main(String args[]) {
+		LabelUtil lu = new LabelUtil();
+		String r = lu.parse("invokeinterface < Source, Lorg/osgi/framework/ServiceReference, getProperty(Ljava/lang/String;)Ljava/lang/Object; > v2,r");
+		System.out.println(r);
+	}
 
 	public void setIR(IR ir){
 		this.ir = ir;
