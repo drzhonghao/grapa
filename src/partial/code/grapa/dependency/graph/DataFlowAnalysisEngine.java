@@ -53,6 +53,7 @@ import com.ibm.wala.classLoader.IClassLoader;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.JarFileModule;
 import com.ibm.wala.classLoader.Module;
+import com.ibm.wala.core.util.strings.Atom;
 import com.ibm.wala.ide.classloader.EclipseSourceFileModule;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
@@ -74,7 +75,7 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.config.SetOfClasses;
-import com.ibm.wala.util.strings.Atom;
+
 
 import ca.mcgill.cs.swevo.ppa.PPAOptions;
 import ca.mcgill.cs.swevo.ppa.ui.PPAUtil;

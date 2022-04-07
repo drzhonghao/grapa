@@ -1,7 +1,8 @@
 package partial.code.grapa.delta.graph;
 
 import com.ibm.wala.util.WalaException;
-import com.ibm.wala.viz.NodeDecorator;
+import com.ibm.wala.util.viz.NodeDecorator;
+
 
 
 public class DeltaGraphDecorator implements NodeDecorator<DeltaNode>{

@@ -5,8 +5,8 @@ import java.io.FileWriter;
 
 
 import com.ibm.wala.util.WalaException;
-import com.ibm.wala.viz.DotUtil;
-import com.ibm.wala.viz.NodeDecorator;
+import com.ibm.wala.util.viz.DotUtil;
+import com.ibm.wala.util.viz.NodeDecorator;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import partial.code.grapa.delta.graph.DeltaEdge;

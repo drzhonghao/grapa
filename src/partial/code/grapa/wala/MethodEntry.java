@@ -3,6 +3,7 @@ package partial.code.grapa.wala;
 import java.util.HashSet;
 
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.core.util.strings.Atom;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.impl.DefaultEntrypoint;
@@ -13,7 +14,7 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
-import com.ibm.wala.util.strings.Atom;
+
 
 import sun.reflect.generics.tree.MethodTypeSignature;
 import sun.reflect.generics.tree.TypeSignature;
